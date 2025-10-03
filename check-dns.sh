@@ -3,7 +3,9 @@
 # DNS 记录检查脚本
 # 用于验证 Resend 邮件域名配置
 
-DOMAIN="mail.borui.org"  # 修改为您在 Resend 中配置的域名
+# 修改为您在 Resend 中配置的域名
+# 推荐使用子域名，避免与现有邮件服务器冲突
+DOMAIN="${1:-app.borui.org}"  # 默认: app.borui.org，也可以通过参数指定
 
 echo "================================================"
 echo "邮件域名 DNS 配置检查工具"
