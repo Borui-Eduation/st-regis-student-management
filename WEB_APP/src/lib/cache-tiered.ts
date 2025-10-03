@@ -123,6 +123,52 @@ export async function clearAllTieredCache(): Promise<void> {
 }
 
 /**
+ * 🚀 写入两层缓存
+ * 
+ * 用于数据写入后立即更新缓存，避免首次访问的查询延迟
+ * 
+ * @param key 缓存键
+ * @param value 要缓存的数据
+ * @param options 缓存选项
+ * 
+ * 示例用法：
+ * ```typescript
+ * // 创建新学生后立即设置缓存
+ * const newStudent = await collections.students.add(data);
+ * await setTieredCache(
+ *   `student:${newStudent.id}`,
+ *   { id: newStudent.id, ...data },
+ *   CACHE_STRATEGY.profiles
+ * );
+ * ```
+ */
+export async function setTieredCache<T>(
+  key: string,
+  value: T,
+  options?: {
+    l1Ttl?: number; // L1缓存时间（秒）
+    l2Ttl?: number; // L2缓存时间（秒）
+  }
+): Promise<void> {
+  const l1Ttl = options?.l1Ttl || CacheTTL.SHORT;
+  const l2Ttl = options?.l2Ttl || CacheTTL.MEDIUM;
+
+  // 写入L1缓存
+  serverCache.set(key, value, l1Ttl);
+  console.log(`✅ L1缓存已设置: ${key} (TTL: ${l1Ttl}s)`);
+
+  // 写入L2缓存（如果已配置）
+  if (RedisConfig.isConfigured()) {
+    try {
+      await redisCache.set(key, value, l2Ttl);
+      console.log(`✅ L2缓存已设置: ${key} (TTL: ${l2Ttl}s)`);
+    } catch (error) {
+      console.error(`⚠️ Redis写入失败: ${key}`, error);
+    }
+  }
+}
+
+/**
  * 获取缓存统计
  */
 export async function getTieredCacheStats() {

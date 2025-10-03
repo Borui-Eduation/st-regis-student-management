@@ -63,10 +63,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse>> 
           timestamp: new Date().toISOString(),
         };
       },
-      {
-        l1Ttl: CacheTTL.MEDIUM,     // L1: 5分钟内存缓存
-        l2Ttl: CacheTTL.LONG,       // L2: 15分钟Redis缓存
-      }
+      CACHE_STRATEGY.stats  // 🚀 使用统计数据缓存策略
     );
 
     return NextResponse.json({

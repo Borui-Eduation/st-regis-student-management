@@ -189,3 +189,105 @@ export const CacheTTL = {
   VERY_LONG: 60 * 60 * 1000,   // 1小时 - 很少变化的数据
 };
 
+/**
+ * Cache options interface
+ */
+export interface CacheOptions {
+  l1Ttl: number;  // L1内存缓存TTL（秒）
+  l2Ttl: number;  // L2 Redis缓存TTL（秒）
+  description?: string;
+}
+
+/**
+ * 🚀 缓存策略分类
+ * 
+ * 根据数据特性选择合适的缓存策略，最大化缓存效率
+ * 基于用户建议优化的分类策略
+ */
+export const CACHE_STRATEGY: Record<string, CacheOptions> = {
+  /**
+   * 基础档案数据 - 很少变化
+   * 适用于: students, agents, teachers, courses（单个记录）
+   * 
+   * 特点：
+   * - 读取频率高
+   * - 变化频率低
+   * - 需要长期缓存
+   * 
+   * 示例：GET /api/students/:id, GET /api/courses/:id
+   */
+  profiles: {
+    l1Ttl: 900,      // 15分钟内存缓存
+    l2Ttl: 3600,     // 1小时Redis缓存
+    description: '基础档案：students, agents, teachers, courses（单个记录）',
+  },
+
+  /**
+   * 查询列表数据 - 中等变化
+   * 适用于: enrollments, payments（列表查询）
+   * 
+   * 特点：
+   * - 读取频率高
+   * - 变化频率中等
+   * - 需要短期缓存
+   * 
+   * 示例：GET /api/admin/enrollments
+   */
+  lists: {
+    l1Ttl: 60,       // 1分钟内存缓存
+    l2Ttl: 300,      // 5分钟Redis缓存
+    description: '查询列表：enrollments, payments（列表）',
+  },
+
+  /**
+   * 统计数据 - 慢变化
+   * 适用于: dashboard stats, finance stats
+   * 
+   * 特点：
+   * - 读取频率高
+   * - 变化频率慢
+   * - 可以接受一定延迟
+   * 
+   * 示例：GET /api/admin/stats, GET /api/admin/finance/stats
+   */
+  stats: {
+    l1Ttl: 300,      // 5分钟内存缓存
+    l2Ttl: 900,      // 15分钟Redis缓存
+    description: '统计数据：dashboard stats, finance stats',
+  },
+
+  /**
+   * 配置数据 - 几乎不变
+   * 适用于: status maps, constants, settings
+   * 
+   * 特点：
+   * - 读取频率高
+   * - 几乎不变化
+   * - 可以长期缓存
+   * 
+   * 示例：GET /api/config/status-map
+   */
+  config: {
+    l1Ttl: 3600,     // 1小时内存缓存
+    l2Ttl: 3600,     // 1小时Redis缓存
+    description: '配置数据：status maps, constants',
+  },
+
+  /**
+   * 实时数据 - 不缓存
+   * 适用于: 特定用户数据，低频访问数据
+   * 
+   * 特点：
+   * - 必须实时
+   * - 访问频率低
+   * - 不需要缓存
+   * 
+   * 示例：GET /api/students/:id/enrollments（个人数据）
+   */
+  realtime: {
+    l1Ttl: 0,        // 不缓存
+    l2Ttl: 0,        // 不缓存
+    description: '实时数据：不缓存',
+  },
+} as const;
+

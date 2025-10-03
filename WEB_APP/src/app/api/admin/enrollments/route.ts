@@ -4,7 +4,7 @@ import { collections, FieldValue } from '@/lib/firebase-admin';
 import { createErrorResponse, createSuccessResponse, notFoundError, validationError, conflictError } from '@/lib/api-error-handler';
 import { getPriceForCourse } from '@/lib/pricing';
 import { tieredCachedFetch, invalidateTieredCacheByPrefix } from '@/lib/cache-tiered';
-import { CacheKeys, CacheTTL } from '@/lib/cache';
+import { CacheKeys, CACHE_STRATEGY } from '@/lib/cache';
 import type { ApiResponse, PaginatedResponse } from '@/types';
 
 /**
@@ -63,10 +63,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse<Pa
           hasMore: offset + pageSize < total,
         } as PaginatedResponse<any>;
       },
-      {
-        l1Ttl: CacheTTL.SHORT,  // L1: 1分钟
-        l2Ttl: CacheTTL.MEDIUM, // L2: 5分钟
-      }
+      CACHE_STRATEGY.lists  // 🚀 使用列表数据缓存策略
     );
     
     return createSuccessResponse(response, 'Enrollments fetched successfully');

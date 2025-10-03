@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/lib/api-auth';
 import { collections } from '@/lib/firebase-admin';
 import { tieredCachedFetch } from '@/lib/cache-tiered';
-import { CacheTTL } from '@/lib/cache';
+import { CACHE_STRATEGY } from '@/lib/cache';
 
 /**
  * GET /api/admin/finance/stats
@@ -91,10 +91,7 @@ export async function GET(req: NextRequest) {
           currency: 'CAD',
         };
       },
-      {
-        l1Ttl: CacheTTL.MEDIUM,     // L1: 5分钟内存缓存
-        l2Ttl: CacheTTL.LONG,       // L2: 15分钟Redis缓存
-      }
+      CACHE_STRATEGY.stats  // 🚀 使用统计数据缓存策略
     );
 
     return NextResponse.json({

@@ -271,36 +271,82 @@ const total = countSnapshot.data().count;
 
 ### 4. 缓存策略
 
-**缓存TTL指南:**
+**🚀 使用 CACHE_STRATEGY 常量（推荐）:**
 
 ```typescript
-// 统计数据（变化慢）
-CacheTTL.MEDIUM (5分钟) 或 CacheTTL.LONG (15分钟)
+import { CACHE_STRATEGY } from '@/lib/cache';
+import { tieredCachedFetch } from '@/lib/cache-tiered';
 
-// 列表数据（变化中等）
-CacheTTL.SHORT (1分钟) 内存 + CacheTTL.MEDIUM (5分钟) Redis
+// 基础档案数据（学生、课程等单个记录）
+await tieredCachedFetch(
+  `student:${id}`,
+  fetchFn,
+  CACHE_STRATEGY.profiles  // 15分钟内存 + 1小时Redis
+);
 
-// 实时数据（变化快）
-不缓存 或 CacheTTL.SHORT (1分钟)
+// 列表数据（注册记录、支付列表）
+await tieredCachedFetch(
+  'enrollments:all',
+  fetchFn,
+  CACHE_STRATEGY.lists     // 1分钟内存 + 5分钟Redis
+);
 
-// 静态数据（几乎不变）
-CacheTTL.VERY_LONG (1小时)
+// 统计数据（Dashboard统计）
+await tieredCachedFetch(
+  'admin:stats',
+  fetchFn,
+  CACHE_STRATEGY.stats     // 5分钟内存 + 15分钟Redis
+);
+
+// 配置数据（状态映射、常量）
+await tieredCachedFetch(
+  'config:status-map',
+  fetchFn,
+  CACHE_STRATEGY.config    // 1小时内存 + 1小时Redis
+);
+
+// 实时数据（个人数据、低频访问）
+// 不缓存，直接查询
 ```
+
+**缓存策略分类:**
+
+| 数据类型 | CACHE_STRATEGY | L1 TTL | L2 TTL | 适用场景 |
+|---------|----------------|--------|--------|---------|
+| 基础档案 | `profiles` | 15分钟 | 1小时 | students/:id, courses/:id |
+| 列表数据 | `lists` | 1分钟 | 5分钟 | enrollments, payments |
+| 统计数据 | `stats` | 5分钟 | 15分钟 | dashboard stats |
+| 配置数据 | `config` | 1小时 | 1小时 | status maps |
+| 实时数据 | `realtime` | 不缓存 | 不缓存 | 个人数据 |
 
 **缓存失效模式:**
 
 ```typescript
+import { invalidateTieredCacheByPrefix, setTieredCache } from '@/lib/cache-tiered';
+
 // 数据变化时，自动失效相关缓存
 export async function POST(req: NextRequest) {
   // 创建/更新数据
-  await collections.students.add(data);
+  const newDoc = await collections.students.add(data);
   
-  // 🚀 失效相关缓存
-  await invalidateTieredCacheByPrefix('students:');
+  // 🚀 方式1: 失效列表缓存
+  await invalidateTieredCacheByPrefix('students:list');
+  
+  // 🚀 方式2: 立即设置单个记录缓存（推荐）
+  await setTieredCache(
+    `student:${newDoc.id}`,
+    { id: newDoc.id, ...data },
+    CACHE_STRATEGY.profiles
+  );
   
   return createSuccessResponse(data);
 }
 ```
+
+**写入后更新缓存的优势：**
+- ✅ 避免首次访问的查询延迟
+- ✅ 提升用户体验（创建后立即访问详情页）
+- ✅ 减少Firestore读取
 
 ---
 
@@ -319,9 +365,12 @@ export async function POST(req: NextRequest) {
 **🚀 推荐做:**
 
 - [ ] 统计数据使用维护字段（Cloud Functions更新）
-- [ ] 高频查询添加两层缓存
-- [ ] 使用并行查询（Promise.all）
-- [ ] 过滤教师等特殊账号
+- [x] 高频查询添加两层缓存
+- [x] 使用 CACHE_STRATEGY 常量（数据分类）
+- [x] 部署 Firestore 索引
+- [x] 写入后立即设置缓存（setTieredCache）
+- [x] 使用并行查询（Promise.all）
+- [x] 过滤教师等特殊账号
 
 ### 2. 缓存优化
 
