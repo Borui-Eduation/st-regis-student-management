@@ -44,13 +44,14 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Check limit error:', error);
+    const isAuthError = error.message?.includes('Unauthorized') || error.message?.includes('sign in');
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || 'Failed to check course limit' 
+        error: error.message || 'Failed to check course limit',
+        message: 'Course limit check failed'
       },
-      { status: 401 }
+      { status: isAuthError ? 401 : 500 }
     );
   }
 }

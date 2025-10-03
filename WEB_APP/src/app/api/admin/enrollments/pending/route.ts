@@ -50,9 +50,12 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse>> 
     });
 
   } catch (error: any) {
-    console.error('Error fetching pending enrollments:', error);
     return NextResponse.json(
-      { success: false, error: error.message || '获取失败' },
+      { 
+        success: false, 
+        error: error.message || '获取失败',
+        message: 'Failed to fetch pending enrollments'
+      },
       { status: 500 }
     );
   }

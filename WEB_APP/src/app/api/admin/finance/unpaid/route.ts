@@ -10,7 +10,7 @@ import { collections } from '@/lib/firebase-admin';
 export async function GET(req: NextRequest) {
   try {
     // 权限检查
-    await requireRole(['admin', 'it', 'superadmin']);
+    await requireRole(['admin', 'superadmin']);
 
     // 查询未付款的注册
     const enrollmentsSnapshot = await collections.enrollments
@@ -87,13 +87,14 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Unpaid enrollments error:', error);
+    const isForbidden = error.message?.includes('Forbidden') || error.message?.includes('Unauthorized');
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || 'Failed to get unpaid enrollments' 
+        error: error.message || 'Failed to get unpaid enrollments',
+        message: 'Unpaid enrollments retrieval failed'
       },
-      { status: error.message?.includes('Forbidden') ? 403 : 500 }
+      { status: isForbidden ? 403 : 500 }
     );
   }
 }

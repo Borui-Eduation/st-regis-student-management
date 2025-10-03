@@ -50,8 +50,8 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded font-mono text-xs">POST</span>
-                <code className="text-gray-700">/api/it/open-course</code>
-                <span className="text-gray-500">- IT 开课</span>
+                <code className="text-gray-700">/api/admin/enrollments</code>
+                <span className="text-gray-500">- 管理员添加课程</span>
               </div>
             </div>
           </div>
@@ -70,10 +70,10 @@ export default function Home() {
               👨‍💼 管理员审批
             </a>
             <a 
-              href="/it" 
+              href="/admin" 
               className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-center font-semibold"
             >
-              💻 IT 开课
+              📊 数据统计
             </a>
           </div>
           

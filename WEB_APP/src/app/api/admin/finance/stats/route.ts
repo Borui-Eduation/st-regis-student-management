@@ -1,23 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/lib/api-auth';
 import { collections } from '@/lib/firebase-admin';
+import { tieredCachedFetch } from '@/lib/cache-tiered';
+import { CacheTTL } from '@/lib/cache';
 
 /**
  * GET /api/admin/finance/stats
  * 获取财务统计数据
  * 权限：管理员及以上
+ * 🚀 已优化：使用两层缓存，大幅减少Firestore读取
  */
 export async function GET(req: NextRequest) {
   try {
     // 权限检查：只有管理员、IT、超级管理员可以访问
-    await requireRole(['admin', 'it', 'superadmin']);
+    await requireRole(['admin', 'superadmin']);
 
-    // 获取所有注册记录
-    const enrollmentsSnapshot = await collections.enrollments.get();
-    const enrollments = enrollmentsSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    // 🚀 使用两层缓存
+    const financeData = await tieredCachedFetch(
+      'finance:stats',
+      async () => {
+        console.log('📊 从Firestore查询财务统计');
+        
+        // 获取所有注册记录
+        const enrollmentsSnapshot = await collections.enrollments.get();
+        const enrollments = enrollmentsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
     // 统计数据
     let totalRevenue = 0;           // 总收入
@@ -55,44 +64,53 @@ export async function GET(req: NextRequest) {
       }
     });
 
-    // 获取学生财务统计
-    const studentsSnapshot = await collections.students.get();
-    const students = studentsSnapshot.docs.map(doc => doc.data());
+        // 获取学生财务统计
+        const studentsSnapshot = await collections.students.get();
+        const students = studentsSnapshot.docs.map(doc => doc.data());
 
-    const studentFinance = {
-      totalPaid: students.reduce((sum, s: any) => sum + (s.totalPaid || 0), 0),
-      totalOwed: students.reduce((sum, s: any) => sum + (s.totalOwed || 0), 0),
-      studentsWithDebt: students.filter((s: any) => (s.totalOwed || 0) > 0).length,
-    };
+        const studentFinance = {
+          totalPaid: students.reduce((sum, s: any) => sum + (s.totalPaid || 0), 0),
+          totalOwed: students.reduce((sum, s: any) => sum + (s.totalOwed || 0), 0),
+          studentsWithDebt: students.filter((s: any) => (s.totalOwed || 0) > 0).length,
+        };
+
+        return {
+          overview: {
+            totalRevenue: Math.round(totalRevenue * 100) / 100,
+            paidRevenue: Math.round(paidRevenue * 100) / 100,
+            unpaidRevenue: Math.round(unpaidRevenue * 100) / 100,
+            paidCount,
+            unpaidCount,
+            totalEnrollments: enrollments.length,
+            paymentRate: enrollments.length > 0 
+              ? Math.round((paidCount / enrollments.length) * 100) 
+              : 0,
+          },
+          byPaymentMethod,
+          studentFinance,
+          currency: 'CAD',
+        };
+      },
+      {
+        l1Ttl: CacheTTL.MEDIUM,     // L1: 5分钟内存缓存
+        l2Ttl: CacheTTL.LONG,       // L2: 15分钟Redis缓存
+      }
+    );
 
     return NextResponse.json({
       success: true,
-      data: {
-        overview: {
-          totalRevenue: Math.round(totalRevenue * 100) / 100,
-          paidRevenue: Math.round(paidRevenue * 100) / 100,
-          unpaidRevenue: Math.round(unpaidRevenue * 100) / 100,
-          paidCount,
-          unpaidCount,
-          totalEnrollments: enrollments.length,
-          paymentRate: enrollments.length > 0 
-            ? Math.round((paidCount / enrollments.length) * 100) 
-            : 0,
-        },
-        byPaymentMethod,
-        studentFinance,
-        currency: 'CAD',
-      },
+      data: financeData,
     });
 
   } catch (error: any) {
-    console.error('Finance stats error:', error);
+    const isForbidden = error.message?.includes('Forbidden') || error.message?.includes('Unauthorized');
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || 'Failed to get finance stats' 
+        error: error.message || 'Failed to get finance stats',
+        message: 'Finance statistics retrieval failed'
       },
-      { status: error.message?.includes('Forbidden') ? 403 : 500 }
+      { status: isForbidden ? 403 : 500 }
     );
   }
 }

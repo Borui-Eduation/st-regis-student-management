@@ -55,12 +55,10 @@ async function createTask(options: {
 
   try {
     const [response] = await client.createTask({ parent, task });
-    console.log(`Task created: ${response.name}`);
     return response;
   } catch (error: any) {
     // 如果任务已存在（去重），忽略错误
     if (error.code === 6) { // ALREADY_EXISTS
-      console.log('Task already exists, skipping...');
       return null;
     }
     throw error;
@@ -137,8 +135,6 @@ export async function createBatchTasks<T>(
   const successful = results.filter(r => r.status === 'fulfilled').length;
   const failed = results.filter(r => r.status === 'rejected').length;
   
-  console.log(`Batch task creation: ${successful} successful, ${failed} failed`);
-  
   return { successful, failed, results };
 }
 
@@ -148,10 +144,8 @@ export async function createBatchTasks<T>(
 export async function cancelTask(taskName: string) {
   try {
     await client.deleteTask({ name: taskName });
-    console.log(`Task cancelled: ${taskName}`);
   } catch (error) {
-    console.error('Error cancelling task:', error);
-    throw error;
+    throw new Error(`Failed to cancel task: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

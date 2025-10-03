@@ -63,7 +63,8 @@ def import_students(df):
         if not name or name == 'nan':
             continue
         
-        # 使用名字作为唯一标识（如果有邮箱，优先用邮箱）
+        # 使用邮箱作为唯一标识（邮箱应该唯一）
+        # 如果没有邮箱，使用名字
         key = email if email else name
         
         if key not in students_dict:
@@ -273,7 +274,7 @@ def import_enrollments(df, student_id_map, course_id_map):
             'finalComments': clean_string(row.get('Final  Comments', '')),
             
             # 状态信息
-            'status': 'active',
+            'status': 'open',  # open = 已开课 (历史数据默认已开课)
             'myEdBCStatus': clean_string(row.get('MyEdBC', '')),
             'paid': False,  # 默认未支付
             'paidDate': None,

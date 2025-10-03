@@ -47,18 +47,54 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse>> 
       }
     });
 
-    // 获取这些学生的详细信息
+    // 获取教师列表，用于过滤
+    const teachersSnapshot = await collections.teachers.get();
+    const teacherEmails = new Set(teachersSnapshot.docs.map(doc => doc.data().email?.toLowerCase()));
+
+    // 🚀 使用批量查询代替N+1查询
     const studentIds = Array.from(studentIdsSet);
     const students = [];
 
-    for (const studentId of studentIds) {
-      const studentDoc = await collections.students.doc(studentId).get();
-      if (studentDoc.exists) {
-        const studentData = studentDoc.data();
+    // Firestore 'in' 查询最多支持10个ID
+    const batchSize = 10;
+    const studentPromises = [];
+
+    for (let i = 0; i < studentIds.length; i += batchSize) {
+      const batch = studentIds.slice(i, i + batchSize);
+      studentPromises.push(
+        collections.students
+          .where('__name__', 'in', batch)
+          .get()
+      );
+    }
+
+    // 并行执行所有批次查询
+    const studentSnapshots = await Promise.all(studentPromises);
+
+    // 构建学生映射
+    const studentsMap = new Map();
+    studentSnapshots.forEach(snapshot => {
+      snapshot.docs.forEach(doc => {
+        studentsMap.set(doc.id, doc.data());
+      });
+    });
+
+    // 组装学生数据
+    studentIds.forEach(studentId => {
+      const studentData = studentsMap.get(studentId);
+      
+      if (studentData) {
+        const email = studentData?.email?.toLowerCase();
+        
+        // 🔧 跳过教师账号
+        if (email && teacherEmails.has(email)) {
+          return;
+        }
+        
         const enrollments = enrollmentsByStudent.get(studentId) || [];
         
         students.push({
-          studentId: studentDoc.id,
+          studentId,
           name: studentData?.name,
           email: studentData?.email,
           school: studentData?.school,
@@ -72,7 +108,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse>> 
           coursesInStatus: enrollments.length,
         });
       }
-    }
+    });
 
     // 按课程数量排序（该状态下的课程多的排前面）
     students.sort((a, b) => b.coursesInStatus - a.coursesInStatus);

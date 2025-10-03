@@ -7,17 +7,35 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import type { Student, StudentEnrollment } from '../types';
+import { EditStudentDialog } from './EditStudentDialog';
+import { AddEnrollmentDialog } from './AddEnrollmentDialog';
+import type { Student, Enrollment } from '@/types';
+
+// StudentEnrollment 类型用于显示
+interface StudentEnrollment {
+  enrollmentId: string;
+  courseName: string;
+  teacherName: string;
+  status: 'pending' | 'ready' | 'open' | 'rejected';
+  academicYear: string;
+  semester: string;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+}
 
 interface StudentDetailDialogProps {
   student: Student | null;
   isOpen: boolean;
   onClose: () => void;
+  onRefresh?: () => void;
 }
 
-export function StudentDetailDialog({ student, isOpen, onClose }: StudentDetailDialogProps) {
+export function StudentDetailDialog({ student, isOpen, onClose, onRefresh }: StudentDetailDialogProps) {
   const [enrollments, setEnrollments] = useState<StudentEnrollment[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showAddEnrollmentDialog, setShowAddEnrollmentDialog] = useState(false);
 
   useEffect(() => {
     if (student && isOpen) {
@@ -40,27 +58,57 @@ export function StudentDetailDialog({ student, isOpen, onClose }: StudentDetailD
     }
   };
 
+  const handleEditSuccess = () => {
+    setShowEditDialog(false);
+    onRefresh?.();
+    fetchEnrollments(student!.studentId);
+  };
+
+  const handleAddEnrollmentSuccess = () => {
+    setShowAddEnrollmentDialog(false);
+    onRefresh?.();
+    fetchEnrollments(student!.studentId);
+  };
+
   if (!student) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <DialogTitle>学生详细信息</DialogTitle>
-              <DialogDescription>完整的学生资料和注册信息</DialogDescription>
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle>学生详细信息</DialogTitle>
+                <DialogDescription>完整的学生资料和注册信息</DialogDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAddEnrollmentDialog(true)}
+                  className="bg-green-50 hover:bg-green-100 text-green-700 border-green-300"
+                >
+                  ➕ 添加课程
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowEditDialog(true)}
+                >
+                  ✏️ 编辑
+                </Button>
+                <button
+                  onClick={onClose}
+                  className="text-gray-400 hover:text-gray-600 transition"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </DialogHeader>
+          </DialogHeader>
 
         <div className="space-y-6">
           {/* Basic Info */}
@@ -84,6 +132,22 @@ export function StudentDetailDialog({ student, isOpen, onClose }: StudentDetailD
                 <p className="text-sm text-gray-900">{(student as any).school || '-'}</p>
               </div>
               <div>
+                <label className="text-xs text-gray-500 uppercase">角色</label>
+                <div className="mt-1">
+                  <Badge 
+                    variant={
+                      (student as any).role === 'superadmin' ? 'error' : 
+                      (student as any).role === 'admin' ? 'warning' : 
+                      'info'
+                    }
+                  >
+                    {(student as any).role === 'superadmin' ? '👑 SuperAdmin' : 
+                     (student as any).role === 'admin' ? '🔑 Admin' : 
+                     '👤 Student'}
+                  </Badge>
+                </div>
+              </div>
+              <div>
                 <label className="text-xs text-gray-500 uppercase">账户状态</label>
                 <div className="mt-1">
                   <Badge variant={student.status === 'active' ? 'success' : 'default'}>
@@ -94,9 +158,13 @@ export function StudentDetailDialog({ student, isOpen, onClose }: StudentDetailD
               <div>
                 <label className="text-xs text-gray-500 uppercase">注册时间</label>
                 <p className="text-sm text-gray-900">
-                  {student.enrollmentDate
-                    ? new Date(student.enrollmentDate).toLocaleDateString('zh-CN')
-                    : '-'}
+                  {(student as any).enrollmentDate
+                    ? new Date((student as any).enrollmentDate).toLocaleDateString('zh-CN')
+                    : student.createdAt 
+                      ? (typeof student.createdAt === 'string' 
+                          ? new Date(student.createdAt).toLocaleDateString('zh-CN')
+                          : new Date((student.createdAt as any).toDate()).toLocaleDateString('zh-CN'))
+                      : '-'}
                 </p>
               </div>
             </div>
@@ -165,13 +233,13 @@ export function StudentDetailDialog({ student, isOpen, onClose }: StudentDetailD
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600">
-                  {student.completedCourses || 0}
+                  {(student as any).completedCourses || 0}
                 </div>
                 <div className="text-xs text-gray-500 mt-1">已完成</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">
-                  {(student.currentCourses || 0) + (student.completedCourses || 0)}
+                  {(student.currentCourses || 0) + ((student as any).completedCourses || 0)}
                 </div>
                 <div className="text-xs text-gray-500 mt-1">总课程</div>
               </div>
@@ -183,13 +251,25 @@ export function StudentDetailDialog({ student, isOpen, onClose }: StudentDetailD
             <Button variant="outline" onClick={onClose}>
               关闭
             </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              编辑学生信息
-            </Button>
           </div>
         </div>
       </DialogContent>
     </Dialog>
+
+    <EditStudentDialog
+      student={student}
+      isOpen={showEditDialog}
+      onClose={() => setShowEditDialog(false)}
+      onSuccess={handleEditSuccess}
+    />
+
+    <AddEnrollmentDialog
+      student={student}
+      isOpen={showAddEnrollmentDialog}
+      onClose={() => setShowAddEnrollmentDialog(false)}
+      onSuccess={handleAddEnrollmentSuccess}
+    />
+    </>
   );
 }
 

@@ -5,7 +5,9 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import type { SearchType, FilterStatus } from '../types';
+// FilterStatus 和 SearchType 需要临时定义，因为全局types中没有
+type SearchType = 'all' | 'name' | 'email' | 'course' | 'teacher';
+type FilterStatus = 'all' | 'pending' | 'ready' | 'open' | 'rejected';
 
 interface SearchBarProps {
   searchTerm: string;
@@ -86,7 +88,10 @@ export function SearchBar({
               {searchType === 'teacher' ? (
                 <select
                   value={searchTerm}
-                  onChange={(e) => onSearchTermChange(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    onSearchTermChange(value);
+                  }}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">👨‍🏫 选择教师...</option>
@@ -99,7 +104,10 @@ export function SearchBar({
               ) : searchType === 'course' ? (
                 <select
                   value={searchTerm}
-                  onChange={(e) => onSearchTermChange(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    onSearchTermChange(value);
+                  }}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">📚 选择课程...</option>

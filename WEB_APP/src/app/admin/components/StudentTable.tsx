@@ -6,7 +6,9 @@
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import type { Student, FilterStatus } from '../types';
+import type { Student } from '@/types';
+
+type FilterStatus = 'all' | 'pending' | 'ready' | 'open' | 'rejected';
 
 interface StudentTableProps {
   students: Student[];
@@ -34,6 +36,8 @@ export function StudentTable({ students, filterStatus, onStudentClick }: Student
           <TableRow>
             <TableHead>学生姓名</TableHead>
             <TableHead>邮箱</TableHead>
+            <TableHead>学生来源</TableHead>
+            <TableHead>中介</TableHead>
             <TableHead>当前课程</TableHead>
             <TableHead>课程状态</TableHead>
             <TableHead>操作</TableHead>
@@ -52,6 +56,27 @@ export function StudentTable({ students, filterStatus, onStudentClick }: Student
               </TableCell>
               <TableCell>
                 <div className="text-sm">{student.email}</div>
+              </TableCell>
+              <TableCell>
+                <Badge
+                  variant={student.schoolType === 'stregis' ? 'default' : 'secondary'}
+                  className={
+                    student.schoolType === 'stregis'
+                      ? 'bg-blue-100 text-blue-800'
+                      : 'bg-gray-100 text-gray-800'
+                  }
+                >
+                  {student.schoolType === 'stregis' ? '🏫 本校' : '🌍 外校'}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                {student.agentName ? (
+                  <div className="text-sm">
+                    <span className="text-teal-600">🤝 {student.agentName}</span>
+                  </div>
+                ) : (
+                  <span className="text-xs text-gray-400">-</span>
+                )}
               </TableCell>
               <TableCell>
                 {filterStatus !== 'all' ? (

@@ -9,7 +9,7 @@ import { collections } from '@/lib/firebase-admin';
  */
 export async function GET(req: NextRequest) {
   try {
-    await requireRole(['admin', 'it', 'superadmin']);
+    await requireRole(['admin', 'superadmin']);
 
     // 获取所有课程
     const coursesSnapshot = await collections.courses
@@ -154,13 +154,14 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Detailed stats error:', error);
+    const isForbidden = error.message?.includes('Forbidden') || error.message?.includes('Unauthorized');
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || 'Failed to get detailed stats' 
+        error: error.message || 'Failed to get detailed stats',
+        message: 'Detailed statistics retrieval failed'
       },
-      { status: error.message?.includes('Forbidden') ? 403 : 500 }
+      { status: isForbidden ? 403 : 500 }
     );
   }
 }

@@ -11,7 +11,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 export async function POST(req: NextRequest) {
   try {
     // 权限检查
-    const session = await requireRole(['admin', 'it', 'superadmin']);
+    const session = await requireRole(['admin', 'superadmin']);
 
     const body = await req.json();
     const { 
@@ -81,13 +81,14 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Mark paid error:', error);
+    const isForbidden = error.message?.includes('Forbidden') || error.message?.includes('Unauthorized');
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || 'Failed to mark as paid' 
+        error: error.message || 'Failed to mark as paid',
+        message: 'Payment update failed'
       },
-      { status: error.message?.includes('Forbidden') ? 403 : 500 }
+      { status: isForbidden ? 403 : 500 }
     );
   }
 }

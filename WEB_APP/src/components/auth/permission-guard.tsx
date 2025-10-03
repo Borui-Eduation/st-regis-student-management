@@ -65,7 +65,7 @@ export function StudentOnly({ children, fallback }: { children: ReactNode; fallb
  */
 export function AdminOnly({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
   return (
-    <PermissionGuard allowedRoles={['admin', 'it', 'superadmin']} fallback={fallback}>
+    <PermissionGuard allowedRoles={['admin', 'superadmin']} fallback={fallback}>
       {children}
     </PermissionGuard>
   );
@@ -76,7 +76,7 @@ export function AdminOnly({ children, fallback }: { children: ReactNode; fallbac
  */
 export function ITOnly({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
   return (
-    <PermissionGuard allowedRoles={['it', 'superadmin']} fallback={fallback}>
+    <PermissionGuard allowedRoles={['superadmin']} fallback={fallback}>
       {children}
     </PermissionGuard>
   );

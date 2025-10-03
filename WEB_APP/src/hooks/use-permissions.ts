@@ -17,19 +17,19 @@ export function usePermissions() {
     permissions: getUserPermissions(role),
     
     // 便捷方法
-    can: (permission: keyof ReturnType<typeof getUserPermissions>) => {
+    can: (permission: string) => {
       return hasPermission(role, permission);
     },
     
     // 角色检查
     isStudent: role === 'student',
+    isAgent: role === 'agent',
     isAdmin: role === 'admin',
-    isIT: role === 'it',
     isSuperAdmin: role === 'superadmin',
     
     // 至少是某个角色
-    isAtLeastAdmin: ['admin', 'it', 'superadmin'].includes(role),
-    isAtLeastIT: ['it', 'superadmin'].includes(role),
+    isAtLeastAgent: ['agent', 'admin', 'superadmin'].includes(role),
+    isAtLeastAdmin: ['admin', 'superadmin'].includes(role),
   };
 }
 

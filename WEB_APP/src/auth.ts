@@ -30,7 +30,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           .limit(1)
           .get();
 
-        let userRole: 'student' | 'admin' | 'it' | 'superadmin' = 'student';
+        let userRole: 'student' | 'agent' | 'admin' | 'superadmin' = 'student';
         let userId = user.id;
 
         if (!usersSnapshot.empty) {
@@ -64,7 +64,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         return true;
       } catch (error) {
-        console.error("Error in signIn callback:", error);
+        // Sign-in error - deny access
         return false;
       }
     },
@@ -83,12 +83,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             const dbRole = userData.role || 'student';
             token.id = usersSnapshot.docs[0].id;
             token.role = dbRole;
+            
+            // 🚀 优化：如果是agent，查询并存储agentId避免重复查询
+            if (dbRole === 'agent') {
+              try {
+                const agentSnapshot = await collections.agents
+                  .where('email', '==', user.email)
+                  .limit(1)
+                  .get();
+                
+                if (!agentSnapshot.empty) {
+                  token.agentId = agentSnapshot.docs[0].id;
+                }
+              } catch (error) {
+                console.error('Failed to fetch agentId:', error);
+              }
+            }
           } else {
             token.id = user.id;
             token.role = assignRoleByEmail(user.email);
           }
         } catch (error) {
-          console.error('Error querying database in JWT callback:', error);
+          // Database query failed - assign default role
           token.id = user.id;
           token.role = 'student';
         }
@@ -106,7 +122,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // 将token中的数据添加到session
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.role = token.role as 'student' | 'admin' | 'it' | 'superadmin';
+        session.user.role = token.role as 'student' | 'admin' | 'superadmin';
+        
+        // 🚀 优化：传递agentId到session
+        if (token.agentId) {
+          session.user.agentId = token.agentId as string;
+        }
       }
       return session;
     },

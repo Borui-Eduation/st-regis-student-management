@@ -33,40 +33,30 @@ export default function NavBar() {
       ];
     }
 
-    // 学生用户
+    // 学生用户 - 只看到学生相关功能
     if (role === 'student') {
       return [
-        { name: '首页', href: '/', icon: '🏠' },
-        { name: '我的课程', href: '/student', icon: '🎓' },
+        { name: '选课中心', href: '/student', icon: '🎓' },
+        { name: '我的课程', href: '/student/courses', icon: '📚' },
+        { name: '个人资料', href: '/student/profile', icon: '👤' },
       ];
     }
 
-    // 管理员用户
-    if (role === 'admin') {
+    // 中介用户 - 只看到中介相关功能
+    if (role === 'agent') {
       return [
-        { name: '首页', href: '/', icon: '🏠' },
-        { name: '学生管理', href: '/admin', icon: '👨‍💼' },
-        { name: '财务管理', href: '/admin/finance', icon: '💰' },
-        { name: '我的课程', href: '/student', icon: '🎓' },
+        { name: '工作台', href: '/agent', icon: '📊' },
+        { name: '我的学生', href: '/agent?tab=students', icon: '👥' },
+        { name: '注册记录', href: '/agent?tab=enrollments', icon: '📝' },
       ];
     }
 
-    // IT用户
-    if (role === 'it') {
+    // 管理员和超级管理员 - 看到所有管理功能
+    if (role === 'admin' || role === 'superadmin') {
       return [
-        { name: '首页', href: '/', icon: '🏠' },
-        { name: 'IT管理', href: '/it', icon: '💻' },
-        { name: '学生管理', href: '/admin', icon: '👨‍💼' },
-        { name: '财务管理', href: '/admin/finance', icon: '💰' },
-      ];
-    }
-
-    // 超级管理员
-    if (role === 'superadmin') {
-      return [
-        { name: '首页', href: '/', icon: '🏠' },
-        { name: 'IT管理', href: '/it', icon: '💻' },
-        { name: '学生管理', href: '/admin', icon: '👨‍💼' },
+        { name: '控制台', href: '/admin', icon: '🎛️' },
+        { name: '学生管理', href: '/admin', icon: '👨‍🎓' },
+        { name: '中介管理', href: '/admin/agents', icon: '🤝' },
         { name: '财务管理', href: '/admin/finance', icon: '💰' },
       ];
     }
@@ -91,6 +81,7 @@ export default function NavBar() {
   const getRoleLabel = (role: string) => {
     const labels: Record<string, string> = {
       student: '学生',
+      agent: '中介',
       admin: '管理员',
       it: 'IT管理',
       superadmin: '超级管理员',
@@ -102,6 +93,7 @@ export default function NavBar() {
   const getRoleColor = (role: string) => {
     const colors: Record<string, string> = {
       student: 'from-blue-500 to-indigo-500',
+      agent: 'from-teal-500 to-cyan-500',
       admin: 'from-purple-500 to-pink-500',
       it: 'from-green-500 to-teal-500',
       superadmin: 'from-red-500 to-orange-500',
@@ -185,8 +177,8 @@ export default function NavBar() {
                         </div>
                       </div>
 
-                      {/* 学生专属菜单 */}
-                      {(session.user.role === 'student' || session.user.role === 'admin') && (
+                      {/* 根据角色显示对应的快捷菜单 */}
+                      {session.user.role === 'student' && (
                         <>
                           <Link
                             href="/student"
@@ -194,6 +186,14 @@ export default function NavBar() {
                             onClick={() => setDropdownOpen(false)}
                           >
                             <span className="mr-2">🎓</span>
+                            选课中心
+                          </Link>
+                          <Link
+                            href="/student/courses"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                            onClick={() => setDropdownOpen(false)}
+                          >
+                            <span className="mr-2">📚</span>
                             我的课程
                           </Link>
                           <Link
@@ -207,17 +207,60 @@ export default function NavBar() {
                         </>
                       )}
 
-                      {/* 管理员菜单 */}
+                      {session.user.role === 'agent' && (
+                        <>
+                          <Link
+                            href="/agent"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                            onClick={() => setDropdownOpen(false)}
+                          >
+                            <span className="mr-2">📊</span>
+                            工作台
+                          </Link>
+                          <Link
+                            href="/agent?tab=students"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                            onClick={() => setDropdownOpen(false)}
+                          >
+                            <span className="mr-2">👥</span>
+                            我的学生
+                          </Link>
+                          <Link
+                            href="/agent?tab=enrollments"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                            onClick={() => setDropdownOpen(false)}
+                          >
+                            <span className="mr-2">📝</span>
+                            注册记录
+                          </Link>
+                        </>
+                      )}
+
                       {(session.user.role === 'admin' || session.user.role === 'superadmin') && (
                         <>
-                          <div className="border-t border-gray-200 my-1"></div>
                           <Link
                             href="/admin"
                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                             onClick={() => setDropdownOpen(false)}
                           >
-                            <span className="mr-2">👨‍💼</span>
+                            <span className="mr-2">🎛️</span>
+                            控制台
+                          </Link>
+                          <Link
+                            href="/admin"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                            onClick={() => setDropdownOpen(false)}
+                          >
+                            <span className="mr-2">👨‍🎓</span>
                             学生管理
+                          </Link>
+                          <Link
+                            href="/admin/agents"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                            onClick={() => setDropdownOpen(false)}
+                          >
+                            <span className="mr-2">🤝</span>
+                            中介管理
                           </Link>
                           <Link
                             href="/admin/finance"
@@ -230,29 +273,8 @@ export default function NavBar() {
                         </>
                       )}
 
-                      {/* IT/超级管理员菜单 */}
-                      {(session.user.role === 'it' || session.user.role === 'superadmin') && (
-                        <>
-                          <Link
-                            href="/it"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            onClick={() => setDropdownOpen(false)}
-                          >
-                            <span className="mr-2">💻</span>
-                            IT管理
-                          </Link>
-                        </>
-                      )}
-
+                      {/* 通用功能 */}
                       <div className="border-t border-gray-200 my-1"></div>
-                      <Link
-                        href="/settings"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                        onClick={() => setDropdownOpen(false)}
-                      >
-                        <span className="mr-2">⚙️</span>
-                        系统设置
-                      </Link>
                       <button
                         onClick={() => {
                           setDropdownOpen(false);

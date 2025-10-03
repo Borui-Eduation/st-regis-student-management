@@ -5,17 +5,12 @@
 
 import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
-import Resend from "next-auth/providers/resend";
 
 export const authConfig = {
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-    Resend({
-      apiKey: process.env.RESEND_API_KEY,
-      from: process.env.RESEND_FROM_EMAIL || "noreply@stregis.edu",
     }),
   ],
   
@@ -45,13 +40,6 @@ export const authConfig = {
       
       if (path.startsWith('/admin') && 
           role !== 'admin' && 
-          role !== 'it' && 
-          role !== 'superadmin') {
-        return false;
-      }
-
-      if (path.startsWith('/it') && 
-          role !== 'it' && 
           role !== 'superadmin') {
         return false;
       }

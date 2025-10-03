@@ -14,13 +14,6 @@ import type { ApiResponse } from '@/types';
  */
 export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>> {
   try {
-    // TODO: 添加 Firebase Auth 验证
-    // const token = req.headers.get('authorization')?.replace('Bearer ', '');
-    // const decodedToken = await admin.auth().verifyIdToken(token);
-    // if (decodedToken.role !== 'admin') {
-    //   return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 403 });
-    // }
-
     const body = await req.json();
     const { enrollmentId, comments, adminEmail } = body as {
       enrollmentId: string;
@@ -85,9 +78,12 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
     });
 
   } catch (error: any) {
-    console.error('Approval error:', error);
     return NextResponse.json(
-      { success: false, error: error.message || '批准失败' },
+      { 
+        success: false, 
+        error: error.message || '批准失败',
+        message: 'Approval failed'
+      },
       { status: 500 }
     );
   }

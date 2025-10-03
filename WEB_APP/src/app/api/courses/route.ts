@@ -67,9 +67,12 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse<Pa
     });
 
   } catch (error: any) {
-    console.error('Error fetching courses:', error);
     return NextResponse.json(
-      { success: false, error: error.message || '获取课程列表失败' },
+      { 
+        success: false, 
+        error: error.message || '获取课程列表失败',
+        message: 'Failed to fetch courses'
+      },
       { status: 500 }
     );
   }

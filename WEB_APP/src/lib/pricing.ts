@@ -126,6 +126,16 @@ export function canEnrollMoreCourses(currentCourses: number, maxCourses: number 
 }
 
 /**
+ * 根据科目获取课程基础价格
+ * @param subject 课程科目
+ * @returns 基础价格（CAD）
+ */
+export function getPriceForCourse(subject: string): number {
+  const category = getCategoryBySubject(subject);
+  return BASE_PRICES[category];
+}
+
+/**
  * 计算购物车总价
  * @param items 购物车项目
  */

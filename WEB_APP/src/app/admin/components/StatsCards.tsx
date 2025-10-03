@@ -4,7 +4,24 @@
  */
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import type { Stats, FilterStatus } from '../types';
+// Stats 和 FilterStatus 需要临时定义
+type FilterStatus = 'all' | 'pending' | 'ready' | 'open' | 'rejected';
+
+interface Stats {
+  enrollments: {
+    pending: number;
+    ready: number;
+    open: number;
+    rejected: number;
+    total: number;
+  };
+  courses: {
+    active: number;
+  };
+  students: {
+    active: number;
+  };
+}
 
 interface StatsCardsProps {
   stats: Stats | null;

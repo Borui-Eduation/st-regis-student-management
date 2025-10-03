@@ -4,7 +4,25 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import type { Student, Enrollment, Stats, FilterStatus } from '../types';
+import type { Student, Enrollment } from '@/types';
+
+type FilterStatus = 'all' | 'pending' | 'ready' | 'open' | 'rejected';
+
+interface Stats {
+  enrollments: {
+    pending: number;
+    ready: number;
+    open: number;
+    rejected: number;
+    total: number;
+  };
+  courses: {
+    active: number;
+  };
+  students: {
+    active: number;
+  };
+}
 
 interface UseAdminDataProps {
   activeTab: 'students' | 'enrollments';
@@ -45,7 +63,9 @@ export function useAdminData({
       if (teachersData.success) setTeachers(teachersData.data);
       if (coursesData.success) setCourses(coursesData.data);
     } catch (error) {
-      console.error('Failed to fetch teachers/courses:', error);
+      // Failed to fetch metadata - continue with empty arrays
+      setTeachers([]);
+      setCourses([]);
     }
   }, []);
 
@@ -81,15 +101,21 @@ export function useAdminData({
           }
         }
       } else {
-        // 获取待审批列表
-        const enrollmentsRes = await fetch('/api/admin/enrollments/pending');
+        // 获取课程注册记录 - 根据状态筛选或获取所有记录
+        const endpoint = filterStatus === 'all' 
+          ? '/api/admin/enrollments'
+          : `/api/admin/enrollments?status=${filterStatus}`;
+        const enrollmentsRes = await fetch(endpoint);
         const enrollmentsData = await enrollmentsRes.json();
         if (enrollmentsData.success) {
-          setEnrollments(enrollmentsData.data.items);
+          setEnrollments(enrollmentsData.data.items || enrollmentsData.data);
         }
       }
     } catch (error) {
-      console.error('Failed to fetch data:', error);
+      // Failed to fetch admin data - reset to empty state
+      setStudents([]);
+      setEnrollments([]);
+      setStats(null);
     } finally {
       setLoading(false);
     }

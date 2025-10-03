@@ -1,34 +1,57 @@
-import { NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase-admin';
-
 /**
- * GET /api/health
- * 系统健康检查
+ * 健康检查和性能监控端点
+ * 访问: /api/health
  */
-export async function GET() {
-  try {
-    // 测试 Firestore 连接
-    await adminDb.listCollections();
 
-    return NextResponse.json({
-      success: true,
+import { NextResponse } from 'next/server';
+import { RedisConfig } from '@/lib/cache-redis';
+import { serverCache } from '@/lib/cache';
+
+export async function GET() {
+  const startTime = Date.now();
+  
+  try {
+    // 检查各组件状态
+    const health = {
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      services: {
-        firestore: 'connected',
-        api: 'running',
+      uptime: process.uptime(),
+      memory: {
+        used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+        percentage: Math.round((process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) * 100),
+      },
+      cache: {
+        l1: {
+          enabled: true,
+          size: serverCache.getStats().size,
+          status: 'active',
+        },
+        l2: {
+          enabled: RedisConfig.isConfigured(),
+          provider: 'Vercel KV (Upstash)',
+          status: RedisConfig.isConfigured() ? 'active' : 'disabled',
+        },
+      },
+      performance: {
+        responseTime: Date.now() - startTime,
+        unit: 'ms',
+      },
+    };
+
+    return NextResponse.json(health, {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0',
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
       {
-        success: false,
         status: 'unhealthy',
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Unknown error',
         timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 503 }
     );
   }
 }
-

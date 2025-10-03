@@ -14,7 +14,10 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 // Types
-import type { Student, FilterStatus, SearchType } from './types';
+import type { Student } from '@/types';
+
+type FilterStatus = 'all' | 'pending' | 'ready' | 'open' | 'rejected';
+type SearchType = 'all' | 'name' | 'email' | 'course' | 'teacher';
 
 // Custom Hooks
 import { useAdminData } from './hooks/useAdminData';
@@ -26,19 +29,22 @@ import { SearchBar } from './components/SearchBar';
 import { StudentTable } from './components/StudentTable';
 import { EnrollmentTable } from './components/EnrollmentTable';
 import { StudentDetailDialog } from './components/StudentDetailDialog';
+import { CreateStudentDialog } from './components/CreateStudentDialog';
 import { Pagination } from './components/Pagination';
+import { Button } from '@/components/ui/button';
 
 const PAGE_SIZE = 20;
 
 export default function AdminPage() {
-  // UI State
-  const [activeTab, setActiveTab] = useState<'students' | 'enrollments'>('students');
+  // UI State - 默认显示注册记录（课程列表）
+  const [activeTab, setActiveTab] = useState<'students' | 'enrollments'>('enrollments');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState<SearchType>('all');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   // Data Management
   const {
@@ -62,37 +68,9 @@ export default function AdminPage() {
   const { processing, handleApprove, handleReject } = useEnrollmentActions(refetch);
 
   // Search and Filter
-  const filteredStudents = useMemo(() => {
-    if (!searchTerm) return students;
-
-    const search = searchTerm.toLowerCase();
-    return students.filter((s) => {
-      const enrollmentsList = (s as any).enrollmentsInStatus || (s as any).enrollments || [];
-
-      switch (searchType) {
-        case 'name':
-          return s.name?.toLowerCase().includes(search);
-        case 'email':
-          return s.email?.toLowerCase().includes(search);
-        case 'course':
-          return enrollmentsList.some((e: any) => e.courseName?.toLowerCase().includes(search));
-        case 'teacher':
-          return enrollmentsList.some((e: any) => e.teacherName?.toLowerCase().includes(search));
-        case 'all':
-        default:
-          return (
-            s.name?.toLowerCase().includes(search) ||
-            s.email?.toLowerCase().includes(search) ||
-            s.studentId?.toLowerCase().includes(search) ||
-            enrollmentsList.some(
-              (e: any) =>
-                e.courseName?.toLowerCase().includes(search) ||
-                e.teacherName?.toLowerCase().includes(search)
-            )
-          );
-      }
-    });
-  }, [students, searchTerm, searchType]);
+  // Note: API already handles search, so we just use the students directly
+  // Client-side filtering is only needed for real-time search without API call
+  const filteredStudents = students;
 
   // Event Handlers
   const handleFilterChange = (status: FilterStatus) => {
@@ -111,7 +89,16 @@ export default function AdminPage() {
   };
 
   const getPageTitle = () => {
-    if (activeTab === 'enrollments') return '待审批列表';
+    if (activeTab === 'enrollments') {
+      if (filterStatus === 'all') return '课程注册记录';
+      const statusMap = {
+        pending: '待审批课程',
+        ready: '待开课课程',
+        open: '已开课课程',
+        rejected: '已拒绝课程',
+      };
+      return statusMap[filterStatus] || '课程注册记录';
+    }
     if (filterStatus === 'all') return '学生列表';
     const statusMap = {
       pending: '待审批课程学生',
@@ -125,7 +112,7 @@ export default function AdminPage() {
   const getPageDescription = () => {
     if (loading) return '加载中...';
     if (activeTab === 'enrollments') {
-      return `共 ${enrollments.length} 条记录`;
+      return `共 ${enrollments.length} 条课程注册记录`;
     }
     if (filterStatus === 'all') {
       return `共 ${filteredStudents.length} 条记录 (第 ${currentPage} 页 / 共 ${totalPages} 页)`;
@@ -135,7 +122,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full mx-auto px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">管理员控制台</h1>
@@ -163,11 +150,49 @@ export default function AdminPage() {
           onRefresh={refetch}
         />
 
+        {/* Tab切换 */}
+        <div className="mb-6 border-b border-gray-200">
+          <nav className="-mb-px flex space-x-8">
+            <button
+              onClick={() => setActiveTab('enrollments')}
+              className={`pb-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'enrollments'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              📚 课程注册记录
+            </button>
+            <button
+              onClick={() => setActiveTab('students')}
+              className={`pb-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'students'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              👨‍🎓 学生列表
+            </button>
+          </nav>
+        </div>
+
         {/* Content */}
         <Card>
           <CardHeader>
-            <CardTitle>{getPageTitle()}</CardTitle>
-            <CardDescription>{getPageDescription()}</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>{getPageTitle()}</CardTitle>
+                <CardDescription>{getPageDescription()}</CardDescription>
+              </div>
+              {activeTab === 'students' && (
+                <Button
+                  onClick={() => setIsCreateDialogOpen(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  ➕ 创建新学生
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -175,7 +200,14 @@ export default function AdminPage() {
                 <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 <p className="mt-4 text-gray-600">加载中...</p>
               </div>
-            ) : activeTab === 'students' ? (
+            ) : activeTab === 'enrollments' ? (
+              <EnrollmentTable
+                enrollments={enrollments}
+                processing={processing}
+                onApprove={handleApprove}
+                onReject={handleReject}
+              />
+            ) : (
               <>
                 <StudentTable
                   students={filteredStudents}
@@ -190,13 +222,6 @@ export default function AdminPage() {
                   onPageChange={setCurrentPage}
                 />
               </>
-            ) : (
-              <EnrollmentTable
-                enrollments={enrollments}
-                processing={processing}
-                onApprove={handleApprove}
-                onReject={handleReject}
-              />
             )}
           </CardContent>
         </Card>
@@ -206,6 +231,14 @@ export default function AdminPage() {
           student={selectedStudent}
           isOpen={isDialogOpen}
           onClose={() => setIsDialogOpen(false)}
+          onRefresh={refetch}
+        />
+
+        {/* Create Student Dialog */}
+        <CreateStudentDialog
+          isOpen={isCreateDialogOpen}
+          onClose={() => setIsCreateDialogOpen(false)}
+          onSuccess={refetch}
         />
 
         {/* Info Banner */}
@@ -222,7 +255,7 @@ export default function AdminPage() {
             </div>
             <div className="ml-3">
               <h3 className="text-sm font-medium text-blue-800">
-                {activeTab === 'students' ? '学生管理说明' : '操作说明'}
+                {activeTab === 'students' ? '学生管理说明' : '课程注册说明'}
               </h3>
               <div className="mt-2 text-sm text-blue-700">
                 {activeTab === 'students' ? (
@@ -234,15 +267,16 @@ export default function AdminPage() {
                   </ul>
                 ) : (
                   <ul className="list-disc pl-5 space-y-1">
+                    <li>显示所有课程注册记录，同一学生的多门课程分别显示</li>
                     <li>
                       批准后，注册状态变为 <code className="bg-blue-100 px-1 rounded">ready</code>
-                      ，系统自动发送 IT 通知邮件
+                      ，系统自动发送通知邮件
                     </li>
                     <li>
                       拒绝后，注册状态变为 <code className="bg-blue-100 px-1 rounded">rejected</code>
                       ，系统自动通知学生
                     </li>
-                    <li>IT 人员会在 Moodle 中为批准的注册开课</li>
+                    <li>可以按照状态（待审批、待开课、已开课）进行筛选</li>
                   </ul>
                 )}
               </div>

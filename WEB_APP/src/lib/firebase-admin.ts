@@ -27,8 +27,11 @@ export const adminDb = getFirestore(databaseId);
  */
 export const collections = {
   students: adminDb.collection('students'),
+  agents: adminDb.collection('agents'),         // 🆕 中介集合
+  teachers: adminDb.collection('teachers'),
   courses: adminDb.collection('courses'),
   enrollments: adminDb.collection('enrollments'),
+  payments: adminDb.collection('payments'),
   carts: adminDb.collection('carts'),
   emails: adminDb.collection('emails'),
 } as const;
