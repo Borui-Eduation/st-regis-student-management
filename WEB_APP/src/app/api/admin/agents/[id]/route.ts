@@ -4,6 +4,10 @@ import { collections, FieldValue } from '@/lib/firebase-admin';
 import { createErrorResponse, createSuccessResponse, notFoundError, validationError } from '@/lib/api-error-handler';
 import type { ApiResponse } from '@/types';
 
+// 强制动态渲染 - 不在构建时预渲染
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 /**
  * GET /api/admin/agents/[id]
  * 获取单个中介详情

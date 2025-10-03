@@ -35,7 +35,7 @@ const getStatusBadge = (status: string) => {
   };
   
   return (
-    <Badge variant="secondary" className={config.className}>
+    <Badge variant="default" className={config.className}>
       {config.label}
     </Badge>
   );
@@ -126,19 +126,12 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
                 {getStatusBadge(enrollment.status)}
               </TableCell>
               <TableCell className="text-sm text-gray-500">
-                {enrollment.deadline
-                  ? (() => {
-                      const date = typeof enrollment.deadline === 'string'
-                        ? new Date(enrollment.deadline)
-                        : enrollment.deadline instanceof Date
-                        ? enrollment.deadline
-                        : new Date((enrollment.deadline as any).toDate());
-                      return date.toLocaleDateString('zh-CN', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                      });
-                    })()
+                {enrollment.endDate
+                  ? new Date(enrollment.endDate).toLocaleDateString('zh-CN', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                    })
                   : '-'}
               </TableCell>
               <TableCell className="text-right">

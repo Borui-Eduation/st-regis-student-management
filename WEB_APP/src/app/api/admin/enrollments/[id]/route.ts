@@ -13,12 +13,12 @@ import type { ApiResponse } from '@/types';
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<ApiResponse>> {
   try {
     await requireRole(['superadmin']);
     
-    const enrollmentId = params.id;
+    const { id: enrollmentId } = await params;
     
     if (!enrollmentId) {
       return NextResponse.json(

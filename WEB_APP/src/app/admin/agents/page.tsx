@@ -172,7 +172,7 @@ export default function AgentsPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <Badge
-                            variant={agent.status === 'active' ? 'default' : 'secondary'}
+                            variant="default"
                             className={
                               agent.status === 'active'
                                 ? 'bg-green-100 text-green-800'

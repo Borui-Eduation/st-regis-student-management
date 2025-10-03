@@ -59,7 +59,7 @@ export function StudentTable({ students, filterStatus, onStudentClick }: Student
               </TableCell>
               <TableCell>
                 <Badge
-                  variant={student.schoolType === 'stregis' ? 'default' : 'secondary'}
+                  variant="default"
                   className={
                     student.schoolType === 'stregis'
                       ? 'bg-blue-100 text-blue-800'

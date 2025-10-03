@@ -9,8 +9,15 @@ services:
       args:
         NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${NEXT_PUBLIC_FIREBASE_PROJECT_ID}
         NEXT_PUBLIC_FIREBASE_DATABASE_ID: ${NEXT_PUBLIC_FIREBASE_DATABASE_ID}
+        # 构建时也需要 Firebase 凭据用于页面预渲染
+        FIREBASE_ADMIN_PROJECT_ID: ${FIREBASE_ADMIN_PROJECT_ID}
+        FIREBASE_ADMIN_CLIENT_EMAIL: ${FIREBASE_ADMIN_CLIENT_EMAIL}
+        FIREBASE_ADMIN_PRIVATE_KEY: ${FIREBASE_ADMIN_PRIVATE_KEY}
+        FIREBASE_ADMIN_DATABASE_ID: ${FIREBASE_ADMIN_DATABASE_ID}
     container_name: stregis-webapp
     restart: unless-stopped
+    env_file:
+      - .env
     ports:
       - "3000:3000"
     environment:

@@ -1,7 +1,7 @@
 # ====================================
 # Stage 1: 依赖安装和构建
 # ====================================
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -14,11 +14,20 @@ RUN npm ci --legacy-peer-deps
 # 复制所有源代码
 COPY . .
 
-# 设置环境变量（构建时需要的公开变量）
+# 设置环境变量（构建时需要的变量）
 ARG NEXT_PUBLIC_FIREBASE_PROJECT_ID
 ARG NEXT_PUBLIC_FIREBASE_DATABASE_ID
+ARG FIREBASE_ADMIN_PROJECT_ID
+ARG FIREBASE_ADMIN_CLIENT_EMAIL
+ARG FIREBASE_ADMIN_PRIVATE_KEY
+ARG FIREBASE_ADMIN_DATABASE_ID
+
 ENV NEXT_PUBLIC_FIREBASE_PROJECT_ID=$NEXT_PUBLIC_FIREBASE_PROJECT_ID
 ENV NEXT_PUBLIC_FIREBASE_DATABASE_ID=$NEXT_PUBLIC_FIREBASE_DATABASE_ID
+ENV FIREBASE_ADMIN_PROJECT_ID=$FIREBASE_ADMIN_PROJECT_ID
+ENV FIREBASE_ADMIN_CLIENT_EMAIL=$FIREBASE_ADMIN_CLIENT_EMAIL
+ENV FIREBASE_ADMIN_PRIVATE_KEY=$FIREBASE_ADMIN_PRIVATE_KEY
+ENV FIREBASE_ADMIN_DATABASE_ID=$FIREBASE_ADMIN_DATABASE_ID
 
 # 构建 Next.js 应用
 RUN npm run build
@@ -26,7 +35,7 @@ RUN npm run build
 # ====================================
 # Stage 2: 生产镜像
 # ====================================
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 WORKDIR /app
 

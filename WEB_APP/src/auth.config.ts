@@ -7,6 +7,9 @@ import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
 
 export const authConfig = {
+  // 信任来自环境变量的主机
+  trustHost: true,
+  
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,

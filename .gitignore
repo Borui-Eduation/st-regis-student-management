@@ -6,6 +6,7 @@ __pycache__/
 
 # 开发
 .next/
+.env
 .env.local
 .env.development.local
 .env.test.local

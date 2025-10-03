@@ -87,7 +87,7 @@ export function AgentDetailDialog({ agent, isOpen, onClose, onRefresh }: AgentDe
               <p className="text-sm text-gray-500 mt-1">中介详情</p>
             </div>
             <Badge
-              variant={agent.status === 'active' ? 'default' : 'secondary'}
+              variant="default"
               className={
                 agent.status === 'active'
                   ? 'bg-green-100 text-green-800'
@@ -228,7 +228,7 @@ export function AgentDetailDialog({ agent, isOpen, onClose, onRefresh }: AgentDe
                         </td>
                         <td className="px-4 py-3 text-sm">
                           <Badge
-                            variant={student.status === 'active' ? 'default' : 'secondary'}
+                            variant="default"
                             className={
                               student.status === 'active'
                                 ? 'bg-green-100 text-green-800'

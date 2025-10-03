@@ -16,12 +16,12 @@ import type { ApiResponse } from '@/types';
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<ApiResponse>> {
   try {
     await requireRole(['superadmin']);
     
-    const userId = params.id;
+    const { id: userId } = await params;
     
     if (!userId) {
       return NextResponse.json(
@@ -85,12 +85,12 @@ export async function DELETE(
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<ApiResponse>> {
   try {
     await requireRole(['superadmin']);
     
-    const userId = params.id;
+    const { id: userId } = await params;
     const body = await req.json();
     const { name, email, phone, role, status } = body;
     

@@ -231,7 +231,7 @@ export default function AgentDashboardPage() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <Badge
-                              variant={student.status === 'active' ? 'default' : 'secondary'}
+                              variant="default"
                               className={
                                 student.status === 'active'
                                   ? 'bg-green-100 text-green-800'
@@ -303,12 +303,12 @@ export default function AgentDashboardPage() {
                             <Badge
                               variant={
                                 enrollment.status === 'open'
-                                  ? 'default'
+                                  ? 'success'
                                   : enrollment.status === 'ready'
-                                  ? 'secondary'
+                                  ? 'info'
                                   : enrollment.status === 'rejected'
-                                  ? 'destructive'
-                                  : 'outline'
+                                  ? 'error'
+                                  : 'default'
                               }
                             >
                               {enrollment.status === 'pending' && '待审批'}
@@ -319,7 +319,7 @@ export default function AgentDashboardPage() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <Badge
-                              variant={enrollment.payment.paid ? 'default' : 'destructive'}
+                              variant={enrollment.payment.paid ? 'success' : 'error'}
                               className={
                                 enrollment.payment.paid
                                   ? 'bg-green-100 text-green-800'
