@@ -3,6 +3,10 @@
  * 课程注册列表表格 - 显示所有课程注册记录
  */
 
+'use client';
+
+import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +17,7 @@ interface EnrollmentTableProps {
   processing: string | null;
   onApprove: (enrollmentId: string, studentName: string) => void;
   onReject: (enrollmentId: string, studentName: string) => void;
+  onRefresh?: () => void;
 }
 
 // 状态显示
@@ -36,7 +41,36 @@ const getStatusBadge = (status: string) => {
   );
 };
 
-export function EnrollmentTable({ enrollments, processing, onApprove, onReject }: EnrollmentTableProps) {
+export function EnrollmentTable({ enrollments, processing, onApprove, onReject, onRefresh }: EnrollmentTableProps) {
+  const { data: session } = useSession();
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const isSuperAdmin = session?.user?.role === 'superadmin';
+  
+  const handleDelete = async (enrollmentId: string, studentName: string) => {
+    if (!confirm(`⚠️ 确认删除 ${studentName} 的注册记录吗？\n\n此操作无法撤销！`)) {
+      return;
+    }
+    
+    setDeleting(enrollmentId);
+    try {
+      const res = await fetch(`/api/admin/enrollments/${enrollmentId}`, {
+        method: 'DELETE',
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        alert('✅ 删除成功！');
+        onRefresh?.();
+      } else {
+        alert('❌ 删除失败: ' + data.error);
+      }
+    } catch (error: any) {
+      alert('❌ 操作失败: ' + error.message);
+    } finally {
+      setDeleting(null);
+    }
+  };
+  
   if (enrollments.length === 0) {
     return (
       <div className="text-center py-12">
@@ -108,37 +142,50 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject }
                   : '-'}
               </TableCell>
               <TableCell className="text-right">
-                {enrollment.status === 'pending' ? (
-                  <div className="flex justify-end gap-2">
+                <div className="flex justify-end gap-2">
+                  {enrollment.status === 'pending' ? (
+                    <>
+                      <Button
+                        size="sm"
+                        onClick={() => onApprove(enrollment.enrollmentId, enrollment.studentName)}
+                        disabled={processing === enrollment.enrollmentId}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        {processing === enrollment.enrollmentId ? '处理中...' : '✓ 批准'}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => onReject(enrollment.enrollmentId, enrollment.studentName)}
+                        disabled={processing === enrollment.enrollmentId}
+                      >
+                        ✕ 拒绝
+                      </Button>
+                    </>
+                  ) : (
                     <Button
                       size="sm"
-                      onClick={() => onApprove(enrollment.enrollmentId, enrollment.studentName)}
-                      disabled={processing === enrollment.enrollmentId}
-                      className="bg-green-600 hover:bg-green-700 text-white"
+                      variant="outline"
+                      onClick={() => {
+                        // TODO: 打开详情对话框
+                        alert('查看详情功能开发中');
+                      }}
                     >
-                      {processing === enrollment.enrollmentId ? '处理中...' : '✓ 批准'}
+                      查看详情
                     </Button>
+                  )}
+                  {isSuperAdmin && (
                     <Button
                       size="sm"
-                      variant="destructive"
-                      onClick={() => onReject(enrollment.enrollmentId, enrollment.studentName)}
-                      disabled={processing === enrollment.enrollmentId}
+                      variant="ghost"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      onClick={() => handleDelete(enrollment.enrollmentId, enrollment.studentName)}
+                      disabled={deleting === enrollment.enrollmentId}
                     >
-                      ✕ 拒绝
+                      {deleting === enrollment.enrollmentId ? '删除中...' : '🗑️'}
                     </Button>
-                  </div>
-                ) : (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      // TODO: 打开详情对话框
-                      alert('查看详情功能开发中');
-                    }}
-                  >
-                    查看详情
-                  </Button>
-                )}
+                  )}
+                </div>
               </TableCell>
             </TableRow>
           ))}

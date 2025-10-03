@@ -85,9 +85,12 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse>> 
       
       if (studentData) {
         const email = studentData?.email?.toLowerCase();
+        const role = studentData?.role;
         
-        // 🔧 跳过教师账号
-        if (email && teacherEmails.has(email)) {
+        // 🚀 排除非学生账号
+        const isNonStudent = role && ['admin', 'superadmin', 'agent'].includes(role);
+        
+        if (!email || teacherEmails.has(email) || isNonStudent) {
           return;
         }
         

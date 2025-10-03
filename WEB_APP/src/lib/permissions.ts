@@ -244,3 +244,23 @@ export const ROLE_HIERARCHY = {
 export function isRoleHigherOrEqual(roleA: UserRole, roleB: UserRole): boolean {
   return ROLE_HIERARCHY[roleA] >= ROLE_HIERARCHY[roleB];
 }
+
+/**
+ * 获取所有系统用户邮箱（用于过滤）
+ * 包括：admin, agent, superadmin
+ */
+export function getAllSystemUserEmails(): Set<string> {
+  return new Set([
+    ...SUPERADMIN_EMAILS,
+    ...ADMIN_EMAILS,
+    ...AGENT_EMAILS,
+  ]);
+}
+
+/**
+ * 检查是否是系统用户邮箱
+ */
+export function isSystemUserEmail(email: string): boolean {
+  const systemEmails = getAllSystemUserEmails();
+  return systemEmails.has(email.toLowerCase());
+}

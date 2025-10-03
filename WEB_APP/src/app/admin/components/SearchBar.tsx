@@ -91,6 +91,8 @@ export function SearchBar({
                   onChange={(e) => {
                     const value = e.target.value;
                     onSearchTermChange(value);
+                    // 自动触发搜索（下拉菜单选择后）
+                    setTimeout(() => onSearch(), 100);
                   }}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
@@ -107,6 +109,8 @@ export function SearchBar({
                   onChange={(e) => {
                     const value = e.target.value;
                     onSearchTermChange(value);
+                    // 自动触发搜索（下拉菜单选择后）
+                    setTimeout(() => onSearch(), 100);
                   }}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >

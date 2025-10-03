@@ -34,9 +34,10 @@ export class RedisCache {
   async set<T>(key: string, value: T, ttl?: number): Promise<void> {
     try {
       if (ttl) {
-        // 设置带过期时间的缓存
-        await kv.setex(key, Math.floor(ttl / 1000), JSON.stringify(value));
-        console.log(`💾 Redis缓存已保存: ${key}, TTL: ${ttl}ms`);
+        // 设置带过期时间的缓存（TTL单位：毫秒，Redis需要秒）
+        const ttlInSeconds = Math.max(1, Math.floor(ttl / 1000)); // 确保至少1秒
+        await kv.setex(key, ttlInSeconds, JSON.stringify(value));
+        console.log(`💾 Redis缓存已保存: ${key}, TTL: ${ttlInSeconds}秒 (${ttl}ms)`);
       } else {
         // 永久缓存
         await kv.set(key, JSON.stringify(value));

@@ -68,9 +68,51 @@ export default function AdminPage() {
   const { processing, handleApprove, handleReject } = useEnrollmentActions(refetch);
 
   // Search and Filter
-  // Note: API already handles search, so we just use the students directly
-  // Client-side filtering is only needed for real-time search without API call
+  // Client-side filtering for enrollments (API doesn't support search yet)
+  // For students tab, API handles the search
   const filteredStudents = students;
+  
+  const filteredEnrollments = useMemo(() => {
+    // 🚀 使用统一的系统用户邮箱列表进行过滤
+    const { getAllSystemUserEmails } = require('@/lib/permissions');
+    const systemEmails = getAllSystemUserEmails();
+    
+    // 先过滤掉系统用户的注册记录
+    let filtered = enrollments.filter(enrollment => {
+      const email = enrollment.studentEmail?.toLowerCase();
+      return email && !systemEmails.has(email);
+    });
+    
+    // 再应用搜索过滤
+    if (searchTerm.trim() && activeTab === 'enrollments') {
+      const term = searchTerm.toLowerCase().trim();
+      
+      filtered = filtered.filter(enrollment => {
+        // 根据搜索类型过滤
+        switch (searchType) {
+          case 'name':
+            return enrollment.studentName?.toLowerCase().includes(term);
+          case 'email':
+            return enrollment.studentEmail?.toLowerCase().includes(term);
+          case 'course':
+            return enrollment.courseName?.toLowerCase().includes(term);
+          case 'teacher':
+            return enrollment.teacherName?.toLowerCase().includes(term);
+          case 'all':
+          default:
+            // 搜索所有字段
+            return (
+              enrollment.studentName?.toLowerCase().includes(term) ||
+              enrollment.studentEmail?.toLowerCase().includes(term) ||
+              enrollment.courseName?.toLowerCase().includes(term) ||
+              enrollment.teacherName?.toLowerCase().includes(term)
+            );
+        }
+      });
+    }
+    
+    return filtered;
+  }, [enrollments, searchTerm, searchType, activeTab]);
 
   // Event Handlers
   const handleFilterChange = (status: FilterStatus) => {
@@ -79,8 +121,13 @@ export default function AdminPage() {
   };
 
   const handleSearch = () => {
-    setCurrentPage(1);
-    refetch();
+    // 在学生标签页，通过API搜索（需要重新获取数据）
+    if (activeTab === 'students') {
+      setCurrentPage(1);
+      refetch();
+    }
+    // 在课程注册记录标签页，使用客户端过滤（无需重新获取）
+    // filteredEnrollments 会自动根据 searchTerm 更新
   };
 
   const handleStudentClick = (student: Student) => {
@@ -112,7 +159,12 @@ export default function AdminPage() {
   const getPageDescription = () => {
     if (loading) return '加载中...';
     if (activeTab === 'enrollments') {
-      return `共 ${enrollments.length} 条课程注册记录`;
+      const count = filteredEnrollments.length;
+      const total = enrollments.length;
+      if (searchTerm.trim() && count !== total) {
+        return `找到 ${count} 条记录 (共 ${total} 条)`;
+      }
+      return `共 ${total} 条课程注册记录`;
     }
     if (filterStatus === 'all') {
       return `共 ${filteredStudents.length} 条记录 (第 ${currentPage} 页 / 共 ${totalPages} 页)`;
@@ -202,10 +254,11 @@ export default function AdminPage() {
               </div>
             ) : activeTab === 'enrollments' ? (
               <EnrollmentTable
-                enrollments={enrollments}
+                enrollments={filteredEnrollments}
                 processing={processing}
                 onApprove={handleApprove}
                 onReject={handleReject}
+                onRefresh={refetch}
               />
             ) : (
               <>

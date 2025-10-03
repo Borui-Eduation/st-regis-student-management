@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/api-auth';
 import { adminDb, collections, FieldValue } from '@/lib/firebase-admin';
+import { invalidateEnrollmentsCaches } from '@/lib/cache-utils';
 import type { ApiResponse } from '@/types';
 
 /**
  * POST /api/admin/approve
  * 管理员批准注册申请
+ * 权限：管理员及以上
  * 
  * 流程：
  * 1. 验证管理员权限
@@ -14,6 +17,9 @@ import type { ApiResponse } from '@/types';
  */
 export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>> {
   try {
+    // 🔒 权限检查
+    const session = await requireRole(['admin', 'superadmin']);
+    
     const body = await req.json();
     const { enrollmentId, comments, adminEmail } = body as {
       enrollmentId: string;
@@ -59,12 +65,14 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
       approvalHistory: FieldValue.arrayUnion({
         status: 'ready',
         timestamp: FieldValue.serverTimestamp(),
-        actor: adminEmail || 'admin',
+        actor: session.user.email || adminEmail || 'admin',
         comments: comments || '已确认支付，批准注册',
       }),
       updatedAt: FieldValue.serverTimestamp(),
     });
 
+    // 🚀 清除相关缓存
+    await invalidateEnrollmentsCaches();
 
     // Firestore Trigger 会自动发送 IT 通知邮件
 

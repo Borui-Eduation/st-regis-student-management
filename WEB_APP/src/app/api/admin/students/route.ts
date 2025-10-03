@@ -75,9 +75,21 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse>> 
     
     let allStudents = snapshot.docs
       .filter(doc => {
-        const email = doc.data().email?.toLowerCase();
-        // 排除教师邮箱
-        return email && !teacherEmails.has(email);
+        const data = doc.data();
+        const email = data.email?.toLowerCase();
+        const role = data.role;
+        
+        // 🚀 排除非学生账号：
+        // 1. 排除教师邮箱
+        // 2. 排除明确标记为管理员/中介的账号 (admin, superadmin, agent)
+        // 3. 没有role字段的默认视为学生
+        const isNonStudent = role && ['admin', 'superadmin', 'agent'].includes(role);
+        
+        return (
+          email && 
+          !teacherEmails.has(email) &&
+          !isNonStudent
+        );
       })
       .map(doc => {
       const data = doc.data();
@@ -192,16 +204,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
       }
     }
 
-    // 确定角色 - 只有SuperAdmin可以创建Admin
-    let userRole: 'student' | 'admin' | 'superadmin' = 'student';
-    if (role && session.user.role === 'superadmin') {
-      // SuperAdmin可以创建任何角色
-      if (['student', 'admin', 'superadmin'].includes(role)) {
-        userRole = role;
-      }
-    }
-
-    // 创建学生记录
+    // 🎯 Admin只能创建学生，角色固定为'student'
+    // Superadmin使用专门的用户管理API创建系统用户
     const studentData = {
       name,
       email: email || null,
@@ -209,7 +213,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
       school: school || 'St. Regis',
       grade: grade ? parseInt(grade) : null,
       status: status || 'active',
-      role: userRole,
+      role: 'student', // 固定为学生角色
       currentCourses: 0,
       maxCoursesPerSemester: 4,
       totalPaid: 0,

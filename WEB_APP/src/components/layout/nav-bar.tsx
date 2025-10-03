@@ -51,13 +51,24 @@ export default function NavBar() {
       ];
     }
 
-    // 管理员和超级管理员 - 看到所有管理功能
-    if (role === 'admin' || role === 'superadmin') {
+    // 管理员 - 看到学生管理功能
+    if (role === 'admin') {
       return [
         { name: '控制台', href: '/admin', icon: '🎛️' },
         { name: '学生管理', href: '/admin', icon: '👨‍🎓' },
         { name: '中介管理', href: '/admin/agents', icon: '🤝' },
         { name: '财务管理', href: '/admin/finance', icon: '💰' },
+      ];
+    }
+    
+    // 超级管理员 - 额外看到用户管理
+    if (role === 'superadmin') {
+      return [
+        { name: '控制台', href: '/admin', icon: '🎛️' },
+        { name: '学生管理', href: '/admin', icon: '👨‍🎓' },
+        { name: '中介管理', href: '/admin/agents', icon: '🤝' },
+        { name: '财务管理', href: '/admin/finance', icon: '💰' },
+        { name: '用户管理', href: '/superadmin', icon: '👑' },
       ];
     }
 
@@ -270,6 +281,16 @@ export default function NavBar() {
                             <span className="mr-2">💰</span>
                             财务管理
                           </Link>
+                          {session.user.role === 'superadmin' && (
+                            <Link
+                              href="/superadmin"
+                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-200"
+                              onClick={() => setDropdownOpen(false)}
+                            >
+                              <span className="mr-2">👑</span>
+                              用户管理
+                            </Link>
+                          )}
                         </>
                       )}
 
