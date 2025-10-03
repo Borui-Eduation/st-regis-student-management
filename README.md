@@ -2,6 +2,8 @@
 
 一个功能完整的教育机构学生管理系统，支持课程管理、学生注册、财务跟踪和权限控制。
 
+**GitHub 仓库**: [Borui-Eduation/st-regis-student-management](https://github.com/Borui-Eduation/st-regis-student-management) 🔒
+
 ---
 
 ## 🚀 快速开始
