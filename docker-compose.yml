@@ -42,6 +42,10 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       
+      # Resend Email
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL}
+      
       # Upstash Redis
       KV_REST_API_URL: ${KV_REST_API_URL}
       KV_REST_API_TOKEN: ${KV_REST_API_TOKEN}

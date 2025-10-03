@@ -5,6 +5,7 @@
 
 import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
+import Resend from "next-auth/providers/resend";
 
 export const authConfig = {
   // 信任来自环境变量的主机
@@ -14,6 +15,10 @@ export const authConfig = {
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+    Resend({
+      apiKey: process.env.RESEND_API_KEY,
+      from: process.env.RESEND_FROM_EMAIL || "admin@borui.org",
     }),
   ],
   
