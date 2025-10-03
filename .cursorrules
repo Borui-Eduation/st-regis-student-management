@@ -1,0 +1,97 @@
+# Cursor AI 项目规则
+
+## 📋 文档生成规则
+
+### ❌ 禁止自动生成的文档类型
+- 不要生成优化报告 (OPTIMIZATION_REPORT.md, CODE_OPTIMIZATION.md 等)
+- 不要生成重构报告 (REFACTORING_REPORT.md 等)
+- 不要生成部署报告 (DEPLOYMENT_READINESS.md 等)
+- 不要生成数据清洗报告 (DATA_CLEANUP_REPORT.md 等)
+- 不要生成任何临时性的分析报告
+
+### ✅ 允许的文档
+只有以下核心文档应该保留和更新：
+- `README.md` - 项目主文档
+- `PROJECT_STRUCTURE.md` - 项目结构说明
+- `scripts/README.md` - 脚本使用文档
+- `WEB_APP/README.md` - 前端应用文档
+
+### 📝 文档更新原则
+- 只在用户**明确要求**时才创建新文档
+- 完成任务后，口头说明即可，不要生成报告文件
+- 代码改动应该通过 Git commit message 记录，而不是生成报告
+- 优化和重构的结果体现在代码本身，不需要额外报告
+
+---
+
+## 🔧 代码规范
+
+### TypeScript/JavaScript
+- 使用 TypeScript 严格模式
+- 优先使用函数式组件和 Hooks
+- 遵循 ESLint 和 Prettier 配置
+- 组件和 Hook 应该模块化
+
+### 文件组织
+- 大型组件应该拆分为子组件和 Hooks
+- 类型定义放在 `types/` 目录
+- 工具函数放在 `lib/` 目录
+- 组件放在 `components/` 目录
+
+### 命名规范
+- 组件: PascalCase (e.g., `StudentTable.tsx`)
+- Hooks: camelCase with 'use' prefix (e.g., `useAdminData.ts`)
+- 类型: PascalCase (e.g., `Student`, `Enrollment`)
+- 常量: UPPER_SNAKE_CASE (e.g., `PAGE_SIZE`)
+
+---
+
+## 🗑️ 清理规则
+
+### 删除临时文件
+完成任务后，自动清理：
+- 测试脚本 (`test_*.py`, `test_*.sh`)
+- 临时 API 端点 (`/api/debug/*`, `/api/test/*`)
+- 临时报告文件 (`*_REPORT.md`, `*_SUMMARY.md`)
+
+### 保留规则
+只保留：
+- 核心功能代码
+- 核心文档 (README 等)
+- 配置文件
+- 生产用脚本
+
+---
+
+## 🚀 部署和优化
+
+### 优化完成后
+- 口头总结改进内容和效果
+- 不生成单独的报告文件
+- 在 Git commit message 中简要说明
+
+### 部署准备
+- 只在用户明确要求部署时，才提供部署清单
+- 清单应该简洁，列出关键步骤即可
+- 不生成详细的部署报告
+
+---
+
+## 💬 沟通原则
+
+### 简洁优先
+- 优先口头说明，而不是生成文档
+- 代码即文档，保持代码清晰
+- 必要时在代码中添加注释，而不是外部文档
+
+### 用户主导
+- 只在用户明确要求时才生成文档
+- 默认不生成报告，除非用户说"生成报告"或"写个文档"
+
+---
+
+**规则创建日期**: 2025-10-03  
+**最后更新**: 2025-10-03
+
+
+

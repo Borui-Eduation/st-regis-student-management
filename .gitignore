@@ -1,0 +1,81 @@
+# 依赖
+node_modules/
+venv/
+__pycache__/
+*.pyc
+
+# 开发
+.next/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 敏感文件
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!next.config.js
+!tailwind.config.ts
+!postcss.config.js
+
+# 构建产物
+dist/
+build/
+.vercel/
+
+# 日志
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 测试
+coverage/
+.nyc_output/
+
+# 临时文件
+*.tmp
+*.bak
+*.cache
+
+# Excel 文件
+~$*.xlsx
+~$*.xls
+*Cleaned*.xlsx
+*Extracted*.xlsx
+
+# Python
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+# 排除临时生成的报告文档
+*_REPORT.md
+*_SUMMARY.md
+*_ANALYSIS.md
+*_PLAN.md
+*_GUIDE.md
+*_DESIGN.md
+OPTIMIZATION_REPORT.md
+CODE_OPTIMIZATION.md
+DEPLOYMENT_READINESS.md
+
+# 保留核心文档
+!README.md
+!PROJECT_STRUCTURE.md
+!**/README.md
