@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // 🚀 启用 standalone 输出模式（Docker 部署必需）
+  output: 'standalone',
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb',
