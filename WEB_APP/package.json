@@ -61,5 +61,10 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "overrides": {
+    "@next-auth/firebase-adapter": {
+      "firebase-admin": "^13.5.0"
+    }
   }
 }
