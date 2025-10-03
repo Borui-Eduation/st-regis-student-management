@@ -51,15 +51,21 @@ function SignInContent() {
       // 2. 用户存在，发送登录邮件
       console.log('✅ 用户存在，发送登录邮件到:', email);
       
-      await signIn('resend', { 
+      const result = await signIn('resend', { 
         email: email.toLowerCase(), 
         callbackUrl,
-        redirect: true
+        redirect: false  // 不自动跳转，手动处理
       });
       
-      // 如果没有跳转（发生错误），显示错误消息
-      setLoading(false);
-      setError('发送邮件时出现问题，请重试');
+      console.log('📧 发送结果:', result);
+      
+      if (result?.error) {
+        setLoading(false);
+        setError('发送邮件时出现问题：' + result.error);
+      } else {
+        // 发送成功，手动跳转到验证页面
+        window.location.href = `/auth/verify-request?email=${encodeURIComponent(email)}`;
+      }
       
     } catch (error) {
       console.error('💥 登录错误:', error);

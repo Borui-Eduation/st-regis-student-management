@@ -32,83 +32,71 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const email = user.email;
         
         if (!email) {
+          console.log('❌ 拒绝登录：邮箱为空');
           return false;
         }
 
         // 检查用户是否存在于 Firestore
         const usersSnapshot = await collections.students
-          .where('email', '==', email)
+          .where('email', '==', email.toLowerCase())
           .limit(1)
           .get();
 
-        // 🚀 优先使用邮箱白名单判断角色（保证权限配置是权威来源）
-        const roleFromWhitelist = assignRoleByEmail(email);
-        let userId = user.id;
-
-        if (!usersSnapshot.empty) {
-          // 用户已存在 - 检查角色是否需要更新
-          const userDoc = usersSnapshot.docs[0];
-          const userData = userDoc.data();
-          const dbRole = userData.role || 'student';
-          userId = userDoc.id;
-          
-          // 如果白名单中的角色与数据库不同，更新数据库
-          if (roleFromWhitelist !== dbRole) {
-            console.log(`🔄 更新用户角色: ${email} (${dbRole} → ${roleFromWhitelist})`);
-            
-            // 更新 students collection
-            await collections.students.doc(userId).update({
-              role: roleFromWhitelist,
-              updatedAt: new Date(),
-            });
-            
-            // 🚀 同时更新 users collection（NextAuth使用）
-            try {
-              const usersCollection = adminDb.collection('users');
-              const authUserSnapshot = await usersCollection
-                .where('email', '==', email)
-                .limit(1)
-                .get();
-              
-              if (!authUserSnapshot.empty) {
-                await authUserSnapshot.docs[0].ref.update({
-                  role: roleFromWhitelist,
-                  updatedAt: new Date(),
-                });
-                console.log(`✅ users collection 已同步: ${email} → ${roleFromWhitelist}`);
-              }
-            } catch (error) {
-              console.error('更新users collection失败:', error);
-            }
-          }
-        } else {
-          // 新用户 - 根据邮箱白名单分配角色
-          const newUserRef = collections.students.doc();
-          await newUserRef.set({
-            studentId: newUserRef.id,
-            name: user.name || email.split('@')[0],
-            email: email,
-            role: roleFromWhitelist,
-            status: 'active',
-            currentCourses: 0,
-            school: '',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          });
-          userId = newUserRef.id;
-          console.log(`✅ 新用户创建: ${email} (角色: ${roleFromWhitelist})`);
+        // 🔒 安全策略：只允许已存在的用户登录，不自动创建新用户
+        if (usersSnapshot.empty) {
+          console.log(`❌ 拒绝登录：用户不存在 (${email})`);
+          console.log('💡 提示：用户需要先由管理员在系统中创建');
+          return false;  // 拒绝登录
         }
 
-        // 使用白名单中的角色
-        const userRole = roleFromWhitelist;
+        // ✅ 用户已存在 - 允许登录
+        const userDoc = usersSnapshot.docs[0];
+        const userData = userDoc.data();
+        const userId = userDoc.id;
+        const dbRole = userData.role || 'student';
+        
+        console.log(`✅ 用户验证通过: ${email} (角色: ${dbRole})`);
+
+        // 🚀 优先使用邮箱白名单判断角色（保证权限配置是权威来源）
+        const roleFromWhitelist = assignRoleByEmail(email);
+        
+        // 如果白名单中的角色与数据库不同，更新数据库
+        if (roleFromWhitelist !== dbRole) {
+          console.log(`🔄 更新用户角色: ${email} (${dbRole} → ${roleFromWhitelist})`);
+          
+          // 更新 students collection
+          await collections.students.doc(userId).update({
+            role: roleFromWhitelist,
+            updatedAt: new Date(),
+          });
+          
+          // 🚀 同时更新 users collection（NextAuth使用）
+          try {
+            const usersCollection = adminDb.collection('users');
+            const authUserSnapshot = await usersCollection
+              .where('email', '==', email)
+              .limit(1)
+              .get();
+            
+            if (!authUserSnapshot.empty) {
+              await authUserSnapshot.docs[0].ref.update({
+                role: roleFromWhitelist,
+                updatedAt: new Date(),
+              });
+              console.log(`✅ users collection 已同步: ${email} → ${roleFromWhitelist}`);
+            }
+          } catch (error) {
+            console.error('更新users collection失败:', error);
+          }
+        }
 
         // 将角色和ID附加到用户对象
-        user.role = userRole;
+        user.role = roleFromWhitelist;
         user.id = userId;
 
         return true;
       } catch (error) {
-        // Sign-in error - deny access
+        console.error('❌ 登录验证错误:', error);
         return false;
       }
     },
