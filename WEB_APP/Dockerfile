@@ -1,7 +1,7 @@
 # ====================================
 # Stage 1: 依赖安装和构建
 # ====================================
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -26,7 +26,7 @@ RUN npm run build
 # ====================================
 # Stage 2: 生产镜像
 # ====================================
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 
