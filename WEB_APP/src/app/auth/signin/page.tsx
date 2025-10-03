@@ -10,37 +10,61 @@ import { Input } from '@/components/ui/input';
 function SignInContent() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     
     if (!email || !email.includes('@')) {
-      alert('请输入有效的邮箱地址');
+      setError('请输入有效的邮箱地址');
       return;
     }
     
     setLoading(true);
     
     try {
-      console.log('🚀 发送登录邮件到:', email);
+      // 1. 先检查用户是否存在
+      console.log('🔍 检查用户是否存在:', email);
       
-      // 使用 redirect: true，让 NextAuth 自动跳转到 verify-request 页面
+      const checkResponse = await fetch('/api/auth/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.toLowerCase() }),
+      });
+
+      const checkData = await checkResponse.json();
+      
+      if (!checkData.exists) {
+        // 用户不存在
+        setLoading(false);
+        setError(
+          '此邮箱未注册。\n\n' +
+          '本系统仅对会员开放，不提供公开注册。\n\n' +
+          '如需注册账户，请联系管理员：admin@borui.org'
+        );
+        return;
+      }
+
+      // 2. 用户存在，发送登录邮件
+      console.log('✅ 用户存在，发送登录邮件到:', email);
+      
       await signIn('resend', { 
-        email, 
+        email: email.toLowerCase(), 
         callbackUrl,
-        redirect: true  // 改为 true，允许自动跳转
+        redirect: true
       });
       
       // 如果没有跳转（发生错误），显示错误消息
       setLoading(false);
-      alert('发送邮件时出现问题，请重试');
+      setError('发送邮件时出现问题，请重试');
       
     } catch (error) {
-      console.error('💥 Sign in error:', error);
+      console.error('💥 登录错误:', error);
       setLoading(false);
-      alert('登录失败，请重试\n\n错误详情：' + (error as Error).message);
+      setError('登录失败，请重试');
     }
   };
 
@@ -107,17 +131,44 @@ function SignInContent() {
                 type="email"
                 placeholder="your.email@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setError(''); // 清除错误提示
+                }}
                 required
                 className="h-12"
               />
+              
+              {/* 错误提示 */}
+              {error && (
+                <div className="mt-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="flex items-start">
+                    <svg className="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-red-800 mb-2">无法登录</p>
+                      <p className="text-sm text-red-700 whitespace-pre-line">{error}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
+            
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 text-base font-medium bg-blue-600 hover:bg-blue-700"
+              className="w-full h-12 text-base font-medium bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
             >
-              {loading ? '发送中...' : '发送登录链接'}
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  检查中...
+                </span>
+              ) : '发送登录链接'}
             </Button>
           </form>
 
