@@ -9,8 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
-    "email:dev": "email dev"
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\""
   },
   "dependencies": {
     "@google-cloud/firestore": "^7.10.0",
@@ -25,7 +24,6 @@
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-tabs": "^1.1.2",
     "@radix-ui/react-toast": "^1.2.3",
-    "@react-email/components": "^0.0.25",
     "@vercel/kv": "^3.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -38,7 +36,6 @@
     "openid-client": "^6.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-email": "^3.0.3",
     "react-hook-form": "^7.54.0",
     "resend": "^6.1.2",
     "tailwind-merge": "^2.6.0",
