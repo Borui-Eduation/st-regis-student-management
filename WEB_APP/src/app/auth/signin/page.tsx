@@ -10,71 +10,43 @@ import { Input } from '@/components/ui/input';
 function SignInContent() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email || !email.includes('@')) {
+      alert('请输入有效的邮箱地址');
+      return;
+    }
+    
     setLoading(true);
+    
     try {
-      const result = await signIn('resend', { 
+      console.log('🚀 发送登录邮件到:', email);
+      
+      // 使用 redirect: true，让 NextAuth 自动跳转到 verify-request 页面
+      await signIn('resend', { 
         email, 
-        redirect: false,
-        callbackUrl 
+        callbackUrl,
+        redirect: true  // 改为 true，允许自动跳转
       });
       
-      if (result?.error) {
-        alert('发送失败：' + result.error);
-      } else {
-        setEmailSent(true);
-      }
-    } catch (error) {
-      console.error('Sign in error:', error);
-      alert('登录失败，请重试');
-    } finally {
+      // 如果没有跳转（发生错误），显示错误消息
       setLoading(false);
+      alert('发送邮件时出现问题，请重试');
+      
+    } catch (error) {
+      console.error('💥 Sign in error:', error);
+      setLoading(false);
+      alert('登录失败，请重试\n\n错误详情：' + (error as Error).message);
     }
   };
 
   const handleGoogleSignIn = () => {
     signIn('google', { callbackUrl });
   };
-
-  if (emailSent) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <CardTitle className="text-2xl">邮件已发送！</CardTitle>
-            <CardDescription className="text-base mt-2">
-              我们已向 <strong>{email}</strong> 发送了登录链接
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center space-y-4">
-            <p className="text-sm text-gray-600">
-              请检查您的邮箱并点击链接完成登录。
-            </p>
-            <p className="text-xs text-gray-500">
-              链接将在24小时后失效
-            </p>
-            <Button 
-              variant="outline" 
-              onClick={() => setEmailSent(false)}
-              className="w-full"
-            >
-              返回登录
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">

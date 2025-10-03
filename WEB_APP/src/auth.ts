@@ -5,12 +5,23 @@
 
 import NextAuth from "next-auth";
 import { FirestoreAdapter } from "@next-auth/firebase-adapter";
+import Resend from "next-auth/providers/resend";
 import { adminDb, collections } from "./lib/firebase-admin";
 import { assignRoleByEmail } from "./lib/permissions";
 import { authConfig } from "./auth.config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
+  
+  // 添加 Email Provider（需要数据库适配器）
+  providers: [
+    ...authConfig.providers,
+    Resend({
+      apiKey: process.env.RESEND_API_KEY,
+      from: process.env.RESEND_FROM_EMAIL || "admin@borui.org",
+    }),
+  ],
+  
   adapter: FirestoreAdapter(adminDb),
   
   callbacks: {
