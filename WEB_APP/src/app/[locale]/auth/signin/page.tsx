@@ -28,12 +28,12 @@ function SignInContent() {
     setError('');
     
     if (!email || !email.includes('@')) {
-      setError('Please enter a valid email address');
+      setError(t('errors.invalidEmail'));
       return;
     }
     
     if (!password) {
-      setError('Please enter password');
+      setError(t('errors.passwordRequired'));
       return;
     }
     
@@ -47,16 +47,16 @@ function SignInContent() {
       });
       
       if (result?.error) {
-        setError('Incorrect email or password');
+        setError(t('errors.invalidCredentials'));
         setLoading(false);
       } else {
-        // 登录成功，跳转
-        router.push(callbackUrl);
+        // 登录成功，使用完整页面刷新以触发服务端角色重定向
+        window.location.href = callbackUrl;
       }
     } catch (error) {
       console.error('Login error:', error);
       setLoading(false);
-      setError('Login failed, please try again');
+      setError(t('errors.loginFailed'));
     }
   };
 

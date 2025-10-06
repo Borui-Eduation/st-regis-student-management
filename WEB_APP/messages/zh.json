@@ -63,7 +63,8 @@
     "agent": "中介",
     "teacher": "教师",
     "admin": "管理员",
-    "superadmin": "超级管理员"
+    "superadmin": "超级管理员",
+    "it": "IT人员"
   },
   "status": {
     "pending": "待审批",

@@ -63,7 +63,8 @@
     "agent": "Agent",
     "teacher": "Teacher",
     "admin": "Administrator",
-    "superadmin": "Super Administrator"
+    "superadmin": "Super Administrator",
+    "it": "IT"
   },
   "status": {
     "pending": "Pending",
