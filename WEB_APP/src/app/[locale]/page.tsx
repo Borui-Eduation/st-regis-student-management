@@ -6,6 +6,9 @@
 import { redirect } from '@/i18n/routing';
 import { auth } from '@/auth';
 
+// 标记为动态渲染（需要访问 session）
+export const dynamic = 'force-dynamic';
+
 export default async function LocaleRootPage() {
   const session = await auth();
   

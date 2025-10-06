@@ -14,9 +14,10 @@ export const routing = defineRouting({
   // 默认语言
   defaultLocale,
   
-  // URL 策略：默认语言不显示前缀，其他语言显示
-  // 例如: /admin (en), /zh/admin (zh)
-  localePrefix: 'as-needed',
+  // URL 策略：始终显示语言前缀
+  // 例如: /en/admin, /zh/admin
+  // 使用 'always' 以匹配 app/[locale] 文件结构
+  localePrefix: 'always',
 });
 
 // 导出国际化的导航组件和钩子
