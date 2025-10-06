@@ -29,9 +29,17 @@ export const authConfig = {
       const isLoggedIn = !!auth?.user;
       const path = nextUrl.pathname;
 
-      // 公开路径
-      const publicPaths = ['/auth/signin', '/auth/error', '/api/auth', '/'];
-      if (publicPaths.some(p => path === p || path.startsWith(p))) {
+      // 公开路径（去除语言前缀后的路径）
+      const pathWithoutLocale = path.replace(/^\/(en|zh)/, '');
+      const publicPaths = ['/auth/signin', '/auth/error', '/auth/verify-request', '/api/auth', '/api/health', '/about'];
+      
+      // 允许访问公开路径
+      if (publicPaths.some(p => pathWithoutLocale === p || pathWithoutLocale.startsWith(p))) {
+        return true;
+      }
+      
+      // 允许访问根路径（用于角色重定向）
+      if (path === '/' || pathWithoutLocale === '/' || path.match(/^\/(en|zh)\/?$/)) {
         return true;
       }
 
@@ -43,17 +51,25 @@ export const authConfig = {
       // 角色检查
       const role = auth?.user?.role;
       
-      if (path.startsWith('/admin') && 
+      if (pathWithoutLocale.startsWith('/admin') && 
           role !== 'admin' && 
           role !== 'superadmin') {
         return false;
       }
       
-      if (path.startsWith('/teacher') && role !== 'teacher') {
+      if (pathWithoutLocale.startsWith('/superadmin') && role !== 'superadmin') {
         return false;
       }
       
-      if (path.startsWith('/agent') && role !== 'agent') {
+      if (pathWithoutLocale.startsWith('/teacher') && role !== 'teacher') {
+        return false;
+      }
+      
+      if (pathWithoutLocale.startsWith('/agent') && role !== 'agent') {
+        return false;
+      }
+      
+      if (pathWithoutLocale.startsWith('/student') && role !== 'student') {
         return false;
       }
 

@@ -1,11 +1,15 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/i18n/routing';
+import { Link } from '@/i18n/routing';
 import { useSession, signOut } from 'next-auth/react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useState, useRef, useEffect } from 'react';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 export default function NavBar() {
+  const t = useTranslations('nav');
+  const tRoles = useTranslations('roles');
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -26,54 +30,52 @@ export default function NavBar() {
   const getNavigationByRole = () => {
     const role = session?.user?.role;
     
-    // 未登录用户
+    // 未登录用户 - 不显示导航
     if (!role) {
-      return [
-        { name: '首页', href: '/', icon: '🏠' },
-      ];
+      return [];
     }
 
     // 学生用户 - 只看到学生相关功能
     if (role === 'student') {
       return [
-        { name: '选课中心', href: '/student', icon: '🎓' },
-        { name: '我的课程', href: '/student/courses', icon: '📚' },
-        { name: '个人资料', href: '/student/profile', icon: '👤' },
+        { name: t('courseSelection'), href: '/student', icon: '🎓' },
+        { name: t('myCourses'), href: '/student/courses', icon: '📚' },
+        { name: t('myProfile'), href: '/student/profile', icon: '👤' },
       ];
     }
 
     // 中介用户 - 只看到中介相关功能
     if (role === 'agent') {
       return [
-        { name: '工作台', href: '/agent', icon: '📊' },
-        { name: '我的学生', href: '/agent?tab=students', icon: '👥' },
-        { name: '注册记录', href: '/agent?tab=enrollments', icon: '📝' },
+        { name: t('dashboard'), href: '/agent', icon: '📊' },
+        { name: t('myStudents'), href: '/agent?tab=students', icon: '👥' },
+        { name: t('enrollmentRecords'), href: '/agent?tab=enrollments', icon: '📝' },
       ];
     }
 
     // 管理员 - 看到学生管理功能
     if (role === 'admin') {
       return [
-        { name: '控制台', href: '/admin', icon: '🎛️' },
-        { name: '学生管理', href: '/admin', icon: '👨‍🎓' },
-        { name: '中介管理', href: '/admin/agents', icon: '🤝' },
-        { name: '财务管理', href: '/admin/finance', icon: '💰' },
+        { name: t('console'), href: '/admin', icon: '🎛️' },
+        { name: t('studentManagement'), href: '/admin', icon: '👨‍🎓' },
+        { name: t('agentManagement'), href: '/admin/agents', icon: '🤝' },
+        { name: t('financeManagement'), href: '/admin/finance', icon: '💰' },
       ];
     }
     
     // 超级管理员 - 额外看到用户管理和 Moodle 管理
     if (role === 'superadmin') {
       return [
-        { name: '控制台', href: '/admin', icon: '🎛️' },
-        { name: '学生管理', href: '/admin', icon: '👨‍🎓' },
-        { name: '中介管理', href: '/admin/agents', icon: '🤝' },
-        { name: '财务管理', href: '/admin/finance', icon: '💰' },
-        { name: '用户管理', href: '/superadmin', icon: '👑' },
-        { name: 'Moodle', href: '/superadmin/moodle', icon: '📚' },
+        { name: t('console'), href: '/admin', icon: '🎛️' },
+        { name: t('studentManagement'), href: '/admin', icon: '👨‍🎓' },
+        { name: t('agentManagement'), href: '/admin/agents', icon: '🤝' },
+        { name: t('financeManagement'), href: '/admin/finance', icon: '💰' },
+        { name: t('userManagement'), href: '/superadmin', icon: '👑' },
+        { name: t('moodle'), href: '/superadmin/moodle', icon: '📚' },
       ];
     }
 
-    return [{ name: '首页', href: '/', icon: '🏠' }];
+    return [];
   };
 
   const filteredNavigation = getNavigationByRole();
@@ -92,11 +94,11 @@ export default function NavBar() {
   // 获取角色标签
   const getRoleLabel = (role: string) => {
     const labels: Record<string, string> = {
-      student: '学生',
-      agent: '中介',
-      admin: '管理员',
-      it: 'IT管理',
-      superadmin: '超级管理员',
+      student: tRoles('student'),
+      agent: tRoles('agent'),
+      admin: tRoles('admin'),
+      it: tRoles('it'),
+      superadmin: tRoles('superadmin'),
     };
     return labels[role] || role;
   };
@@ -144,6 +146,7 @@ export default function NavBar() {
             </div>
           </div>
           <div className="flex items-center space-x-4">
+            <LanguageSwitcher />
             {status === 'authenticated' && session?.user ? (
               <>
                 <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
@@ -179,7 +182,7 @@ export default function NavBar() {
                     <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
                       <div className="px-4 py-3 border-b border-gray-200">
                         <p className="text-sm font-medium text-gray-900">
-                          {session.user.name || '用户'}
+                          {session.user.name || t('user')}
                         </p>
                         <p className="text-xs text-gray-500 truncate">
                           {session.user.email}
@@ -198,7 +201,7 @@ export default function NavBar() {
                             onClick={() => setDropdownOpen(false)}
                           >
                             <span className="mr-2">🎓</span>
-                            选课中心
+                            {t('courseSelection')}
                           </Link>
                           <Link
                             href="/student/courses"
@@ -206,7 +209,7 @@ export default function NavBar() {
                             onClick={() => setDropdownOpen(false)}
                           >
                             <span className="mr-2">📚</span>
-                            我的课程
+                            {t('myCourses')}
                           </Link>
                           <Link
                             href="/student/profile"
@@ -214,7 +217,7 @@ export default function NavBar() {
                             onClick={() => setDropdownOpen(false)}
                           >
                             <span className="mr-2">👤</span>
-                            个人资料
+                            {t('myProfile')}
                           </Link>
                         </>
                       )}
@@ -227,7 +230,7 @@ export default function NavBar() {
                             onClick={() => setDropdownOpen(false)}
                           >
                             <span className="mr-2">📊</span>
-                            工作台
+                            {t('dashboard')}
                           </Link>
                           <Link
                             href="/agent?tab=students"
@@ -235,7 +238,7 @@ export default function NavBar() {
                             onClick={() => setDropdownOpen(false)}
                           >
                             <span className="mr-2">👥</span>
-                            我的学生
+                            {t('myStudents')}
                           </Link>
                           <Link
                             href="/agent?tab=enrollments"
@@ -243,7 +246,7 @@ export default function NavBar() {
                             onClick={() => setDropdownOpen(false)}
                           >
                             <span className="mr-2">📝</span>
-                            注册记录
+                            {t('enrollmentRecords')}
                           </Link>
                         </>
                       )}
@@ -256,7 +259,7 @@ export default function NavBar() {
                             onClick={() => setDropdownOpen(false)}
                           >
                             <span className="mr-2">🎛️</span>
-                            控制台
+                            {t('console')}
                           </Link>
                           <Link
                             href="/admin"
@@ -264,7 +267,7 @@ export default function NavBar() {
                             onClick={() => setDropdownOpen(false)}
                           >
                             <span className="mr-2">👨‍🎓</span>
-                            学生管理
+                            {t('studentManagement')}
                           </Link>
                           <Link
                             href="/admin/agents"
@@ -272,7 +275,7 @@ export default function NavBar() {
                             onClick={() => setDropdownOpen(false)}
                           >
                             <span className="mr-2">🤝</span>
-                            中介管理
+                            {t('agentManagement')}
                           </Link>
                           <Link
                             href="/admin/finance"
@@ -280,7 +283,7 @@ export default function NavBar() {
                             onClick={() => setDropdownOpen(false)}
                           >
                             <span className="mr-2">💰</span>
-                            财务管理
+                            {t('financeManagement')}
                           </Link>
                           {session.user.role === 'superadmin' && (
                             <>
@@ -290,7 +293,7 @@ export default function NavBar() {
                                 onClick={() => setDropdownOpen(false)}
                               >
                                 <span className="mr-2">👑</span>
-                                用户管理
+                                {t('userManagement')}
                               </Link>
                               <Link
                                 href="/superadmin/moodle"
@@ -298,7 +301,7 @@ export default function NavBar() {
                                 onClick={() => setDropdownOpen(false)}
                               >
                                 <span className="mr-2">📚</span>
-                                Moodle 管理
+                                {t('moodleManagement')}
                               </Link>
                             </>
                           )}
@@ -315,7 +318,7 @@ export default function NavBar() {
                         className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                       >
                         <span className="mr-2">🚪</span>
-                        退出登录
+                        {t('logout')}
                       </button>
                     </div>
                   )}
@@ -331,7 +334,7 @@ export default function NavBar() {
                 href="/auth/signin"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
               >
-                登录
+                {t('login')}
               </Link>
             )}
           </div>

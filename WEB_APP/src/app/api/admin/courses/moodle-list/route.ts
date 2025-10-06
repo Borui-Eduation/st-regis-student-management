@@ -50,3 +50,4 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse>> 
     return createErrorResponse(error, 'Failed to fetch Moodle courses');
   }
 }
+

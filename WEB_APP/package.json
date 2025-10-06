@@ -35,6 +35,7 @@
     "nanoid": "^5.0.9",
     "next": "^15.5.4",
     "next-auth": "^5.0.0-beta.29",
+    "next-intl": "^3.23.0",
     "openid-client": "^6.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

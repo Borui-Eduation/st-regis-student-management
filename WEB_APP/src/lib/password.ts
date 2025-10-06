@@ -38,3 +38,4 @@ export async function getDefaultPasswordHash(): Promise<string> {
   return hashPassword(DEFAULT_PASSWORD);
 }
 
+
