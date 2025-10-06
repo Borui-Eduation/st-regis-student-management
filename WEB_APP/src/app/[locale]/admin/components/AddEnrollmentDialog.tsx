@@ -7,6 +7,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -31,6 +32,10 @@ interface AddEnrollmentDialogProps {
 
 export function AddEnrollmentDialog({ student, isOpen, onClose, onSuccess }: AddEnrollmentDialogProps) {
   const { toast } = useToast();
+  const t = useTranslations('dialogs.addEnrollment');
+  const tCommon = useTranslations('dialogs.common');
+  const tStatus = useTranslations('dialogs.changeStatus.statusOptions');
+  
   const [loading, setLoading] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState('');
@@ -46,18 +51,16 @@ export function AddEnrollmentDialog({ student, isOpen, onClose, onSuccess }: Add
   const fetchCourses = async () => {
     setLoadingCourses(true);
     try {
-      const res = await fetch('/api/courses?pageSize=100'); // 获取更多课程用于选择
+      const res = await fetch('/api/courses?pageSize=100');
       const data = await res.json();
       if (data.success && data.data) {
-        // API返回的是分页数据，需要取items数组
         setCourses(data.data.items || []);
       } else {
         setCourses([]);
       }
     } catch (error) {
       toast({
-        title: '❌ 加载课程失败',
-        description: '无法获取课程列表',
+        title: t('errors.addFailed'),
         variant: 'destructive',
       });
       setCourses([]);
@@ -85,12 +88,12 @@ export function AddEnrollmentDialog({ student, isOpen, onClose, onSuccess }: Add
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || data.message || '添加失败');
+        throw new Error(data.error || data.message || t('errors.addFailed'));
       }
 
       toast({
-        title: '✅ 添加成功',
-        description: `已为 ${student.name} 添加课程`,
+        title: t('success'),
+        description: student.name,
       });
 
       onSuccess?.();
@@ -99,7 +102,7 @@ export function AddEnrollmentDialog({ student, isOpen, onClose, onSuccess }: Add
       setSelectedStatus('ready');
     } catch (error: any) {
       toast({
-        title: '❌ 添加失败',
+        title: t('errors.addFailed'),
         description: error.message,
         variant: 'destructive',
       });
@@ -112,18 +115,18 @@ export function AddEnrollmentDialog({ student, isOpen, onClose, onSuccess }: Add
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>为学生添加课程</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>
-            为 <strong>{student?.name}</strong> 添加新的课程注册
+            {student?.name}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <Label htmlFor="course">选择课程 *</Label>
+              <Label htmlFor="course">{t('selectCourse')} *</Label>
               {loadingCourses ? (
-                <div className="text-sm text-gray-500 py-2">加载课程列表...</div>
+                <div className="text-sm text-gray-500 py-2">{tCommon('loading')}</div>
               ) : (
                 <select
                   id="course"
@@ -133,7 +136,7 @@ export function AddEnrollmentDialog({ student, isOpen, onClose, onSuccess }: Add
                   required
                   style={{ maxWidth: '100%' }}
                 >
-                  <option value="">-- 请选择课程 --</option>
+                  <option value="">-- {t('selectCourse')} --</option>
                   {courses.map((course) => (
                     <option 
                       key={course.courseId} 
@@ -146,12 +149,12 @@ export function AddEnrollmentDialog({ student, isOpen, onClose, onSuccess }: Add
                 </select>
               )}
               <p className="text-xs text-gray-500 mt-1">
-                共 {courses.length} 门可选课程
+                {courses.length} {t('selectCourse')}
               </p>
             </div>
 
             <div>
-              <Label htmlFor="status">初始状态 *</Label>
+              <Label htmlFor="status">{t('status')} *</Label>
               <select
                 id="status"
                 value={selectedStatus}
@@ -159,31 +162,10 @@ export function AddEnrollmentDialog({ student, isOpen, onClose, onSuccess }: Add
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
-                <option value="pending">Pending (待审批)</option>
-                <option value="ready">Ready (待开课)</option>
-                <option value="open">Open (已开课)</option>
+                <option value="pending">{tStatus('pending.label')}</option>
+                <option value="ready">{tStatus('ready.label')}</option>
+                <option value="open">{tStatus('open.label')}</option>
               </select>
-              <p className="text-xs text-gray-500 mt-1">
-                💡 建议选择 "Ready" - 跳过审批直接进入待开课状态
-              </p>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <div className="flex items-start">
-                <svg className="h-5 w-5 text-blue-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                </svg>
-                <div className="ml-3">
-                  <h4 className="text-sm font-medium text-blue-800">注意事项</h4>
-                  <div className="mt-1 text-xs text-blue-700">
-                    <ul className="list-disc pl-4 space-y-1">
-                      <li>系统会自动计算课程费用</li>
-                      <li>默认支付状态为"未支付"</li>
-                      <li>学生的课程计数会自动更新</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -194,14 +176,14 @@ export function AddEnrollmentDialog({ student, isOpen, onClose, onSuccess }: Add
               onClick={onClose}
               disabled={loading}
             >
-              取消
+              {tCommon('cancel')}
             </Button>
             <Button 
               type="submit" 
               disabled={loading || !selectedCourseId}
               className="bg-blue-600 hover:bg-blue-700"
             >
-              {loading ? '添加中...' : '添加课程'}
+              {loading ? tCommon('creating') : tCommon('create')}
             </Button>
           </div>
         </form>
@@ -209,4 +191,3 @@ export function AddEnrollmentDialog({ student, isOpen, onClose, onSuccess }: Add
     </Dialog>
   );
 }
-
