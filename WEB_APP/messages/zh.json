@@ -335,6 +335,90 @@
       "success": {
         "passwordChanged": "密码更新成功"
       }
+    },
+    "superadmin": {
+      "title": "超级管理员控制台",
+      "subtitle": "系统用户管理（管理员、教师、中介、超级管理员）",
+      "createUser": "创建用户",
+      "createSuccess": "✅ 用户创建成功！",
+      "deleteSuccess": "✅ 用户已删除！",
+      "confirmDelete": "⚠️ 确认删除用户 {name} 吗？\n\n此操作无法撤销！",
+      "errors": {
+        "fillRequired": "请填写所有必填字段",
+        "createFailed": "创建失败",
+        "deleteFailed": "删除失败",
+        "operationFailed": "操作失败"
+      },
+      "userList": {
+        "title": "系统用户列表",
+        "name": "姓名",
+        "email": "邮箱",
+        "phone": "电话",
+        "role": "角色"
+      },
+      "dialog": {
+        "title": "创建系统用户",
+        "description": "创建管理员、教师、中介或超级管理员账号",
+        "fields": {
+          "name": "姓名",
+          "email": "邮箱",
+          "phone": "电话",
+          "role": "角色"
+        },
+        "placeholders": {
+          "name": "请输入姓名",
+          "email": "请输入邮箱",
+          "phone": "请输入电话"
+        }
+      }
+    },
+    "performance": {
+      "errors": {
+        "loadFailed": "获取失败",
+        "cannotLoadEnrollment": "无法加载课程注册信息",
+        "loadError": "加载错误",
+        "validationFailed": "验证失败",
+        "midtermRange": "期中成绩必须在0-100之间",
+        "finalRange": "期末成绩必须在0-100之间",
+        "updateFailed": "更新失败",
+        "saveFailed": "保存失败"
+      },
+      "saveSuccess": {
+        "title": "保存成功",
+        "description": "学生成绩和评语已更新"
+      }
+    },
+    "moodle": {
+      "title": "Moodle 系统集成",
+      "subtitle": "查看 Moodle 中所有已注册用户及其课程",
+      "errors": {
+        "unknown": "未知错误",
+        "requestFailed": "请求失败: {error}"
+      },
+      "buttons": {
+        "refresh": "🔄 刷新数据",
+        "forceRefresh": "🔥 强制刷新"
+      },
+      "stats": {
+        "totalCourses": "总课程数",
+        "coursesDescription": "开设的课程",
+        "totalStudents": "总学生数",
+        "uniqueStudents": "唯一学生数",
+        "totalEnrollments": "总注册数",
+        "enrollmentCount": "课程注册总数"
+      },
+      "search": {
+        "placeholder": "搜索课程名称、代码或学生姓名、邮箱...",
+        "results": "找到 {count} 个匹配的课程"
+      },
+      "courseList": {
+        "title": "课程列表",
+        "noMatch": "未找到匹配的课程",
+        "noCourses": "暂无课程数据",
+        "studentCount": "{count} 个学生",
+        "enrolledStudents": "注册学生 ({count})",
+        "noStudents": "该课程暂无学生注册"
+      }
     }
   },
   "forms": {
@@ -453,90 +537,6 @@
         "subject": "注册确认 - {courseName}",
         "greeting": "亲爱的 {studentName}",
         "body": "您已成功注册课程 {courseName}，我们将尽快审核您的申请。"
-      }
-    },
-    "performance": {
-      "errors": {
-        "loadFailed": "获取失败",
-        "cannotLoadEnrollment": "无法加载课程注册信息",
-        "loadError": "加载错误",
-        "validationFailed": "验证失败",
-        "midtermRange": "期中成绩必须在0-100之间",
-        "finalRange": "期末成绩必须在0-100之间",
-        "updateFailed": "更新失败",
-        "saveFailed": "保存失败"
-      },
-      "saveSuccess": {
-        "title": "保存成功",
-        "description": "学生成绩和评语已更新"
-      }
-    },
-    "superadmin": {
-      "title": "超级管理员控制台",
-      "subtitle": "系统用户管理（管理员、教师、中介、超级管理员）",
-      "createUser": "创建用户",
-      "createSuccess": "✅ 用户创建成功！",
-      "deleteSuccess": "✅ 用户已删除！",
-      "confirmDelete": "⚠️ 确认删除用户 {name} 吗？\n\n此操作无法撤销！",
-      "errors": {
-        "fillRequired": "请填写所有必填字段",
-        "createFailed": "创建失败",
-        "deleteFailed": "删除失败",
-        "operationFailed": "操作失败"
-      },
-      "userList": {
-        "title": "系统用户列表",
-        "name": "姓名",
-        "email": "邮箱",
-        "phone": "电话",
-        "role": "角色"
-      },
-      "dialog": {
-        "title": "创建系统用户",
-        "description": "创建管理员、教师、中介或超级管理员账号",
-        "fields": {
-          "name": "姓名",
-          "email": "邮箱",
-          "phone": "电话",
-          "role": "角色"
-        },
-        "placeholders": {
-          "name": "请输入姓名",
-          "email": "请输入邮箱",
-          "phone": "请输入电话"
-        }
-      }
-    },
-    "moodle": {
-      "title": "Moodle 系统集成",
-      "subtitle": "查看 Moodle 中所有已注册用户及其课程",
-      "errors": {
-        "unknown": "未知错误",
-        "requestFailed": "请求失败: {error}"
-      },
-      "buttons": {
-        "refresh": "🔄 刷新数据",
-        "forceRefresh": "🔥 强制刷新"
-      },
-      "stats": {
-        "totalCourses": "总课程数",
-        "coursesDescription": "开设的课程",
-        "totalStudents": "总学生数",
-        "uniqueStudents": "唯一学生数",
-        "totalEnrollments": "总注册数",
-        "enrollmentCount": "课程注册总数"
-      },
-      "search": {
-        "placeholder": "搜索课程名称、代码或学生姓名、邮箱...",
-        "results": "找到 {count} 个匹配的课程"
-      },
-      "courseList": {
-        "title": "课程列表",
-        "noMatch": "未找到匹配的课程",
-        "noCourses": "暂无课程数据",
-        "studentCount": "{count} 个学生",
-        "enrolledStudents": "注册学生 ({count})",
-        "noStudents": "该课程暂无学生注册"
       }
     }
   }

@@ -335,6 +335,90 @@
       "success": {
         "passwordChanged": "Password updated successfully"
       }
+    },
+    "superadmin": {
+      "title": "Superadmin Console",
+      "subtitle": "System User Management (Admins, Teachers, Agents, Superadmins)",
+      "createUser": "Create User",
+      "createSuccess": "✅ User created successfully!",
+      "deleteSuccess": "✅ User deleted!",
+      "confirmDelete": "⚠️ Confirm deleting user {name}?\n\nThis action cannot be undone!",
+      "errors": {
+        "fillRequired": "Please fill in all required fields",
+        "createFailed": "Creation failed",
+        "deleteFailed": "Delete failed",
+        "operationFailed": "Operation failed"
+      },
+      "userList": {
+        "title": "System Users",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "role": "Role"
+      },
+      "dialog": {
+        "title": "Create System User",
+        "description": "Create administrator, teacher, agent, or superadmin account",
+        "fields": {
+          "name": "Name",
+          "email": "Email",
+          "phone": "Phone",
+          "role": "Role"
+        },
+        "placeholders": {
+          "name": "Enter name",
+          "email": "Enter email",
+          "phone": "Enter phone"
+        }
+      }
+    },
+    "performance": {
+      "errors": {
+        "loadFailed": "Load Failed",
+        "cannotLoadEnrollment": "Cannot load enrollment information",
+        "loadError": "Load Error",
+        "validationFailed": "Validation Failed",
+        "midtermRange": "Midterm grade must be between 0-100",
+        "finalRange": "Final grade must be between 0-100",
+        "updateFailed": "Update Failed",
+        "saveFailed": "Save Failed"
+      },
+      "saveSuccess": {
+        "title": "Saved Successfully",
+        "description": "Student grades and comments have been updated"
+      }
+    },
+    "moodle": {
+      "title": "Moodle System Integration",
+      "subtitle": "View all enrolled users and their courses in Moodle",
+      "errors": {
+        "unknown": "Unknown error",
+        "requestFailed": "Request failed: {error}"
+      },
+      "buttons": {
+        "refresh": "🔄 Refresh Data",
+        "forceRefresh": "🔥 Force Refresh"
+      },
+      "stats": {
+        "totalCourses": "Total Courses",
+        "coursesDescription": "Courses offered",
+        "totalStudents": "Total Students",
+        "uniqueStudents": "Unique students",
+        "totalEnrollments": "Total Enrollments",
+        "enrollmentCount": "Total course enrollments"
+      },
+      "search": {
+        "placeholder": "Search course name, code, or student name, email...",
+        "results": "Found {count} matching courses"
+      },
+      "courseList": {
+        "title": "Course List",
+        "noMatch": "No matching courses found",
+        "noCourses": "No course data available",
+        "studentCount": "{count} students",
+        "enrolledStudents": "Enrolled Students ({count})",
+        "noStudents": "No students enrolled in this course"
+      }
     }
   },
   "forms": {
@@ -453,90 +537,6 @@
         "subject": "Enrollment Confirmation - {courseName}",
         "greeting": "Dear {studentName}",
         "body": "You have successfully enrolled in {courseName}. We will review your application shortly."
-      }
-    },
-    "performance": {
-      "errors": {
-        "loadFailed": "Load Failed",
-        "cannotLoadEnrollment": "Cannot load enrollment information",
-        "loadError": "Load Error",
-        "validationFailed": "Validation Failed",
-        "midtermRange": "Midterm grade must be between 0-100",
-        "finalRange": "Final grade must be between 0-100",
-        "updateFailed": "Update Failed",
-        "saveFailed": "Save Failed"
-      },
-      "saveSuccess": {
-        "title": "Saved Successfully",
-        "description": "Student grades and comments have been updated"
-      }
-    },
-    "superadmin": {
-      "title": "Superadmin Console",
-      "subtitle": "System User Management (Admins, Teachers, Agents, Superadmins)",
-      "createUser": "Create User",
-      "createSuccess": "✅ User created successfully!",
-      "deleteSuccess": "✅ User deleted!",
-      "confirmDelete": "⚠️ Confirm deleting user {name}?\n\nThis action cannot be undone!",
-      "errors": {
-        "fillRequired": "Please fill in all required fields",
-        "createFailed": "Creation failed",
-        "deleteFailed": "Delete failed",
-        "operationFailed": "Operation failed"
-      },
-      "userList": {
-        "title": "System Users",
-        "name": "Name",
-        "email": "Email",
-        "phone": "Phone",
-        "role": "Role"
-      },
-      "dialog": {
-        "title": "Create System User",
-        "description": "Create administrator, teacher, agent, or superadmin account",
-        "fields": {
-          "name": "Name",
-          "email": "Email",
-          "phone": "Phone",
-          "role": "Role"
-        },
-        "placeholders": {
-          "name": "Enter name",
-          "email": "Enter email",
-          "phone": "Enter phone"
-        }
-      }
-    },
-    "moodle": {
-      "title": "Moodle System Integration",
-      "subtitle": "View all enrolled users and their courses in Moodle",
-      "errors": {
-        "unknown": "Unknown error",
-        "requestFailed": "Request failed: {error}"
-      },
-      "buttons": {
-        "refresh": "🔄 Refresh Data",
-        "forceRefresh": "🔥 Force Refresh"
-      },
-      "stats": {
-        "totalCourses": "Total Courses",
-        "coursesDescription": "Courses offered",
-        "totalStudents": "Total Students",
-        "uniqueStudents": "Unique students",
-        "totalEnrollments": "Total Enrollments",
-        "enrollmentCount": "Total course enrollments"
-      },
-      "search": {
-        "placeholder": "Search course name, code, or student name, email...",
-        "results": "Found {count} matching courses"
-      },
-      "courseList": {
-        "title": "Course List",
-        "noMatch": "No matching courses found",
-        "noCourses": "No course data available",
-        "studentCount": "{count} students",
-        "enrolledStudents": "Enrolled Students ({count})",
-        "noStudents": "No students enrolled in this course"
       }
     }
   }
