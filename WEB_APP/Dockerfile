@@ -9,7 +9,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # 安装依赖（使用 legacy-peer-deps 解决依赖冲突）
-RUN npm ci --legacy-peer-deps
+# 使用 npm install 代替 npm ci，允许更新 lock 文件
+RUN npm install --legacy-peer-deps
 
 # 复制所有源代码
 COPY . .

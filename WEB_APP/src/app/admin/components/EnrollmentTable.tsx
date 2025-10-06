@@ -7,9 +7,12 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { EditGradesDialog } from './EditGradesDialog';
+import { ChangeStatusDialog } from './ChangeStatusDialog';
 import type { Enrollment } from '@/types';
 
 interface EnrollmentTableProps {
@@ -43,8 +46,30 @@ const getStatusBadge = (status: string) => {
 
 export function EnrollmentTable({ enrollments, processing, onApprove, onReject, onRefresh }: EnrollmentTableProps) {
   const { data: session } = useSession();
+  const router = useRouter();
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [selectedEnrollment, setSelectedEnrollment] = useState<Enrollment | null>(null);
+  const [isEditGradesOpen, setIsEditGradesOpen] = useState(false);
+  const [isChangeStatusOpen, setIsChangeStatusOpen] = useState(false);
   const isSuperAdmin = session?.user?.role === 'superadmin';
+  
+  const handleEditGrades = (enrollment: Enrollment) => {
+    setSelectedEnrollment(enrollment);
+    setIsEditGradesOpen(true);
+  };
+  
+  const handleChangeStatus = (enrollment: Enrollment) => {
+    setSelectedEnrollment(enrollment);
+    setIsChangeStatusOpen(true);
+  };
+  
+  const handleGradesEditSuccess = () => {
+    onRefresh?.();
+  };
+  
+  const handleStatusChangeSuccess = () => {
+    onRefresh?.();
+  };
   
   const handleDelete = async (enrollmentId: string, studentName: string) => {
     if (!confirm(`⚠️ 确认删除 ${studentName} 的注册记录吗？\n\n此操作无法撤销！`)) {
@@ -84,20 +109,22 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
   }
 
   return (
-    <div className="overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>学生姓名</TableHead>
-            <TableHead>邮箱</TableHead>
-            <TableHead>课程名称</TableHead>
-            <TableHead>教师</TableHead>
-            <TableHead>学期</TableHead>
-            <TableHead>注册状态</TableHead>
-            <TableHead>截止日期</TableHead>
-            <TableHead className="text-right">操作</TableHead>
-          </TableRow>
-        </TableHeader>
+    <>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>学生姓名</TableHead>
+              <TableHead>邮箱</TableHead>
+              <TableHead>课程名称</TableHead>
+              <TableHead>教师</TableHead>
+              <TableHead>学期</TableHead>
+              <TableHead>注册状态</TableHead>
+              <TableHead>成绩</TableHead>
+              <TableHead>截止日期</TableHead>
+              <TableHead className="text-right">操作</TableHead>
+            </TableRow>
+          </TableHeader>
         <TableBody>
           {enrollments.map((enrollment) => (
             <TableRow key={enrollment.enrollmentId} className="hover:bg-gray-50">
@@ -125,6 +152,24 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
               <TableCell>
                 {getStatusBadge(enrollment.status)}
               </TableCell>
+              <TableCell>
+                <div className="text-xs space-y-1">
+                  {enrollment.midtermMark !== undefined && enrollment.midtermMark !== null ? (
+                    <div className="text-blue-600 font-medium">
+                      期中: {enrollment.midtermMark}
+                    </div>
+                  ) : (
+                    <div className="text-gray-400">期中: -</div>
+                  )}
+                  {enrollment.finalGrade !== undefined && enrollment.finalGrade !== null ? (
+                    <div className="text-green-600 font-medium">
+                      期末: {enrollment.finalGrade}
+                    </div>
+                  ) : (
+                    <div className="text-gray-400">期末: -</div>
+                  )}
+                </div>
+              </TableCell>
               <TableCell className="text-sm text-gray-500">
                 {enrollment.endDate
                   ? new Date(enrollment.endDate).toLocaleDateString('zh-CN', {
@@ -135,7 +180,7 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
                   : '-'}
               </TableCell>
               <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-end gap-2 flex-wrap">
                   {enrollment.status === 'pending' ? (
                     <>
                       <Button
@@ -156,27 +201,48 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
                       </Button>
                     </>
                   ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        // TODO: 打开详情对话框
-                        alert('查看详情功能开发中');
-                      }}
-                    >
-                      查看详情
-                    </Button>
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          router.push(`/teacher/performance/${enrollment.enrollmentId}`);
+                        }}
+                      >
+                        查看详情
+                      </Button>
+                      {enrollment.status === 'open' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300"
+                          onClick={() => handleEditGrades(enrollment)}
+                        >
+                          📝 编辑成绩
+                        </Button>
+                      )}
+                    </>
                   )}
                   {isSuperAdmin && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      onClick={() => handleDelete(enrollment.enrollmentId, enrollment.studentName)}
-                      disabled={deleting === enrollment.enrollmentId}
-                    >
-                      {deleting === enrollment.enrollmentId ? '删除中...' : '🗑️'}
-                    </Button>
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-300"
+                        onClick={() => handleChangeStatus(enrollment)}
+                      >
+                        🔄 更改状态
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => handleDelete(enrollment.enrollmentId, enrollment.studentName)}
+                        disabled={deleting === enrollment.enrollmentId}
+                      >
+                        {deleting === enrollment.enrollmentId ? '删除中...' : '🗑️'}
+                      </Button>
+                    </>
                   )}
                 </div>
               </TableCell>
@@ -185,6 +251,27 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
         </TableBody>
       </Table>
     </div>
+    
+    <EditGradesDialog
+      enrollment={selectedEnrollment}
+      isOpen={isEditGradesOpen}
+      onClose={() => {
+        setIsEditGradesOpen(false);
+        setSelectedEnrollment(null);
+      }}
+      onSuccess={handleGradesEditSuccess}
+    />
+    
+    <ChangeStatusDialog
+      enrollment={selectedEnrollment}
+      isOpen={isChangeStatusOpen}
+      onClose={() => {
+        setIsChangeStatusOpen(false);
+        setSelectedEnrollment(null);
+      }}
+      onSuccess={handleStatusChangeSuccess}
+    />
+  </>
   );
 }
 

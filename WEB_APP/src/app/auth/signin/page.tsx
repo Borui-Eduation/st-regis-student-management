@@ -2,19 +2,22 @@
 
 import { signIn } from 'next-auth/react';
 import { useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 function SignInContent() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
 
-  const handleEmailSignIn = async (e: React.FormEvent) => {
+  const handlePasswordSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     
@@ -23,52 +26,29 @@ function SignInContent() {
       return;
     }
     
+    if (!password) {
+      setError('请输入密码');
+      return;
+    }
+    
     setLoading(true);
     
     try {
-      // 1. 先检查用户是否存在
-      console.log('🔍 检查用户是否存在:', email);
-      
-      const checkResponse = await fetch('/api/auth/check-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.toLowerCase() }),
+      const result = await signIn('credentials', {
+        email: email.toLowerCase(),
+        password: password,
+        redirect: false,
       });
-
-      const checkData = await checkResponse.json();
-      
-      if (!checkData.exists) {
-        // 用户不存在
-        setLoading(false);
-        setError(
-          '此邮箱未注册。\n\n' +
-          '本系统仅对会员开放，不提供公开注册。\n\n' +
-          '如需注册账户，请联系管理员：admin@borui.org'
-        );
-        return;
-      }
-
-      // 2. 用户存在，发送登录邮件
-      console.log('✅ 用户存在，发送登录邮件到:', email);
-      
-      const result = await signIn('resend', { 
-        email: email.toLowerCase(), 
-        callbackUrl,
-        redirect: false  // 不自动跳转，手动处理
-      });
-      
-      console.log('📧 发送结果:', result);
       
       if (result?.error) {
+        setError('邮箱或密码错误，请重试');
         setLoading(false);
-        setError('发送邮件时出现问题：' + result.error);
       } else {
-        // 发送成功，手动跳转到验证页面
-        window.location.href = `/auth/verify-request?email=${encodeURIComponent(email)}`;
+        // 登录成功，跳转
+        router.push(callbackUrl);
       }
-      
     } catch (error) {
-      console.error('💥 登录错误:', error);
+      console.error('登录错误:', error);
       setLoading(false);
       setError('登录失败，请重试');
     }
@@ -122,16 +102,14 @@ function SignInContent() {
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">或</span>
+              <span className="px-4 bg-white text-gray-500">或使用邮箱密码登录</span>
             </div>
           </div>
 
-          {/* Email 登录 */}
-          <form onSubmit={handleEmailSignIn} className="space-y-4">
+          {/* 密码登录 */}
+          <form onSubmit={handlePasswordSignIn} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                邮箱地址
-              </label>
+              <Label htmlFor="email">邮箱地址</Label>
               <Input
                 id="email"
                 type="email"
@@ -139,27 +117,46 @@ function SignInContent() {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  setError(''); // 清除错误提示
+                  setError('');
                 }}
                 required
-                className="h-12"
+                className="h-12 mt-1"
               />
-              
-              {/* 错误提示 */}
-              {error && (
-                <div className="mt-3 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <div className="flex items-start">
-                    <svg className="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-red-800 mb-2">无法登录</p>
-                      <p className="text-sm text-red-700 whitespace-pre-line">{error}</p>
-                    </div>
+            </div>
+
+            <div>
+              <Label htmlFor="password">密码</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="输入您的密码"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setError('');
+                }}
+                required
+                className="h-12 mt-1"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                默认密码：StRegis2025! （可登录后修改）
+              </p>
+            </div>
+            
+            {/* 错误提示 */}
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-start">
+                  <svg className="w-5 h-5 text-red-600 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-red-800">无法登录</p>
+                    <p className="text-sm text-red-700 mt-1">{error}</p>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
             
             <Button
               type="submit"
@@ -172,16 +169,29 @@ function SignInContent() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  检查中...
+                  登录中...
                 </span>
-              ) : '发送登录链接'}
+              ) : '🔐 登录'}
             </Button>
           </form>
 
           <div className="pt-4 border-t border-gray-200">
-            <p className="text-xs text-gray-500 text-center">
-              登录即表示您同意我们的服务条款和隐私政策
-            </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <div className="flex items-start">
+                <svg className="w-5 h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div className="text-xs text-blue-800">
+                  <p className="font-semibold mb-1">登录说明</p>
+                  <ul className="list-disc list-inside space-y-0.5">
+                    <li>本系统仅供管理员、中介和教师登录</li>
+                    <li>学生账号不提供登录功能</li>
+                    <li>如需账号，请联系超级管理员</li>
+                    <li>登录后可在"设置"中修改密码</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

@@ -61,7 +61,7 @@ export default function NavBar() {
       ];
     }
     
-    // 超级管理员 - 额外看到用户管理
+    // 超级管理员 - 额外看到用户管理和 Moodle 管理
     if (role === 'superadmin') {
       return [
         { name: '控制台', href: '/admin', icon: '🎛️' },
@@ -69,6 +69,7 @@ export default function NavBar() {
         { name: '中介管理', href: '/admin/agents', icon: '🤝' },
         { name: '财务管理', href: '/admin/finance', icon: '💰' },
         { name: '用户管理', href: '/superadmin', icon: '👑' },
+        { name: 'Moodle', href: '/superadmin/moodle', icon: '📚' },
       ];
     }
 
@@ -282,14 +283,24 @@ export default function NavBar() {
                             财务管理
                           </Link>
                           {session.user.role === 'superadmin' && (
-                            <Link
-                              href="/superadmin"
-                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-200"
-                              onClick={() => setDropdownOpen(false)}
-                            >
-                              <span className="mr-2">👑</span>
-                              用户管理
-                            </Link>
+                            <>
+                              <Link
+                                href="/superadmin"
+                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-200"
+                                onClick={() => setDropdownOpen(false)}
+                              >
+                                <span className="mr-2">👑</span>
+                                用户管理
+                              </Link>
+                              <Link
+                                href="/superadmin/moodle"
+                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                onClick={() => setDropdownOpen(false)}
+                              >
+                                <span className="mr-2">📚</span>
+                                Moodle 管理
+                              </Link>
+                            </>
                           )}
                         </>
                       )}

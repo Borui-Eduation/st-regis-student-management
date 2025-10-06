@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/lib/api-auth';
 import { adminDb, collections, FieldValue } from '@/lib/firebase-admin';
 import { createErrorResponse, createSuccessResponse } from '@/lib/api-error-handler';
+import { getDefaultPasswordHash, hashPassword } from '@/lib/password';
 import type { ApiResponse, PaginatedResponse } from '@/types';
 
 /**
@@ -175,7 +176,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
     const session = await requireRole(['admin', 'superadmin']);
 
     const body = await req.json();
-    const { name, email, phone, school, grade, parentName, parentEmail, parentPhone, status, role } = body;
+    const { name, email, phone, school, grade, parentName, parentEmail, parentPhone, status, role, customPassword } = body;
 
     // 验证必填字段
     if (!name) {
@@ -204,8 +205,29 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
       }
     }
 
-    // 🎯 Admin只能创建学生，角色固定为'student'
-    // Superadmin使用专门的用户管理API创建系统用户
+    // 🎯 确定用户角色
+    // SuperAdmin可以创建admin/superadmin账号，Admin只能创建学生
+    const userRole = (session.user?.role === 'superadmin' && role) ? role : 'student';
+    
+    // 🔐 生成密码哈希
+    // 只为 admin、agent、teacher 设置密码，学生不提供登录功能
+    let hashedPassword = null;
+    if (email && userRole !== 'student') {
+      if (customPassword) {
+        // 验证自定义密码
+        if (customPassword.length < 8) {
+          return NextResponse.json(
+            { success: false, error: '密码至少需要8个字符', message: 'Password must be at least 8 characters' },
+            { status: 400 }
+          );
+        }
+        hashedPassword = await hashPassword(customPassword);
+      } else {
+        // 使用默认密码
+        hashedPassword = await getDefaultPasswordHash();
+      }
+    }
+    
     const studentData = {
       name,
       email: email || null,
@@ -213,7 +235,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
       school: school || 'St. Regis',
       grade: grade ? parseInt(grade) : null,
       status: status || 'active',
-      role: 'student', // 固定为学生角色
+      role: userRole, // 使用确定的角色
       currentCourses: 0,
       maxCoursesPerSemester: 4,
       totalPaid: 0,
@@ -221,6 +243,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
       parentName: parentName || null,
       parentEmail: parentEmail || null,
       parentPhone: parentPhone || null,
+      hashedPassword: hashedPassword, // 只为非学生角色设置密码
+      passwordSetAt: hashedPassword ? FieldValue.serverTimestamp() : null,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     };

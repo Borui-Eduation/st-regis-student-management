@@ -15,7 +15,7 @@ export const authConfig = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
-    // Email provider 需要在 auth.ts 中配置（需要数据库适配器）
+    // Credentials provider 在 auth.ts 中配置（需要 Node.js runtime）
   ],
   
   pages: {
@@ -46,6 +46,14 @@ export const authConfig = {
       if (path.startsWith('/admin') && 
           role !== 'admin' && 
           role !== 'superadmin') {
+        return false;
+      }
+      
+      if (path.startsWith('/teacher') && role !== 'teacher') {
+        return false;
+      }
+      
+      if (path.startsWith('/agent') && role !== 'agent') {
         return false;
       }
 

@@ -42,10 +42,10 @@ export async function DELETE(
     const userData = userDoc.data();
     const role = userData?.role;
     
-    // 只能删除系统用户（admin, agent, superadmin），不能删除学生
-    if (!role || !['admin', 'agent', 'superadmin'].includes(role)) {
+    // 只能删除系统用户（admin, agent, teacher, superadmin），不能删除学生
+    if (!role || !['admin', 'agent', 'teacher', 'superadmin'].includes(role)) {
       return NextResponse.json(
-        { success: false, error: '只能删除系统用户（admin/agent/superadmin）' },
+        { success: false, error: '只能删除系统用户（admin/agent/teacher/superadmin）' },
         { status: 400 }
       );
     }
@@ -63,6 +63,22 @@ export async function DELETE(
         }
       } catch (error) {
         console.error('Failed to delete agent record:', error);
+      }
+    }
+    
+    // 如果是teacher，同时删除teachers集合中的记录
+    if (role === 'teacher' && userData?.email) {
+      try {
+        const teacherSnapshot = await collections.teachers
+          .where('email', '==', userData.email)
+          .limit(1)
+          .get();
+        
+        if (!teacherSnapshot.empty) {
+          await teacherSnapshot.docs[0].ref.delete();
+        }
+      } catch (error) {
+        console.error('Failed to delete teacher record:', error);
       }
     }
     
@@ -113,7 +129,7 @@ export async function PUT(
     const currentData = userDoc.data();
     
     // 只能修改系统用户
-    if (!currentData?.role || !['admin', 'agent', 'superadmin'].includes(currentData.role)) {
+    if (!currentData?.role || !['admin', 'agent', 'teacher', 'superadmin'].includes(currentData.role)) {
       return NextResponse.json(
         { success: false, error: '只能修改系统用户' },
         { status: 400 }
@@ -121,9 +137,9 @@ export async function PUT(
     }
     
     // 验证新角色
-    if (role && !['admin', 'agent', 'superadmin'].includes(role)) {
+    if (role && !['admin', 'agent', 'teacher', 'superadmin'].includes(role)) {
       return NextResponse.json(
-        { success: false, error: '角色必须是 admin, agent 或 superadmin' },
+        { success: false, error: '角色必须是 admin, agent, teacher 或 superadmin' },
         { status: 400 }
       );
     }

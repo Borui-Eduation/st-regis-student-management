@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/lib/api-auth';
 import { collections, FieldValue } from '@/lib/firebase-admin';
 import { createSuccessResponse, createErrorResponse } from '@/lib/api-error-handler';
+import { getDefaultPasswordHash } from '@/lib/password';
 import type { ApiResponse } from '@/types';
 
 /**
@@ -21,9 +22,9 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse>> 
   try {
     await requireRole(['superadmin']);
     
-    // 获取所有用户，只显示admin, agent, superadmin
+    // 获取所有用户，只显示admin, agent, teacher, superadmin
     const snapshot = await collections.students
-      .where('role', 'in', ['admin', 'agent', 'superadmin'])
+      .where('role', 'in', ['admin', 'agent', 'teacher', 'superadmin'])
       .get();
     
     const users = snapshot.docs.map(doc => ({
@@ -60,9 +61,9 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
     }
     
     // 验证角色
-    if (!['admin', 'agent', 'superadmin'].includes(role)) {
+    if (!['admin', 'agent', 'teacher', 'superadmin'].includes(role)) {
       return NextResponse.json(
-        { success: false, error: '角色必须是 admin, agent 或 superadmin' },
+        { success: false, error: '角色必须是 admin, agent, teacher 或 superadmin' },
         { status: 400 }
       );
     }
@@ -80,14 +81,19 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
       );
     }
     
+    // 🔐 为所有系统用户设置默认密码
+    const hashedPassword = await getDefaultPasswordHash();
+    
     // 创建用户
     const userData = {
       name,
       email,
       phone: phone || null,
-      role, // admin, agent, or superadmin
+      role, // admin, agent, teacher, or superadmin
       status: 'active',
       currentCourses: 0,
+      hashedPassword, // 设置默认密码哈希
+      passwordSetAt: FieldValue.serverTimestamp(),
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     };
@@ -112,9 +118,23 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
       await collections.agents.doc().set(agentData);
     }
     
+    // 如果是teacher，同时在teachers集合中创建记录
+    if (role === 'teacher') {
+      const teacherData = {
+        name,
+        email,
+        phone: phone || null,
+        status: 'active',
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+      };
+      
+      await collections.teachers.doc().set(teacherData);
+    }
+    
     return createSuccessResponse(
       { id: docRef.id, ...userData },
-      `${role === 'admin' ? '管理员' : role === 'agent' ? '中介' : '超级管理员'}创建成功`,
+      `${role === 'admin' ? '管理员' : role === 'agent' ? '中介' : role === 'teacher' ? '教师' : '超级管理员'}创建成功（默认密码：StRegis2025!）`,
       201
     );
     

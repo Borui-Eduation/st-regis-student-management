@@ -110,7 +110,7 @@ export function AddEnrollmentDialog({ student, isOpen, onClose, onSuccess }: Add
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>为学生添加课程</DialogTitle>
           <DialogDescription>
@@ -129,12 +129,17 @@ export function AddEnrollmentDialog({ student, isOpen, onClose, onSuccess }: Add
                   id="course"
                   value={selectedCourseId}
                   onChange={(e) => setSelectedCourseId(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   required
+                  style={{ maxWidth: '100%' }}
                 >
                   <option value="">-- 请选择课程 --</option>
                   {courses.map((course) => (
-                    <option key={course.courseId} value={course.courseId}>
+                    <option 
+                      key={course.courseId} 
+                      value={course.courseId}
+                      title={`${course.name} - ${course.teacherName} (${course.subject} G${course.grade})`}
+                    >
                       {course.name} - {course.teacherName} ({course.subject} G{course.grade})
                     </option>
                   ))}

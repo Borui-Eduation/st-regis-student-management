@@ -5,20 +5,82 @@
 
 import NextAuth from "next-auth";
 import { FirestoreAdapter } from "@next-auth/firebase-adapter";
-import Resend from "next-auth/providers/resend";
+import Credentials from "next-auth/providers/credentials";
 import { adminDb, collections } from "./lib/firebase-admin";
 import { assignRoleByEmail } from "./lib/permissions";
+import { verifyPassword } from "./lib/password";
 import { authConfig } from "./auth.config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   
-  // 添加 Email Provider（需要数据库适配器）
+  // 🔐 添加 Credentials Provider（需要 Node.js runtime）
   providers: [
     ...authConfig.providers,
-    Resend({
-      apiKey: process.env.RESEND_API_KEY,
-      from: process.env.RESEND_FROM_EMAIL || "admin@borui.org",
+    Credentials({
+      name: "credentials",
+      credentials: {
+        email: { label: "邮箱", type: "email" },
+        password: { label: "密码", type: "password" }
+      },
+      async authorize(credentials) {
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.log('❌ 缺少邮箱或密码');
+            return null;
+          }
+
+          const email = (credentials.email as string).toLowerCase();
+          const password = credentials.password as string;
+
+          // 查询用户
+          const usersSnapshot = await collections.students
+            .where('email', '==', email)
+            .limit(1)
+            .get();
+
+          if (usersSnapshot.empty) {
+            console.log(`❌ 用户不存在: ${email}`);
+            return null;
+          }
+
+          const userDoc = usersSnapshot.docs[0];
+          const userData = userDoc.data();
+          const userRole = userData.role || 'student';
+
+          // 🔒 只允许 admin、superadmin、agent、teacher 登录
+          if (userRole === 'student') {
+            console.log(`❌ 学生账号不允许登录: ${email}`);
+            return null;
+          }
+
+          // 检查是否设置了密码
+          if (!userData.hashedPassword) {
+            console.log(`❌ 用户未设置密码: ${email}`);
+            return null;
+          }
+
+          // 验证密码
+          const isValid = await verifyPassword(password, userData.hashedPassword);
+          if (!isValid) {
+            console.log(`❌ 密码错误: ${email}`);
+            return null;
+          }
+
+          console.log(`✅ 密码验证通过: ${email} (角色: ${userRole})`);
+
+          // 返回用户信息
+          return {
+            id: userDoc.id,
+            email: userData.email,
+            name: userData.name,
+            role: userRole,
+          };
+        } catch (error) {
+          console.error('❌ 密码登录错误:', error);
+          return null;
+        }
+      }
     }),
   ],
   
@@ -54,6 +116,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const userData = userDoc.data();
         const userId = userDoc.id;
         const dbRole = userData.role || 'student';
+        
+        // 🔒 只允许 admin、superadmin、agent、teacher 通过 Google 登录
+        // 学生账号不提供任何登录方式
+        if (dbRole === 'student') {
+          console.log(`❌ 拒绝登录：学生账号不允许登录 (${email})`);
+          return false;
+        }
         
         console.log(`✅ 用户验证通过: ${email} (角色: ${dbRole})`);
 
@@ -132,6 +201,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 console.error('Failed to fetch agentId:', error);
               }
             }
+            
+            // 🚀 优化：如果是teacher，查询并存储teacherId避免重复查询
+            if (roleFromWhitelist === 'teacher') {
+              try {
+                const teacherSnapshot = await collections.teachers
+                  .where('email', '==', user.email)
+                  .limit(1)
+                  .get();
+                
+                if (!teacherSnapshot.empty) {
+                  token.teacherId = teacherSnapshot.docs[0].id;
+                }
+              } catch (error) {
+                console.error('Failed to fetch teacherId:', error);
+              }
+            }
           } else {
             token.id = user.id;
             token.role = roleFromWhitelist; // 使用白名单角色
@@ -155,11 +240,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // 将token中的数据添加到session
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.role = token.role as 'student' | 'admin' | 'superadmin';
+        session.user.role = token.role as 'student' | 'agent' | 'teacher' | 'admin' | 'superadmin';
         
         // 🚀 优化：传递agentId到session
         if (token.agentId) {
           session.user.agentId = token.agentId as string;
+        }
+        
+        // 🚀 优化：传递teacherId到session
+        if (token.teacherId) {
+          session.user.teacherId = token.teacherId as string;
         }
       }
       return session;

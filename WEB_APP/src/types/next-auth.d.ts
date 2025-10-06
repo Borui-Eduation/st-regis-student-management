@@ -9,19 +9,29 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-      role: 'student' | 'agent' | 'admin' | 'superadmin';
+      email: string;
+      name?: string | null;
+      role: 'student' | 'agent' | 'teacher' | 'admin' | 'superadmin';
+      agentId?: string;
+      teacherId?: string;
     } & DefaultSession["user"];
   }
 
   interface User {
     id: string;
-    role?: 'student' | 'agent' | 'admin' | 'superadmin';
+    email: string;
+    name?: string | null;
+    role?: 'student' | 'agent' | 'teacher' | 'admin' | 'superadmin';
+    agentId?: string;
+    teacherId?: string;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     id?: string;
-    role?: 'student' | 'agent' | 'admin' | 'superadmin';
+    role?: 'student' | 'agent' | 'teacher' | 'admin' | 'superadmin';
+    agentId?: string;
+    teacherId?: string;
   }
 }

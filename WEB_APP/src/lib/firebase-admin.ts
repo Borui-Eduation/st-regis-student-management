@@ -39,5 +39,5 @@ export const collections = {
 /**
  * Helper 函数：获取服务器时间戳
  */
-export { FieldValue } from 'firebase-admin/firestore';
+export { FieldValue, Timestamp } from 'firebase-admin/firestore';
 

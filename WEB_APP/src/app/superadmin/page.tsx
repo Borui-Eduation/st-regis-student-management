@@ -34,7 +34,7 @@ interface SystemUser {
   name: string;
   email: string;
   phone?: string;
-  role: 'admin' | 'agent' | 'superadmin';
+  role: 'admin' | 'agent' | 'teacher' | 'superadmin';
   status: string;
   createdAt?: string;
 }
@@ -52,7 +52,7 @@ export default function SuperadminPage() {
     name: '',
     email: '',
     phone: '',
-    role: 'admin' as 'admin' | 'agent' | 'superadmin',
+    role: 'admin' as 'admin' | 'agent' | 'teacher' | 'superadmin',
   });
 
   // 权限检查
@@ -149,6 +149,7 @@ export default function SuperadminPage() {
   const getRoleBadge = (role: string) => {
     const roleConfig = {
       admin: { label: '管理员', className: 'bg-blue-100 text-blue-800' },
+      teacher: { label: '教师', className: 'bg-green-100 text-green-800' },
       agent: { label: '中介', className: 'bg-purple-100 text-purple-800' },
       superadmin: { label: '超级管理员', className: 'bg-red-100 text-red-800' },
     };
@@ -182,11 +183,11 @@ export default function SuperadminPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">👑 超级管理员控制台</h1>
-          <p className="mt-2 text-sm text-gray-600">系统用户管理（管理员、中介、超级管理员）</p>
+          <p className="mt-2 text-sm text-gray-600">系统用户管理（管理员、教师、中介、超级管理员）</p>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-gray-600">管理员</CardTitle>
@@ -194,6 +195,17 @@ export default function SuperadminPage() {
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">
                 {users.filter(u => u.role === 'admin').length}
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-gray-600">教师</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">
+                {users.filter(u => u.role === 'teacher').length}
               </div>
             </CardContent>
           </Card>
@@ -309,7 +321,7 @@ export default function SuperadminPage() {
             <DialogHeader>
               <DialogTitle>创建系统用户</DialogTitle>
               <DialogDescription>
-                创建管理员、中介或超级管理员账号
+                创建管理员、教师、中介或超级管理员账号
               </DialogDescription>
             </DialogHeader>
             
@@ -353,11 +365,12 @@ export default function SuperadminPage() {
                   <select
                     id="role"
                     value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value as 'admin' | 'agent' | 'superadmin' })}
+                    onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
                     className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     required
                   >
                     <option value="admin">管理员（Admin）</option>
+                    <option value="teacher">教师（Teacher）</option>
                     <option value="agent">中介（Agent）</option>
                     <option value="superadmin">超级管理员（Superadmin）</option>
                   </select>

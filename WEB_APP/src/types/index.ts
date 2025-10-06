@@ -3,7 +3,7 @@ import { Timestamp } from 'firebase-admin/firestore';
 /**
  * 用户角色类型
  */
-export type UserRole = 'student' | 'agent' | 'admin' | 'superadmin';
+export type UserRole = 'student' | 'agent' | 'teacher' | 'admin' | 'superadmin';
 
 /**
  * 注册状态类型
@@ -43,6 +43,10 @@ export interface Student {
   parentName?: string;
   parentEmail?: string;
   parentPhone?: string;
+  
+  // 🔐 认证信息
+  hashedPassword?: string;    // 密码哈希值（使用bcrypt）
+  passwordSetAt?: Timestamp;  // 密码设置时间
   
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -105,6 +109,10 @@ export interface Course {
   description?: string;
   syllabus?: string;                 // 课程大纲
   credits?: number;                  // 学分
+  
+  // 🆕 Moodle 集成字段
+  moodleId?: string;                 // Moodle 课程 ID
+  moodleCategoryId?: string;         // Moodle 分类 ID
   
   // 时间安排（新增）
   schedule?: {
