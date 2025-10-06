@@ -1,7 +1,6 @@
 'use client';
 
-import { usePathname } from '@/i18n/routing';
-import { Link } from '@/i18n/routing';
+import { usePathname, useRouter, Link } from '@/i18n/routing';
 import { useSession, signOut } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { useState, useRef, useEffect } from 'react';
