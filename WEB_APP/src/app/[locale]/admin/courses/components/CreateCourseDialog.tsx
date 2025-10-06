@@ -7,6 +7,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -20,6 +21,8 @@ interface CreateCourseDialogProps {
 
 export function CreateCourseDialog({ isOpen, onClose, onSuccess }: CreateCourseDialogProps) {
   const { toast } = useToast();
+  const t = useTranslations('dialogs.createCourse');
+  const tCommon = useTranslations('dialogs.common');
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     courseName: '',
@@ -70,21 +73,21 @@ export function CreateCourseDialog({ isOpen, onClose, onSuccess }: CreateCourseD
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || data.message || '创建失败');
+        throw new Error(data.error || data.message || t('errors.createFailed'));
       }
 
       toast({
-        title: '✅ 课程创建成功',
+        title: t('success'),
         description: data.data.moodleSynced 
-          ? `课程已创建并同步到 Moodle (ID: ${data.data.moodleId})`
-          : '课程已创建（未同步到 Moodle）',
+          ? t('successMoodle', { id: data.data.moodleId })
+          : t('successNoMoodle'),
       });
 
       onSuccess?.();
       onClose();
     } catch (error: any) {
       toast({
-        title: '❌ 创建失败',
+        title: t('errors.createFailed'),
         description: error.message,
         variant: 'destructive',
       });
@@ -101,9 +104,9 @@ export function CreateCourseDialog({ isOpen, onClose, onSuccess }: CreateCourseD
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>创建新课程</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>
-            创建新课程并同步到 Moodle 系统
+            {t('description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -307,7 +310,7 @@ export function CreateCourseDialog({ isOpen, onClose, onSuccess }: CreateCourseD
               onClick={onClose}
               disabled={loading}
             >
-              取消
+              {tCommon('cancel')}
             </Button>
             <Button 
               type="submit" 
@@ -320,14 +323,14 @@ export function CreateCourseDialog({ isOpen, onClose, onSuccess }: CreateCourseD
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  创建中...
+                  {tCommon('creating')}
                 </>
               ) : (
                 <>
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  创建课程
+                  {tCommon('create')}
                 </>
               )}
             </Button>

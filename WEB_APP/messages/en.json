@@ -762,15 +762,33 @@
     },
     "createCourse": {
       "title": "Create New Course",
-      "description": "Add a new course to the system",
+      "description": "Add a new course to the system (sync to Moodle)",
       "courseCode": "Course Code",
       "courseName": "Course Name",
+      "subject": "Subject",
       "category": "Category",
-      "price": "Price",
-      "capacity": "Capacity",
+      "gradeLevel": "Grade Level",
+      "description_field": "Description",
+      "basePrice": "Base Price",
+      "academicYear": "Academic Year",
+      "semester": "Semester",
+      "maxEnrollment": "Max Enrollment",
+      "minEnrollment": "Min Enrollment",
+      "syncToMoodle": "Sync to Moodle",
       "success": "✅ Course created successfully!",
+      "successMoodle": "Course created and synced to Moodle (ID: {id})",
+      "successNoMoodle": "Course created (not synced to Moodle)",
       "errors": {
         "createFailed": "Failed to create course"
+      },
+      "categories": {
+        "arts": "Arts",
+        "science": "Science"
+      },
+      "semesters": {
+        "fall": "Fall",
+        "spring": "Spring",
+        "summer": "Summer"
       }
     },
     "editCourse": {

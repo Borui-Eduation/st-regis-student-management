@@ -762,15 +762,33 @@
     },
     "createCourse": {
       "title": "创建新课程",
-      "description": "添加新课程到系统",
+      "description": "添加新课程到系统（同步到 Moodle）",
       "courseCode": "课程代码",
       "courseName": "课程名称",
+      "subject": "科目",
       "category": "类别",
-      "price": "价格",
-      "capacity": "容量",
+      "gradeLevel": "年级",
+      "description_field": "课程描述",
+      "basePrice": "基础价格",
+      "academicYear": "学年",
+      "semester": "学期",
+      "maxEnrollment": "最大人数",
+      "minEnrollment": "最小人数",
+      "syncToMoodle": "同步到 Moodle",
       "success": "✅ 课程创建成功！",
+      "successMoodle": "课程已创建并同步到 Moodle (ID: {id})",
+      "successNoMoodle": "课程已创建（未同步到 Moodle）",
       "errors": {
         "createFailed": "创建课程失败"
+      },
+      "categories": {
+        "arts": "文科",
+        "science": "理科"
+      },
+      "semesters": {
+        "fall": "秋季",
+        "spring": "春季",
+        "summer": "夏季"
       }
     },
     "editCourse": {

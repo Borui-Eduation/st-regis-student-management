@@ -7,6 +7,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -22,6 +23,8 @@ interface EditCourseDialogProps {
 
 export function EditCourseDialog({ course, isOpen, onClose, onSuccess }: EditCourseDialogProps) {
   const { toast } = useToast();
+  const t = useTranslations('dialogs.editCourse');
+  const tCommon = useTranslations('dialogs.common');
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     courseName: '',
@@ -74,19 +77,18 @@ export function EditCourseDialog({ course, isOpen, onClose, onSuccess }: EditCou
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || data.message || '更新失败');
+        throw new Error(data.error || data.message || t('errors.updateFailed'));
       }
 
       toast({
-        title: '✅ 课程更新成功',
-        description: `课程 "${formData.courseName}" 已更新`,
+        title: t('success'),
       });
 
       onSuccess?.();
       onClose();
     } catch (error: any) {
       toast({
-        title: '❌ 更新失败',
+        title: t('errors.updateFailed'),
         description: error.message,
         variant: 'destructive',
       });
