@@ -1,0 +1,453 @@
+{
+  "common": {
+    "name": "姓名",
+    "email": "邮箱",
+    "phone": "电话",
+    "actions": "操作",
+    "loading": "加载中",
+    "refreshing": "刷新中...",
+    "processing": "创建中...",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "search": "搜索",
+    "filter": "筛选",
+    "submit": "提交",
+    "confirm": "确认",
+    "back": "返回",
+    "next": "下一步",
+    "previous": "上一步",
+    "close": "关闭",
+    "refresh": "刷新",
+    "view": "查看",
+    "details": "详情",
+    "status": "状态",
+    "date": "日期",
+    "time": "时间",
+    "all": "全部",
+    "yes": "是",
+    "no": "否",
+    "total": "共 {count} 条记录",
+    "page": "第 {current} 页 / 共 {total} 页"
+  },
+  "nav": {
+    "home": "首页",
+    "dashboard": "控制台",
+    "students": "学生管理",
+    "courses": "课程管理",
+    "enrollments": "注册管理",
+    "finance": "财务管理",
+    "agents": "中介管理",
+    "teachers": "教师管理",
+    "settings": "设置",
+    "profile": "个人资料",
+    "logout": "退出登录",
+    "login": "登录",
+    "user": "用户",
+    "courseSelection": "选课中心",
+    "myCourses": "我的课程",
+    "myProfile": "个人资料",
+    "myStudents": "我的学生",
+    "enrollmentRecords": "注册记录",
+    "console": "控制台",
+    "studentManagement": "学生管理",
+    "agentManagement": "中介管理",
+    "financeManagement": "财务管理",
+    "userManagement": "用户管理",
+    "moodle": "Moodle",
+    "moodleManagement": "Moodle 管理"
+  },
+  "roles": {
+    "student": "学生",
+    "agent": "中介",
+    "teacher": "教师",
+    "admin": "管理员",
+    "superadmin": "超级管理员"
+  },
+  "status": {
+    "pending": "待审批",
+    "ready": "待开课",
+    "open": "已开课",
+    "rejected": "已拒绝",
+    "active": "激活",
+    "inactive": "未激活",
+    "archived": "已归档",
+    "cancelled": "已取消",
+    "available": "可报名",
+    "full": "已满",
+    "closed": "已关闭",
+    "inCart": "已在购物车"
+  },
+  "pages": {
+    "home": {
+      "title": "St Regis 选课系统",
+      "subtitle": "支持 1000-2000 并发注册的高性能在线选课平台",
+      "features": {
+        "highConcurrency": {
+          "title": "高并发",
+          "description": "支持 1000-2000 并发注册"
+        },
+        "automation": {
+          "title": "自动化",
+          "description": "审批、开课、通知全自动"
+        },
+        "realTime": {
+          "title": "实时通知",
+          "description": "邮件自动发送"
+        }
+      },
+      "buttons": {
+        "studentEnroll": "🎓 学生选课",
+        "adminApprove": "👨‍💼 管理员审批",
+        "dataStats": "📊 数据统计"
+      },
+      "apiEndpoints": "📡 可用的 API 端点",
+      "testApi": "或直接测试 API 端点 →",
+      "systemStatus": "✅ 系统运行正常 | 🔥 Cloud Functions 已配置 | 📊 Firestore 已连接"
+    },
+    "student": {
+      "title": "学生选课",
+      "availableCourses": "可选课程",
+      "myCourses": "我的课程",
+      "shoppingCart": "购物车",
+      "courseList": "课程列表",
+      "addToCart": "加入购物车",
+      "removeFromCart": "移出购物车",
+      "checkout": "结算",
+      "totalAmount": "总计",
+      "noCoursesAvailable": "暂无可选课程",
+      "cartEmpty": "购物车为空",
+      "selectCourses": "请选择要注册的课程",
+      "enrollmentSuccess": "注册成功！",
+      "enrollmentFailed": "注册失败",
+      "courseInfo": {
+        "teacher": "教师",
+        "academicYear": "学年",
+        "semester": "学期",
+        "enrollment": "报名人数",
+        "price": "价格",
+        "gradeLevel": "年级",
+        "subject": "科目"
+      }
+    },
+    "admin": {
+      "title": "管理员控制台",
+      "subtitle": "管理学生、审批注册申请",
+      "tabs": {
+        "enrollments": "📚 课程注册记录",
+        "students": "👨‍🎓 学生列表"
+      },
+      "stats": {
+        "totalStudents": "总学生数",
+        "activeStudents": "激活学生",
+        "totalEnrollments": "总注册数",
+        "pendingEnrollments": "待审批",
+        "readyEnrollments": "待开课",
+        "openEnrollments": "已开课",
+        "rejectedEnrollments": "已拒绝"
+      },
+      "filters": {
+        "allEnrollments": "课程注册记录",
+        "pendingCourses": "待审批课程",
+        "readyCourses": "待开课课程",
+        "openCourses": "已开课课程",
+        "rejectedCourses": "已拒绝课程",
+        "allStudents": "学生列表",
+        "pendingStudents": "待审批课程学生",
+        "readyStudents": "待开课课程学生",
+        "openStudents": "已开课课程学生",
+        "rejectedStudents": "已拒绝课程学生"
+      },
+      "actions": {
+        "approve": "批准",
+        "reject": "拒绝",
+        "createStudent": "➕ 创建新学生",
+        "viewDetails": "查看详情",
+        "editStudent": "编辑学生",
+        "deleteStudent": "删除学生"
+      },
+      "search": {
+        "placeholder": "搜索学生、课程或教师...",
+        "types": {
+          "all": "全部",
+          "name": "姓名",
+          "email": "邮箱",
+          "course": "课程",
+          "teacher": "教师"
+        }
+      },
+      "table": {
+        "studentName": "学生姓名",
+        "studentEmail": "学生邮箱",
+        "courseName": "课程名称",
+        "teacherName": "教师姓名",
+        "status": "状态",
+        "paymentStatus": "支付状态",
+        "createdAt": "创建时间",
+        "actions": "操作"
+      },
+      "info": {
+        "studentManagement": {
+          "title": "学生管理说明",
+          "items": [
+            "查看所有注册学生的详细信息",
+            "使用搜索框快速定位学生",
+            "支持按姓名、邮箱、课程、教师搜索",
+            "分页显示，每页 20 条记录"
+          ]
+        },
+        "enrollmentManagement": {
+          "title": "课程注册说明",
+          "items": [
+            "显示所有课程注册记录，同一学生的多门课程分别显示",
+            "批准后，注册状态变为 ready，系统自动发送通知邮件",
+            "拒绝后，注册状态变为 rejected，系统自动通知学生",
+            "可以按照状态（待审批、待开课、已开课）进行筛选"
+          ]
+        }
+      }
+    },
+    "agent": {
+      "title": "中介控制台",
+      "myStudents": "我的学生",
+      "addStudent": "添加学生",
+      "studentEnrollments": "学生注册"
+    },
+    "teacher": {
+      "title": "教师控制台",
+      "myCourses": "我的课程",
+      "students": "学生列表",
+      "grades": "成绩管理"
+    },
+    "auth": {
+      "signin": {
+        "title": "登录",
+        "subtitle": "登录到你的账户",
+        "email": "邮箱地址",
+        "password": "密码",
+        "button": "登录",
+        "forgotPassword": "忘记密码？",
+        "noAccount": "还没有账户？",
+        "register": "注册"
+      },
+      "error": {
+        "title": "认证错误",
+        "subtitle": "登录时出现问题",
+        "backToLogin": "返回登录"
+      },
+      "verifyRequest": {
+        "title": "检查你的邮箱",
+        "subtitle": "我们已向你发送了一个登录链接"
+      }
+    },
+    "unauthorized": {
+      "title": "未授权访问",
+      "message": "你没有权限访问此页面",
+      "backToHome": "返回首页"
+    }
+  },
+  "forms": {
+    "validation": {
+      "required": "此字段为必填项",
+      "email": "请输入有效的邮箱地址",
+      "phone": "请输入有效的电话号码",
+      "min": "最少 {min} 个字符",
+      "max": "最多 {max} 个字符",
+      "minValue": "最小值为 {min}",
+      "maxValue": "最大值为 {max}",
+      "number": "请输入数字",
+      "url": "请输入有效的URL"
+    },
+    "student": {
+      "createTitle": "创建新学生",
+      "editTitle": "编辑学生信息",
+      "fields": {
+        "name": "学生姓名",
+        "email": "邮箱地址",
+        "phone": "电话号码",
+        "school": "学校",
+        "grade": "年级",
+        "schoolType": "学生类型",
+        "agent": "所属中介",
+        "parentName": "家长姓名",
+        "parentEmail": "家长邮箱",
+        "parentPhone": "家长电话"
+      },
+      "schoolTypes": {
+        "stregis": "本校学生",
+        "outside": "外校学生"
+      }
+    },
+    "course": {
+      "createTitle": "创建新课程",
+      "editTitle": "编辑课程信息",
+      "fields": {
+        "courseName": "课程名称",
+        "courseCode": "课程代码",
+        "subject": "科目",
+        "category": "类别",
+        "gradeLevel": "年级",
+        "teacher": "授课教师",
+        "academicYear": "学年",
+        "semester": "学期",
+        "maxEnrollment": "最大人数",
+        "minEnrollment": "最小人数",
+        "basePrice": "基础价格",
+        "description": "课程描述"
+      },
+      "categories": {
+        "arts": "文科",
+        "science": "理科"
+      }
+    }
+  },
+  "api": {
+    "errors": {
+      "unauthorized": "未授权访问",
+      "forbidden": "权限不足",
+      "notFound": "资源未找到",
+      "serverError": "服务器错误",
+      "validationError": "数据验证失败",
+      "duplicateEmail": "邮箱已存在",
+      "studentNotFound": "学生未找到",
+      "courseNotFound": "课程未找到",
+      "enrollmentNotFound": "注册记录未找到",
+      "courseFull": "课程已满",
+      "alreadyEnrolled": "已经注册过该课程",
+      "networkError": "网络错误，请重试"
+    },
+    "success": {
+      "created": "创建成功",
+      "updated": "更新成功",
+      "deleted": "删除成功",
+      "approved": "审批成功",
+      "rejected": "已拒绝",
+      "enrolled": "注册成功",
+      "saved": "保存成功"
+    }
+  },
+  "payment": {
+    "status": {
+      "paid": "已支付",
+      "unpaid": "未支付",
+      "pending": "待支付",
+      "failed": "支付失败",
+      "refunded": "已退款"
+    },
+    "methods": {
+      "credit_card": "信用卡",
+      "wechat": "微信支付",
+      "alipay": "支付宝",
+      "emt": "Interac e-Transfer",
+      "manual": "手动支付"
+    },
+    "amount": "金额",
+    "paidAt": "支付时间",
+    "method": "支付方式",
+    "transactionId": "交易ID"
+  },
+  "email": {
+    "templates": {
+      "courseOpened": {
+        "subject": "课程已开课 - {courseName}",
+        "greeting": "亲爱的 {studentName}",
+        "body": "您的课程 {courseName} 已经开课，请登录系统查看详情。"
+      },
+      "rejection": {
+        "subject": "注册申请被拒绝 - {courseName}",
+        "greeting": "亲爱的 {studentName}",
+        "body": "很抱歉，您的注册申请已被拒绝。如有疑问，请联系管理员。"
+      },
+      "confirmation": {
+        "subject": "注册确认 - {courseName}",
+        "greeting": "亲爱的 {studentName}",
+        "body": "您已成功注册课程 {courseName}，我们将尽快审核您的申请。"
+      }
+    },
+    "performance": {
+      "errors": {
+        "loadFailed": "获取失败",
+        "cannotLoadEnrollment": "无法加载课程注册信息",
+        "loadError": "加载错误",
+        "validationFailed": "验证失败",
+        "midtermRange": "期中成绩必须在0-100之间",
+        "finalRange": "期末成绩必须在0-100之间",
+        "updateFailed": "更新失败",
+        "saveFailed": "保存失败"
+      },
+      "saveSuccess": {
+        "title": "保存成功",
+        "description": "学生成绩和评语已更新"
+      }
+    },
+    "superadmin": {
+      "title": "超级管理员控制台",
+      "subtitle": "系统用户管理（管理员、教师、中介、超级管理员）",
+      "createUser": "创建用户",
+      "createSuccess": "✅ 用户创建成功！",
+      "deleteSuccess": "✅ 用户已删除！",
+      "confirmDelete": "⚠️ 确认删除用户 {name} 吗？\n\n此操作无法撤销！",
+      "errors": {
+        "fillRequired": "请填写所有必填字段",
+        "createFailed": "创建失败",
+        "deleteFailed": "删除失败",
+        "operationFailed": "操作失败"
+      },
+      "userList": {
+        "title": "系统用户列表",
+        "name": "姓名",
+        "email": "邮箱",
+        "phone": "电话",
+        "role": "角色"
+      },
+      "dialog": {
+        "title": "创建系统用户",
+        "description": "创建管理员、教师、中介或超级管理员账号",
+        "fields": {
+          "name": "姓名",
+          "email": "邮箱",
+          "phone": "电话",
+          "role": "角色"
+        },
+        "placeholders": {
+          "name": "请输入姓名",
+          "email": "请输入邮箱",
+          "phone": "请输入电话"
+        }
+      }
+    },
+    "moodle": {
+      "title": "Moodle 系统集成",
+      "subtitle": "查看 Moodle 中所有已注册用户及其课程",
+      "errors": {
+        "unknown": "未知错误",
+        "requestFailed": "请求失败: {error}"
+      },
+      "buttons": {
+        "refresh": "🔄 刷新数据",
+        "forceRefresh": "🔥 强制刷新"
+      },
+      "stats": {
+        "totalCourses": "总课程数",
+        "coursesDescription": "开设的课程",
+        "totalStudents": "总学生数",
+        "uniqueStudents": "唯一学生数",
+        "totalEnrollments": "总注册数",
+        "enrollmentCount": "课程注册总数"
+      },
+      "search": {
+        "placeholder": "搜索课程名称、代码或学生姓名、邮箱...",
+        "results": "找到 {count} 个匹配的课程"
+      },
+      "courseList": {
+        "title": "课程列表",
+        "noMatch": "未找到匹配的课程",
+        "noCourses": "暂无课程数据",
+        "studentCount": "{count} 个学生",
+        "enrolledStudents": "注册学生 ({count})",
+        "noStudents": "该课程暂无学生注册"
+      }
+    }
+  }
+}

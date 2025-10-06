@@ -1,0 +1,453 @@
+{
+  "common": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "actions": "Actions",
+    "loading": "Loading",
+    "refreshing": "Refreshing...",
+    "processing": "Processing...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "filter": "Filter",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "refresh": "Refresh",
+    "view": "View",
+    "details": "Details",
+    "status": "Status",
+    "date": "Date",
+    "time": "Time",
+    "all": "All",
+    "yes": "Yes",
+    "no": "No",
+    "total": "Total {count} records",
+    "page": "Page {current} of {total}"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "students": "Students",
+    "courses": "Courses",
+    "enrollments": "Enrollments",
+    "finance": "Finance",
+    "agents": "Agents",
+    "teachers": "Teachers",
+    "settings": "Settings",
+    "profile": "Profile",
+    "logout": "Logout",
+    "login": "Login",
+    "user": "User",
+    "courseSelection": "Course Selection",
+    "myCourses": "My Courses",
+    "myProfile": "My Profile",
+    "myStudents": "My Students",
+    "enrollmentRecords": "Enrollment Records",
+    "console": "Console",
+    "studentManagement": "Student Management",
+    "agentManagement": "Agent Management",
+    "financeManagement": "Finance Management",
+    "userManagement": "User Management",
+    "moodle": "Moodle",
+    "moodleManagement": "Moodle Management"
+  },
+  "roles": {
+    "student": "Student",
+    "agent": "Agent",
+    "teacher": "Teacher",
+    "admin": "Administrator",
+    "superadmin": "Super Administrator"
+  },
+  "status": {
+    "pending": "Pending",
+    "ready": "Ready",
+    "open": "Open",
+    "rejected": "Rejected",
+    "active": "Active",
+    "inactive": "Inactive",
+    "archived": "Archived",
+    "cancelled": "Cancelled",
+    "available": "Available",
+    "full": "Full",
+    "closed": "Closed",
+    "inCart": "In Cart"
+  },
+  "pages": {
+    "home": {
+      "title": "St Regis Course Enrollment System",
+      "subtitle": "High-performance online course enrollment platform supporting 1000-2000 concurrent registrations",
+      "features": {
+        "highConcurrency": {
+          "title": "High Concurrency",
+          "description": "Supports 1000-2000 concurrent registrations"
+        },
+        "automation": {
+          "title": "Automation",
+          "description": "Automated approval, course opening, and notifications"
+        },
+        "realTime": {
+          "title": "Real-time Notifications",
+          "description": "Automatic email notifications"
+        }
+      },
+      "buttons": {
+        "studentEnroll": "🎓 Student Enrollment",
+        "adminApprove": "👨‍💼 Admin Approval",
+        "dataStats": "📊 Data Statistics"
+      },
+      "apiEndpoints": "📡 Available API Endpoints",
+      "testApi": "Or test API endpoints directly →",
+      "systemStatus": "✅ System Running | 🔥 Cloud Functions Configured | 📊 Firestore Connected"
+    },
+    "student": {
+      "title": "Student Enrollment",
+      "availableCourses": "Available Courses",
+      "myCourses": "My Courses",
+      "shoppingCart": "Shopping Cart",
+      "courseList": "Course List",
+      "addToCart": "Add to Cart",
+      "removeFromCart": "Remove from Cart",
+      "checkout": "Checkout",
+      "totalAmount": "Total",
+      "noCoursesAvailable": "No courses available",
+      "cartEmpty": "Cart is empty",
+      "selectCourses": "Please select courses to enroll",
+      "enrollmentSuccess": "Enrollment successful!",
+      "enrollmentFailed": "Enrollment failed",
+      "courseInfo": {
+        "teacher": "Teacher",
+        "academicYear": "Academic Year",
+        "semester": "Semester",
+        "enrollment": "Enrollment",
+        "price": "Price",
+        "gradeLevel": "Grade Level",
+        "subject": "Subject"
+      }
+    },
+    "admin": {
+      "title": "Admin Dashboard",
+      "subtitle": "Manage students and approve enrollment requests",
+      "tabs": {
+        "enrollments": "📚 Enrollment Records",
+        "students": "👨‍🎓 Student List"
+      },
+      "stats": {
+        "totalStudents": "Total Students",
+        "activeStudents": "Active Students",
+        "totalEnrollments": "Total Enrollments",
+        "pendingEnrollments": "Pending",
+        "readyEnrollments": "Ready",
+        "openEnrollments": "Open",
+        "rejectedEnrollments": "Rejected"
+      },
+      "filters": {
+        "allEnrollments": "Enrollment Records",
+        "pendingCourses": "Pending Courses",
+        "readyCourses": "Ready Courses",
+        "openCourses": "Open Courses",
+        "rejectedCourses": "Rejected Courses",
+        "allStudents": "Student List",
+        "pendingStudents": "Pending Course Students",
+        "readyStudents": "Ready Course Students",
+        "openStudents": "Open Course Students",
+        "rejectedStudents": "Rejected Course Students"
+      },
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject",
+        "createStudent": "➕ Create Student",
+        "viewDetails": "View Details",
+        "editStudent": "Edit Student",
+        "deleteStudent": "Delete Student"
+      },
+      "search": {
+        "placeholder": "Search students, courses or teachers...",
+        "types": {
+          "all": "All",
+          "name": "Name",
+          "email": "Email",
+          "course": "Course",
+          "teacher": "Teacher"
+        }
+      },
+      "table": {
+        "studentName": "Student Name",
+        "studentEmail": "Student Email",
+        "courseName": "Course Name",
+        "teacherName": "Teacher Name",
+        "status": "Status",
+        "paymentStatus": "Payment Status",
+        "createdAt": "Created At",
+        "actions": "Actions"
+      },
+      "info": {
+        "studentManagement": {
+          "title": "Student Management Guide",
+          "items": [
+            "View detailed information of all registered students",
+            "Use the search box to quickly locate students",
+            "Search by name, email, course, or teacher",
+            "Paginated display, 20 records per page"
+          ]
+        },
+        "enrollmentManagement": {
+          "title": "Enrollment Management Guide",
+          "items": [
+            "Display all enrollment records, multiple courses per student shown separately",
+            "After approval, enrollment status changes to ready, system sends notification email",
+            "After rejection, enrollment status changes to rejected, system notifies student",
+            "Filter by status (Pending, Ready, Open)"
+          ]
+        }
+      }
+    },
+    "agent": {
+      "title": "Agent Dashboard",
+      "myStudents": "My Students",
+      "addStudent": "Add Student",
+      "studentEnrollments": "Student Enrollments"
+    },
+    "teacher": {
+      "title": "Teacher Dashboard",
+      "myCourses": "My Courses",
+      "students": "Students",
+      "grades": "Grade Management"
+    },
+    "auth": {
+      "signin": {
+        "title": "Sign In",
+        "subtitle": "Sign in to your account",
+        "email": "Email Address",
+        "password": "Password",
+        "button": "Sign In",
+        "forgotPassword": "Forgot password?",
+        "noAccount": "Don't have an account?",
+        "register": "Register"
+      },
+      "error": {
+        "title": "Authentication Error",
+        "subtitle": "There was a problem signing in",
+        "backToLogin": "Back to login"
+      },
+      "verifyRequest": {
+        "title": "Check your email",
+        "subtitle": "We've sent you a sign in link"
+      }
+    },
+    "unauthorized": {
+      "title": "Unauthorized Access",
+      "message": "You don't have permission to access this page",
+      "backToHome": "Back to Home"
+    }
+  },
+  "forms": {
+    "validation": {
+      "required": "This field is required",
+      "email": "Please enter a valid email address",
+      "phone": "Please enter a valid phone number",
+      "min": "Minimum {min} characters",
+      "max": "Maximum {max} characters",
+      "minValue": "Minimum value is {min}",
+      "maxValue": "Maximum value is {max}",
+      "number": "Please enter a number",
+      "url": "Please enter a valid URL"
+    },
+    "student": {
+      "createTitle": "Create New Student",
+      "editTitle": "Edit Student Information",
+      "fields": {
+        "name": "Student Name",
+        "email": "Email Address",
+        "phone": "Phone Number",
+        "school": "School",
+        "grade": "Grade",
+        "schoolType": "Student Type",
+        "agent": "Agent",
+        "parentName": "Parent Name",
+        "parentEmail": "Parent Email",
+        "parentPhone": "Parent Phone"
+      },
+      "schoolTypes": {
+        "stregis": "St Regis Student",
+        "outside": "External Student"
+      }
+    },
+    "course": {
+      "createTitle": "Create New Course",
+      "editTitle": "Edit Course Information",
+      "fields": {
+        "courseName": "Course Name",
+        "courseCode": "Course Code",
+        "subject": "Subject",
+        "category": "Category",
+        "gradeLevel": "Grade Level",
+        "teacher": "Teacher",
+        "academicYear": "Academic Year",
+        "semester": "Semester",
+        "maxEnrollment": "Max Enrollment",
+        "minEnrollment": "Min Enrollment",
+        "basePrice": "Base Price",
+        "description": "Description"
+      },
+      "categories": {
+        "arts": "Arts",
+        "science": "Science"
+      }
+    }
+  },
+  "api": {
+    "errors": {
+      "unauthorized": "Unauthorized access",
+      "forbidden": "Insufficient permissions",
+      "notFound": "Resource not found",
+      "serverError": "Server error",
+      "validationError": "Validation failed",
+      "duplicateEmail": "Email already exists",
+      "studentNotFound": "Student not found",
+      "courseNotFound": "Course not found",
+      "enrollmentNotFound": "Enrollment not found",
+      "courseFull": "Course is full",
+      "alreadyEnrolled": "Already enrolled in this course",
+      "networkError": "Network error, please try again"
+    },
+    "success": {
+      "created": "Created successfully",
+      "updated": "Updated successfully",
+      "deleted": "Deleted successfully",
+      "approved": "Approved successfully",
+      "rejected": "Rejected",
+      "enrolled": "Enrolled successfully",
+      "saved": "Saved successfully"
+    }
+  },
+  "payment": {
+    "status": {
+      "paid": "Paid",
+      "unpaid": "Unpaid",
+      "pending": "Pending",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
+    "methods": {
+      "credit_card": "Credit Card",
+      "wechat": "WeChat Pay",
+      "alipay": "Alipay",
+      "emt": "Interac e-Transfer",
+      "manual": "Manual Payment"
+    },
+    "amount": "Amount",
+    "paidAt": "Paid At",
+    "method": "Payment Method",
+    "transactionId": "Transaction ID"
+  },
+  "email": {
+    "templates": {
+      "courseOpened": {
+        "subject": "Course Opened - {courseName}",
+        "greeting": "Dear {studentName}",
+        "body": "Your course {courseName} has been opened. Please login to view details."
+      },
+      "rejection": {
+        "subject": "Enrollment Rejected - {courseName}",
+        "greeting": "Dear {studentName}",
+        "body": "We're sorry, but your enrollment request has been rejected. Please contact the administrator if you have questions."
+      },
+      "confirmation": {
+        "subject": "Enrollment Confirmation - {courseName}",
+        "greeting": "Dear {studentName}",
+        "body": "You have successfully enrolled in {courseName}. We will review your application shortly."
+      }
+    },
+    "performance": {
+      "errors": {
+        "loadFailed": "Load Failed",
+        "cannotLoadEnrollment": "Cannot load enrollment information",
+        "loadError": "Load Error",
+        "validationFailed": "Validation Failed",
+        "midtermRange": "Midterm grade must be between 0-100",
+        "finalRange": "Final grade must be between 0-100",
+        "updateFailed": "Update Failed",
+        "saveFailed": "Save Failed"
+      },
+      "saveSuccess": {
+        "title": "Saved Successfully",
+        "description": "Student grades and comments have been updated"
+      }
+    },
+    "superadmin": {
+      "title": "Superadmin Console",
+      "subtitle": "System User Management (Admins, Teachers, Agents, Superadmins)",
+      "createUser": "Create User",
+      "createSuccess": "✅ User created successfully!",
+      "deleteSuccess": "✅ User deleted!",
+      "confirmDelete": "⚠️ Confirm deleting user {name}?\n\nThis action cannot be undone!",
+      "errors": {
+        "fillRequired": "Please fill in all required fields",
+        "createFailed": "Creation failed",
+        "deleteFailed": "Delete failed",
+        "operationFailed": "Operation failed"
+      },
+      "userList": {
+        "title": "System Users",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "role": "Role"
+      },
+      "dialog": {
+        "title": "Create System User",
+        "description": "Create administrator, teacher, agent, or superadmin account",
+        "fields": {
+          "name": "Name",
+          "email": "Email",
+          "phone": "Phone",
+          "role": "Role"
+        },
+        "placeholders": {
+          "name": "Enter name",
+          "email": "Enter email",
+          "phone": "Enter phone"
+        }
+      }
+    },
+    "moodle": {
+      "title": "Moodle System Integration",
+      "subtitle": "View all enrolled users and their courses in Moodle",
+      "errors": {
+        "unknown": "Unknown error",
+        "requestFailed": "Request failed: {error}"
+      },
+      "buttons": {
+        "refresh": "🔄 Refresh Data",
+        "forceRefresh": "🔥 Force Refresh"
+      },
+      "stats": {
+        "totalCourses": "Total Courses",
+        "coursesDescription": "Courses offered",
+        "totalStudents": "Total Students",
+        "uniqueStudents": "Unique students",
+        "totalEnrollments": "Total Enrollments",
+        "enrollmentCount": "Total course enrollments"
+      },
+      "search": {
+        "placeholder": "Search course name, code, or student name, email...",
+        "results": "Found {count} matching courses"
+      },
+      "courseList": {
+        "title": "Course List",
+        "noMatch": "No matching courses found",
+        "noCourses": "No course data available",
+        "studentCount": "{count} students",
+        "enrolledStudents": "Enrolled Students ({count})",
+        "noStudents": "No students enrolled in this course"
+      }
+    }
+  }
+}
