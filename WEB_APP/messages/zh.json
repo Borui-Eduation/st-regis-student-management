@@ -56,7 +56,8 @@
     "financeManagement": "财务管理",
     "userManagement": "用户管理",
     "moodle": "Moodle",
-    "moodleManagement": "Moodle 管理"
+    "moodleManagement": "Moodle 管理",
+    "courseManagement": "课程管理"
   },
   "roles": {
     "student": "学生",
@@ -467,6 +468,54 @@
       },
       "actions": {
         "viewUnpaid": "查看未支付列表"
+      }
+    },
+    "courses": {
+      "title": "课程管理",
+      "subtitle": "管理所有课程并与Moodle同步",
+      "createCourse": "创建课程",
+      "confirmSync": "⚠️ 确认从Moodle同步所有课程吗？\n\n这将：\n• 从Moodle导入所有课程\n• 更新现有课程\n• 创建新课程\n\n此操作可能需要几分钟时间。",
+      "syncSuccess": "同步成功",
+      "syncSuccessDesc": "已同步: {synced}, 已创建: {created}, 已更新: {updated}",
+      "listTitle": "课程列表",
+      "noCourses": "暂无课程",
+      "noCoursesHint": "点击\"创建课程\"或从Moodle同步以添加课程",
+      "manualCreated": "手动创建",
+      "linkMoodle": "关联Moodle",
+      "linkMoodleTooltip": "将此课程关联到Moodle课程",
+      "errors": {
+        "loadFailed": "加载失败",
+        "cannotFetchCourses": "无法获取课程列表",
+        "syncFailed": "同步失败"
+      },
+      "moodleSync": {
+        "title": "Moodle 课程同步",
+        "description": "自动从Moodle系统导入和同步课程数据",
+        "lastResult": "上次同步结果",
+        "syncing": "同步中",
+        "startSync": "开始同步",
+        "hint": "这将从Moodle同步所有课程",
+        "synced": "已同步",
+        "site": "Moodle站点",
+        "stats": {
+          "moodleCourses": "Moodle课程",
+          "synced": "已同步",
+          "created": "已创建",
+          "updated": "已更新",
+          "skipped": "已跳过"
+        }
+      },
+      "table": {
+        "courseName": "课程名称",
+        "courseCode": "课程代码",
+        "grade": "年级",
+        "subject": "科目",
+        "category": "类别",
+        "price": "价格"
+      },
+      "categories": {
+        "arts": "文科",
+        "science": "理科"
       }
     }
   },

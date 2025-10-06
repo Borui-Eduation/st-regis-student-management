@@ -56,7 +56,8 @@
     "financeManagement": "Finance Management",
     "userManagement": "User Management",
     "moodle": "Moodle",
-    "moodleManagement": "Moodle Management"
+    "moodleManagement": "Moodle Management",
+    "courseManagement": "Course Management"
   },
   "roles": {
     "student": "Student",
@@ -467,6 +468,54 @@
       },
       "actions": {
         "viewUnpaid": "View Unpaid List"
+      }
+    },
+    "courses": {
+      "title": "Course Management",
+      "subtitle": "Manage all courses and sync with Moodle",
+      "createCourse": "Create Course",
+      "confirmSync": "⚠️ Confirm syncing all courses from Moodle?\n\nThis will:\n• Import all courses from Moodle\n• Update existing courses\n• Create new courses\n\nThis operation may take several minutes.",
+      "syncSuccess": "Sync successful",
+      "syncSuccessDesc": "Synced: {synced}, Created: {created}, Updated: {updated}",
+      "listTitle": "Course List",
+      "noCourses": "No courses available",
+      "noCoursesHint": "Click \"Create Course\" or sync from Moodle to add courses",
+      "manualCreated": "Manual",
+      "linkMoodle": "Link Moodle",
+      "linkMoodleTooltip": "Link this course to a Moodle course",
+      "errors": {
+        "loadFailed": "Load failed",
+        "cannotFetchCourses": "Unable to fetch course list",
+        "syncFailed": "Sync failed"
+      },
+      "moodleSync": {
+        "title": "Moodle Course Sync",
+        "description": "Automatically import and sync course data from Moodle system",
+        "lastResult": "Last Sync Result",
+        "syncing": "Syncing",
+        "startSync": "Start Sync",
+        "hint": "This will sync all courses from Moodle",
+        "synced": "Synced",
+        "site": "Moodle Site",
+        "stats": {
+          "moodleCourses": "Moodle Courses",
+          "synced": "Synced",
+          "created": "Created",
+          "updated": "Updated",
+          "skipped": "Skipped"
+        }
+      },
+      "table": {
+        "courseName": "Course Name",
+        "courseCode": "Course Code",
+        "grade": "Grade",
+        "subject": "Subject",
+        "category": "Category",
+        "price": "Price"
+      },
+      "categories": {
+        "arts": "Arts",
+        "science": "Science"
       }
     }
   },

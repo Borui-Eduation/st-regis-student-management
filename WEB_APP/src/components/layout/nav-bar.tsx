@@ -57,6 +57,7 @@ export default function NavBar() {
     if (role === 'admin') {
       return [
         { name: t('studentManagement'), href: '/admin', icon: '👨‍🎓' },
+        { name: t('courseManagement'), href: '/admin/courses', icon: '📖' },
         { name: t('agentManagement'), href: '/admin/agents', icon: '🤝' },
         { name: t('financeManagement'), href: '/admin/finance', icon: '💰' },
       ];
@@ -66,6 +67,7 @@ export default function NavBar() {
     if (role === 'superadmin') {
       return [
         { name: t('studentManagement'), href: '/admin', icon: '👨‍🎓' },
+        { name: t('courseManagement'), href: '/admin/courses', icon: '📖' },
         { name: t('agentManagement'), href: '/admin/agents', icon: '🤝' },
         { name: t('financeManagement'), href: '/admin/finance', icon: '💰' },
         { name: t('userManagement'), href: '/superadmin', icon: '👑' },
@@ -275,6 +277,16 @@ export default function NavBar() {
                           >
                             <span className="mr-2">👨‍🎓</span>
                             {t('studentManagement')}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              router.push('/admin/courses');
+                            }}
+                            className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                          >
+                            <span className="mr-2">📖</span>
+                            {t('courseManagement')}
                           </button>
                           <button
                             onClick={() => {
