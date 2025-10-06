@@ -725,11 +725,32 @@
     "createAgent": {
       "title": "创建新中介",
       "description": "添加新中介到系统",
-      "companyName": "公司名称",
-      "contactPerson": "联系人",
+      "companyName": "机构名称",
+      "contactPerson": "联系人姓名",
       "success": "✅ 中介创建成功！",
       "errors": {
+        "fillRequired": "请填写必填字段：名称和邮箱",
+        "invalidEmail": "请输入有效的邮箱地址",
+        "invalidCommission": "佣金比例必须在 0-1 之间（如：0.10 表示 10%）",
         "createFailed": "创建中介失败"
+      },
+      "email": "邮箱",
+      "phone": "电话",
+      "address": "地址",
+      "commissionRate": "佣金比例",
+      "status": "状态",
+      "notes": "备注",
+      "placeholders": {
+        "companyName": "如：ABC教育咨询",
+        "contactPerson": "联系人姓名",
+        "email": "agent@example.com",
+        "phone": "+1 (123) 456-7890",
+        "address": "123 Main St, City, Province",
+        "commissionRate": "0.10 (表示10%)",
+        "notes": "其他备注信息..."
+      },
+      "hints": {
+        "commissionRate": "输入0-1之间的小数，如0.10表示10%"
       }
     },
     "agentDetail": {

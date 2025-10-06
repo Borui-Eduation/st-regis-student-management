@@ -729,7 +729,28 @@
       "contactPerson": "Contact Person",
       "success": "✅ Agent created successfully!",
       "errors": {
+        "fillRequired": "Please fill in required fields: Name and Email",
+        "invalidEmail": "Please enter a valid email address",
+        "invalidCommission": "Commission rate must be between 0-1 (e.g., 0.10 = 10%)",
         "createFailed": "Failed to create agent"
+      },
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "commissionRate": "Commission Rate",
+      "status": "Status",
+      "notes": "Notes",
+      "placeholders": {
+        "companyName": "e.g., ABC Education Consulting",
+        "contactPerson": "Contact person name",
+        "email": "agent@example.com",
+        "phone": "+1 (123) 456-7890",
+        "address": "123 Main St, City, Province",
+        "commissionRate": "0.10 (10%)",
+        "notes": "Additional notes..."
+      },
+      "hints": {
+        "commissionRate": "Enter a decimal between 0-1, e.g., 0.10 means 10%"
       }
     },
     "agentDetail": {
