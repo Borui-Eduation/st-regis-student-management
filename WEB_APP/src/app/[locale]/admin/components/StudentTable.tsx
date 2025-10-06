@@ -3,6 +3,9 @@
  * 学生列表表格
  */
 
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -17,14 +20,17 @@ interface StudentTableProps {
 }
 
 export function StudentTable({ students, filterStatus, onStudentClick }: StudentTableProps) {
+  const t = useTranslations('components.studentTable');
+  const tStatus = useTranslations('status');
+  
   if (students.length === 0) {
     return (
       <div className="text-center py-12">
         <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
         </svg>
-        <h3 className="mt-2 text-sm font-medium text-gray-900">暂无学生</h3>
-        <p className="mt-1 text-sm text-gray-500">没有找到匹配的学生记录</p>
+        <h3 className="mt-2 text-sm font-medium text-gray-900">{t('empty.title')}</h3>
+        <p className="mt-1 text-sm text-gray-500">{t('empty.description')}</p>
       </div>
     );
   }
@@ -34,13 +40,13 @@ export function StudentTable({ students, filterStatus, onStudentClick }: Student
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>学生姓名</TableHead>
-            <TableHead>邮箱</TableHead>
-            <TableHead>学生来源</TableHead>
-            <TableHead>中介</TableHead>
-            <TableHead>当前课程</TableHead>
-            <TableHead>课程状态</TableHead>
-            <TableHead>操作</TableHead>
+            <TableHead>{t('headers.studentName')}</TableHead>
+            <TableHead>{t('headers.email')}</TableHead>
+            <TableHead>{t('headers.source')}</TableHead>
+            <TableHead>{t('headers.agent')}</TableHead>
+            <TableHead>{t('headers.currentCourses')}</TableHead>
+            <TableHead>{t('headers.courseStatus')}</TableHead>
+            <TableHead>{t('headers.actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -66,7 +72,7 @@ export function StudentTable({ students, filterStatus, onStudentClick }: Student
                       : 'bg-gray-100 text-gray-800'
                   }
                 >
-                  {student.schoolType === 'stregis' ? '🏫 本校' : '🌍 外校'}
+                  {student.schoolType === 'stregis' ? '🏫 ' + t('source.stregis') : '🌍 ' + t('source.external')}
                 </Badge>
               </TableCell>
               <TableCell>
@@ -85,13 +91,7 @@ export function StudentTable({ students, filterStatus, onStudentClick }: Student
                       {(student as any).coursesInStatus || 0}
                     </span>
                     <span className="text-gray-500 text-xs ml-1">
-                      门{' '}
-                      {
-                        filterStatus === 'pending' ? '待审批' :
-                        filterStatus === 'ready' ? '待开课' :
-                        filterStatus === 'open' ? '已开课' :
-                        '已拒绝'
-                      }
+                      {t('statusCourses', { count: '', status: tStatus(filterStatus) })}
                     </span>
                   </div>
                 ) : (
@@ -99,7 +99,7 @@ export function StudentTable({ students, filterStatus, onStudentClick }: Student
                     <span className="font-semibold text-blue-600">
                       {student.currentCourses || 0}
                     </span>
-                    <span className="text-gray-500 text-xs ml-1">门课程</span>
+                    <span className="text-gray-500 text-xs ml-1">{t('courseCount', { count: '' })}</span>
                   </div>
                 )}
               </TableCell>
@@ -114,14 +114,11 @@ export function StudentTable({ students, filterStatus, onStudentClick }: Student
                     }
                     className={filterStatus === 'ready' ? 'bg-blue-100 text-blue-800' : ''}
                   >
-                    {filterStatus === 'pending' ? '⏳ 待审批' :
-                     filterStatus === 'ready' ? '✅ 待开课' :
-                     filterStatus === 'open' ? '🎉 已开课' :
-                     '❌ 已拒绝'}
+                    {tStatus(filterStatus)}
                   </Badge>
                 ) : (
                   <Badge variant={student.status === 'active' ? 'success' : 'default'}>
-                    {student.status === 'active' ? '活跃' : student.status}
+                    {tStatus(student.status)}
                   </Badge>
                 )}
               </TableCell>
@@ -134,7 +131,7 @@ export function StudentTable({ students, filterStatus, onStudentClick }: Student
                     onStudentClick(student);
                   }}
                 >
-                  查看详情
+                  {t('actions.viewDetails')}
                 </Button>
               </TableCell>
             </TableRow>
@@ -144,6 +141,3 @@ export function StudentTable({ students, filterStatus, onStudentClick }: Student
     </div>
   );
 }
-
-
-

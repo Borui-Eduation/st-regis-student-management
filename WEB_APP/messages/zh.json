@@ -826,5 +826,65 @@
         "syncFailed": "同步失败"
       }
     }
+  },
+  "components": {
+    "enrollmentTable": {
+      "headers": {
+        "studentName": "学生姓名",
+        "email": "邮箱",
+        "courseName": "课程名称",
+        "teacher": "教师",
+        "semester": "学期",
+        "status": "注册状态",
+        "grades": "成绩",
+        "endDate": "截止日期",
+        "actions": "操作"
+      },
+      "grades": {
+        "midterm": "期中",
+        "final": "期末"
+      },
+      "actions": {
+        "approve": "批准",
+        "reject": "拒绝",
+        "processing": "处理中...",
+        "viewDetails": "查看详情",
+        "editGrades": "编辑成绩",
+        "changeStatus": "更改状态",
+        "deleting": "删除中..."
+      },
+      "empty": {
+        "title": "暂无课程记录",
+        "description": "还没有学生注册课程"
+      },
+      "confirmDelete": "⚠️ 确认删除 {name} 的注册记录吗？\n\n此操作无法撤销！",
+      "deleteSuccess": "✅ 删除成功！",
+      "deleteFailed": "❌ 删除失败: {error}",
+      "operationFailed": "❌ 操作失败: {error}"
+    },
+    "studentTable": {
+      "headers": {
+        "studentName": "学生姓名",
+        "email": "邮箱",
+        "source": "学生来源",
+        "agent": "中介",
+        "currentCourses": "当前课程",
+        "courseStatus": "课程状态",
+        "actions": "操作"
+      },
+      "source": {
+        "stregis": "本校",
+        "external": "外校"
+      },
+      "courseCount": "{count}门课程",
+      "statusCourses": "{count}门{status}",
+      "empty": {
+        "title": "暂无学生",
+        "description": "没有找到匹配的学生记录"
+      },
+      "actions": {
+        "viewDetails": "查看详情"
+      }
+    }
   }
 }

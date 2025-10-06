@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -23,35 +24,37 @@ interface EnrollmentTableProps {
   onRefresh?: () => void;
 }
 
-// 状态显示
-const getStatusBadge = (status: string) => {
-  const statusConfig = {
-    pending: { label: '⏳ 待审批', className: 'bg-yellow-100 text-yellow-800' },
-    ready: { label: '✅ 待开课', className: 'bg-blue-100 text-blue-800' },
-    open: { label: '🎉 已开课', className: 'bg-green-100 text-green-800' },
-    rejected: { label: '❌ 已拒绝', className: 'bg-red-100 text-red-800' },
-  };
-  
-  const config = statusConfig[status as keyof typeof statusConfig] || { 
-    label: status, 
-    className: 'bg-gray-100 text-gray-800' 
-  };
-  
-  return (
-    <Badge variant="default" className={config.className}>
-      {config.label}
-    </Badge>
-  );
-};
-
 export function EnrollmentTable({ enrollments, processing, onApprove, onReject, onRefresh }: EnrollmentTableProps) {
   const { data: session } = useSession();
   const router = useRouter();
+  const t = useTranslations('components.enrollmentTable');
+  const tStatus = useTranslations('status');
+  
   const [deleting, setDeleting] = useState<string | null>(null);
   const [selectedEnrollment, setSelectedEnrollment] = useState<Enrollment | null>(null);
   const [isEditGradesOpen, setIsEditGradesOpen] = useState(false);
   const [isChangeStatusOpen, setIsChangeStatusOpen] = useState(false);
   const isSuperAdmin = session?.user?.role === 'superadmin';
+  
+  // 状态显示
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      pending: { className: 'bg-yellow-100 text-yellow-800' },
+      ready: { className: 'bg-blue-100 text-blue-800' },
+      open: { className: 'bg-green-100 text-green-800' },
+      rejected: { className: 'bg-red-100 text-red-800' },
+    };
+    
+    const config = statusConfig[status as keyof typeof statusConfig] || { 
+      className: 'bg-gray-100 text-gray-800' 
+    };
+    
+    return (
+      <Badge variant="default" className={config.className}>
+        {tStatus(status)}
+      </Badge>
+    );
+  };
   
   const handleEditGrades = (enrollment: Enrollment) => {
     setSelectedEnrollment(enrollment);
@@ -72,7 +75,7 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
   };
   
   const handleDelete = async (enrollmentId: string, studentName: string) => {
-    if (!confirm(`⚠️ 确认删除 ${studentName} 的注册记录吗？\n\n此操作无法撤销！`)) {
+    if (!confirm(t('confirmDelete', { name: studentName }))) {
       return;
     }
     
@@ -84,13 +87,13 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
       
       const data = await res.json();
       if (data.success) {
-        alert('✅ 删除成功！');
+        alert(t('deleteSuccess'));
         onRefresh?.();
       } else {
-        alert('❌ 删除失败: ' + data.error);
+        alert(t('deleteFailed', { error: data.error }));
       }
     } catch (error: any) {
-      alert('❌ 操作失败: ' + error.message);
+      alert(t('operationFailed', { error: error.message }));
     } finally {
       setDeleting(null);
     }
@@ -102,8 +105,8 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
         <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        <h3 className="mt-2 text-sm font-medium text-gray-900">暂无课程记录</h3>
-        <p className="mt-1 text-sm text-gray-500">还没有学生注册课程</p>
+        <h3 className="mt-2 text-sm font-medium text-gray-900">{t('empty.title')}</h3>
+        <p className="mt-1 text-sm text-gray-500">{t('empty.description')}</p>
       </div>
     );
   }
@@ -114,15 +117,15 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>学生姓名</TableHead>
-              <TableHead>邮箱</TableHead>
-              <TableHead>课程名称</TableHead>
-              <TableHead>教师</TableHead>
-              <TableHead>学期</TableHead>
-              <TableHead>注册状态</TableHead>
-              <TableHead>成绩</TableHead>
-              <TableHead>截止日期</TableHead>
-              <TableHead className="text-right">操作</TableHead>
+              <TableHead>{t('headers.studentName')}</TableHead>
+              <TableHead>{t('headers.email')}</TableHead>
+              <TableHead>{t('headers.courseName')}</TableHead>
+              <TableHead>{t('headers.teacher')}</TableHead>
+              <TableHead>{t('headers.semester')}</TableHead>
+              <TableHead>{t('headers.status')}</TableHead>
+              <TableHead>{t('headers.grades')}</TableHead>
+              <TableHead>{t('headers.endDate')}</TableHead>
+              <TableHead className="text-right">{t('headers.actions')}</TableHead>
             </TableRow>
           </TableHeader>
         <TableBody>
@@ -156,27 +159,23 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
                 <div className="text-xs space-y-1">
                   {enrollment.midtermMark !== undefined && enrollment.midtermMark !== null ? (
                     <div className="text-blue-600 font-medium">
-                      期中: {enrollment.midtermMark}
+                      {t('grades.midterm')}: {enrollment.midtermMark}
                     </div>
                   ) : (
-                    <div className="text-gray-400">期中: -</div>
+                    <div className="text-gray-400">{t('grades.midterm')}: -</div>
                   )}
                   {enrollment.finalGrade !== undefined && enrollment.finalGrade !== null ? (
                     <div className="text-green-600 font-medium">
-                      期末: {enrollment.finalGrade}
+                      {t('grades.final')}: {enrollment.finalGrade}
                     </div>
                   ) : (
-                    <div className="text-gray-400">期末: -</div>
+                    <div className="text-gray-400">{t('grades.final')}: -</div>
                   )}
                 </div>
               </TableCell>
               <TableCell className="text-sm text-gray-500">
                 {enrollment.endDate
-                  ? new Date(enrollment.endDate).toLocaleDateString('zh-CN', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                    })
+                  ? new Date(enrollment.endDate).toLocaleDateString()
                   : '-'}
               </TableCell>
               <TableCell className="text-right">
@@ -189,7 +188,7 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
                         disabled={processing === enrollment.enrollmentId}
                         className="bg-green-600 hover:bg-green-700 text-white"
                       >
-                        {processing === enrollment.enrollmentId ? '处理中...' : '✓ 批准'}
+                        {processing === enrollment.enrollmentId ? t('actions.processing') : '✓ ' + t('actions.approve')}
                       </Button>
                       <Button
                         size="sm"
@@ -197,7 +196,7 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
                         onClick={() => onReject(enrollment.enrollmentId, enrollment.studentName)}
                         disabled={processing === enrollment.enrollmentId}
                       >
-                        ✕ 拒绝
+                        ✕ {t('actions.reject')}
                       </Button>
                     </>
                   ) : (
@@ -209,7 +208,7 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
                           router.push(`/teacher/performance/${enrollment.enrollmentId}`);
                         }}
                       >
-                        查看详情
+                        {t('actions.viewDetails')}
                       </Button>
                       {enrollment.status === 'open' && (
                         <Button
@@ -218,7 +217,7 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
                           className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300"
                           onClick={() => handleEditGrades(enrollment)}
                         >
-                          📝 编辑成绩
+                          📝 {t('actions.editGrades')}
                         </Button>
                       )}
                     </>
@@ -231,7 +230,7 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
                         className="bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-300"
                         onClick={() => handleChangeStatus(enrollment)}
                       >
-                        🔄 更改状态
+                        🔄 {t('actions.changeStatus')}
                       </Button>
                       <Button
                         size="sm"
@@ -240,7 +239,7 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
                         onClick={() => handleDelete(enrollment.enrollmentId, enrollment.studentName)}
                         disabled={deleting === enrollment.enrollmentId}
                       >
-                        {deleting === enrollment.enrollmentId ? '删除中...' : '🗑️'}
+                        {deleting === enrollment.enrollmentId ? t('actions.deleting') : '🗑️'}
                       </Button>
                     </>
                   )}
@@ -274,6 +273,3 @@ export function EnrollmentTable({ enrollments, processing, onApprove, onReject, 
   </>
   );
 }
-
-
-

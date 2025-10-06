@@ -826,5 +826,65 @@
         "syncFailed": "Sync failed"
       }
     }
+  },
+  "components": {
+    "enrollmentTable": {
+      "headers": {
+        "studentName": "Student Name",
+        "email": "Email",
+        "courseName": "Course Name",
+        "teacher": "Teacher",
+        "semester": "Semester",
+        "status": "Enrollment Status",
+        "grades": "Grades",
+        "endDate": "End Date",
+        "actions": "Actions"
+      },
+      "grades": {
+        "midterm": "Midterm",
+        "final": "Final"
+      },
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject",
+        "processing": "Processing...",
+        "viewDetails": "View Details",
+        "editGrades": "Edit Grades",
+        "changeStatus": "Change Status",
+        "deleting": "Deleting..."
+      },
+      "empty": {
+        "title": "No enrollment records",
+        "description": "No students have enrolled in courses yet"
+      },
+      "confirmDelete": "⚠️ Confirm deleting enrollment record for {name}?\n\nThis action cannot be undone!",
+      "deleteSuccess": "✅ Deleted successfully!",
+      "deleteFailed": "❌ Delete failed: {error}",
+      "operationFailed": "❌ Operation failed: {error}"
+    },
+    "studentTable": {
+      "headers": {
+        "studentName": "Student Name",
+        "email": "Email",
+        "source": "Student Source",
+        "agent": "Agent",
+        "currentCourses": "Current Courses",
+        "courseStatus": "Course Status",
+        "actions": "Actions"
+      },
+      "source": {
+        "stregis": "Our School",
+        "external": "External"
+      },
+      "courseCount": "{count} courses",
+      "statusCourses": "{count} {status}",
+      "empty": {
+        "title": "No students found",
+        "description": "No matching student records found"
+      },
+      "actions": {
+        "viewDetails": "View Details"
+      }
+    }
   }
 }
