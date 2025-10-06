@@ -19,9 +19,9 @@ export const authConfig = {
   ],
   
   pages: {
-    signIn: "/auth/signin",
-    error: "/auth/error",
-    verifyRequest: "/auth/verify-request",
+    signIn: "/en/auth/signin",  // 使用完整路径（包含语言前缀）
+    error: "/en/auth/error",
+    verifyRequest: "/en/auth/verify-request",
   },
 
   callbacks: {
@@ -29,22 +29,33 @@ export const authConfig = {
       const isLoggedIn = !!auth?.user;
       const path = nextUrl.pathname;
 
+      // 调试信息
+      console.log('🔍 Auth Check:', {
+        path,
+        isLoggedIn,
+        userEmail: auth?.user?.email,
+        userRole: auth?.user?.role,
+      });
+
       // 公开路径（去除语言前缀后的路径）
       const pathWithoutLocale = path.replace(/^\/(en|zh)/, '');
       const publicPaths = ['/auth/signin', '/auth/error', '/auth/verify-request', '/api/auth', '/api/health', '/about'];
       
       // 允许访问公开路径
       if (publicPaths.some(p => pathWithoutLocale === p || pathWithoutLocale.startsWith(p))) {
+        console.log('✅ Public path allowed:', pathWithoutLocale);
         return true;
       }
       
       // 允许访问根路径（用于角色重定向）
       if (path === '/' || pathWithoutLocale === '/' || path.match(/^\/(en|zh)\/?$/)) {
+        console.log('✅ Root path allowed');
         return true;
       }
 
       // 需要登录
       if (!isLoggedIn) {
+        console.log('❌ Not logged in, redirecting to signin');
         return false;
       }
 
