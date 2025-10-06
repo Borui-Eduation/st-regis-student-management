@@ -669,6 +669,24 @@
       "successDesc": "Course status changed from \"{from}\" to \"{to}\"",
       "errors": {
         "updateFailed": "Update failed"
+      },
+      "statusOptions": {
+        "pending": {
+          "label": "⏳ Pending",
+          "description": "Waiting for admin approval"
+        },
+        "ready": {
+          "label": "✅ Ready",
+          "description": "Approved, waiting for course to start"
+        },
+        "open": {
+          "label": "🎉 Open",
+          "description": "Course has started, students can attend"
+        },
+        "rejected": {
+          "label": "❌ Rejected",
+          "description": "Enrollment application rejected"
+        }
       }
     },
     "editGrades": {
@@ -687,26 +705,70 @@
     "addEnrollment": {
       "title": "Add Course Enrollment",
       "description": "Manually add a course enrollment record",
-      "fields": {
-        "student": "Student",
-        "course": "Course",
-        "teacher": "Teacher",
-        "status": "Status",
-        "paymentStatus": "Payment Status",
-        "paymentMethod": "Payment Method",
-        "amount": "Amount"
-      },
-      "placeholders": {
-        "searchStudent": "Search student by name or email",
-        "selectCourse": "Select a course",
-        "selectTeacher": "Select a teacher",
-        "amount": "Enter amount"
-      },
+      "searchStudent": "Search Student",
+      "searchPlaceholder": "Search by name or email",
+      "selectCourse": "Select Course",
+      "selectTeacher": "Select Teacher",
+      "status": "Enrollment Status",
+      "paymentStatus": "Payment Status",
+      "paymentMethod": "Payment Method",
+      "amount": "Amount",
+      "paid": "Paid",
+      "unpaid": "Unpaid",
+      "studentNotFound": "Student not found",
       "success": "✅ Enrollment added successfully!",
       "errors": {
         "fillRequired": "Please fill in all required fields",
-        "studentNotFound": "Student not found",
         "addFailed": "Failed to add enrollment"
+      }
+    },
+    "createAgent": {
+      "title": "Create New Agent",
+      "description": "Add a new agent to the system",
+      "companyName": "Company Name",
+      "contactPerson": "Contact Person",
+      "success": "✅ Agent created successfully!",
+      "errors": {
+        "createFailed": "Failed to create agent"
+      }
+    },
+    "agentDetail": {
+      "title": "Agent Details",
+      "viewStudents": "View Students",
+      "viewEnrollments": "View Enrollments",
+      "totalStudents": "Total Students",
+      "totalEnrollments": "Total Enrollments"
+    },
+    "createCourse": {
+      "title": "Create New Course",
+      "description": "Add a new course to the system",
+      "courseCode": "Course Code",
+      "courseName": "Course Name",
+      "category": "Category",
+      "price": "Price",
+      "capacity": "Capacity",
+      "success": "✅ Course created successfully!",
+      "errors": {
+        "createFailed": "Failed to create course"
+      }
+    },
+    "editCourse": {
+      "title": "Edit Course",
+      "description": "Update course information",
+      "success": "✅ Course updated successfully!",
+      "errors": {
+        "updateFailed": "Failed to update course"
+      }
+    },
+    "moodleSync": {
+      "title": "Moodle Course Sync",
+      "description": "Sync course with Moodle system",
+      "selectMoodleCourse": "Select Moodle Course",
+      "syncNow": "Sync Now",
+      "syncing": "Syncing...",
+      "success": "✅ Synced with Moodle successfully!",
+      "errors": {
+        "syncFailed": "Sync failed"
       }
     }
   }

@@ -669,6 +669,24 @@
       "successDesc": "课程状态已从 \"{from}\" 更改为 \"{to}\"",
       "errors": {
         "updateFailed": "更新失败"
+      },
+      "statusOptions": {
+        "pending": {
+          "label": "⏳ 待审批",
+          "description": "等待管理员审批"
+        },
+        "ready": {
+          "label": "✅ 待开课",
+          "description": "已批准，等待开课"
+        },
+        "open": {
+          "label": "🎉 已开课",
+          "description": "课程已开课，学生可以上课"
+        },
+        "rejected": {
+          "label": "❌ 已拒绝",
+          "description": "注册申请被拒绝"
+        }
       }
     },
     "editGrades": {
@@ -687,26 +705,70 @@
     "addEnrollment": {
       "title": "添加课程注册",
       "description": "手动添加课程注册记录",
-      "fields": {
-        "student": "学生",
-        "course": "课程",
-        "teacher": "教师",
-        "status": "状态",
-        "paymentStatus": "支付状态",
-        "paymentMethod": "支付方式",
-        "amount": "金额"
-      },
-      "placeholders": {
-        "searchStudent": "按姓名或邮箱搜索学生",
-        "selectCourse": "选择课程",
-        "selectTeacher": "选择教师",
-        "amount": "输入金额"
-      },
+      "searchStudent": "搜索学生",
+      "searchPlaceholder": "按姓名或邮箱搜索",
+      "selectCourse": "选择课程",
+      "selectTeacher": "选择教师",
+      "status": "注册状态",
+      "paymentStatus": "支付状态",
+      "paymentMethod": "支付方式",
+      "amount": "金额",
+      "paid": "已支付",
+      "unpaid": "未支付",
+      "studentNotFound": "未找到学生",
       "success": "✅ 注册添加成功！",
       "errors": {
         "fillRequired": "请填写所有必填字段",
-        "studentNotFound": "未找到学生",
         "addFailed": "添加注册失败"
+      }
+    },
+    "createAgent": {
+      "title": "创建新中介",
+      "description": "添加新中介到系统",
+      "companyName": "公司名称",
+      "contactPerson": "联系人",
+      "success": "✅ 中介创建成功！",
+      "errors": {
+        "createFailed": "创建中介失败"
+      }
+    },
+    "agentDetail": {
+      "title": "中介详情",
+      "viewStudents": "查看学生",
+      "viewEnrollments": "查看注册",
+      "totalStudents": "总学生数",
+      "totalEnrollments": "总注册数"
+    },
+    "createCourse": {
+      "title": "创建新课程",
+      "description": "添加新课程到系统",
+      "courseCode": "课程代码",
+      "courseName": "课程名称",
+      "category": "类别",
+      "price": "价格",
+      "capacity": "容量",
+      "success": "✅ 课程创建成功！",
+      "errors": {
+        "createFailed": "创建课程失败"
+      }
+    },
+    "editCourse": {
+      "title": "编辑课程",
+      "description": "更新课程信息",
+      "success": "✅ 课程更新成功！",
+      "errors": {
+        "updateFailed": "更新课程失败"
+      }
+    },
+    "moodleSync": {
+      "title": "Moodle 课程同步",
+      "description": "将课程与 Moodle 系统同步",
+      "selectMoodleCourse": "选择 Moodle 课程",
+      "syncNow": "立即同步",
+      "syncing": "同步中...",
+      "success": "✅ 已成功与 Moodle 同步！",
+      "errors": {
+        "syncFailed": "同步失败"
       }
     }
   }
