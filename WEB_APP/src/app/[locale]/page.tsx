@@ -3,18 +3,18 @@
  * 根据用户角色重定向到相应的控制台
  */
 
-import { redirect } from 'next/navigation';
+import { redirect } from '@/i18n/routing';
 import { auth } from '@/auth';
 
 export default async function LocaleRootPage() {
   const session = await auth();
   
-  // 未登录，重定向到登录页
+  // 未登录，重定向到登录页（使用 i18n 路由）
   if (!session) {
     redirect('/auth/signin');
   }
   
-  // 根据角色重定向到相应的控制台
+  // 根据角色重定向到相应的控制台（使用 i18n 路由）
   const role = session.user?.role;
   
   switch (role) {

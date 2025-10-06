@@ -3,10 +3,9 @@
  * 根页面重定向到登录页
  */
 
-import { redirect } from 'next/navigation';
-import { defaultLocale } from '@/i18n/config';
+import { redirect } from '@/i18n/routing';
 
 export default function RootPage() {
-  // 重定向到登录页
-  redirect(`/${defaultLocale}/auth/signin`);
+  // 使用 i18n 路由重定向到登录页
+  redirect('/auth/signin');
 }
