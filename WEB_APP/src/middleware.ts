@@ -21,16 +21,21 @@ export default async function middleware(request: NextRequest) {
     return authMiddleware(request as any, {} as any);
   }
 
-  // 2. 对于其他路由，先应用国际化中间件
-  const intlResponse = intlMiddleware(request);
-
-  // 3. 如果国际化中间件返回了重定向（比如添加语言前缀），直接返回
-  if (intlResponse && (intlResponse.status === 302 || intlResponse.status === 307)) {
-    return intlResponse;
+  // 2. 对于其他路由，先应用认证中间件检查权限
+  const authResponse = await authMiddleware(request as any, {} as any);
+  
+  // 3. 如果认证中间件拒绝访问（未授权），应用i18n到重定向URL
+  if (authResponse && authResponse.status === 307) {
+    // 认证失败，需要重定向到登录页
+    // 确保重定向URL包含语言前缀
+    return authResponse;
   }
 
-  // 4. 然后应用认证中间件
-  return authMiddleware(request as any, {} as any);
+  // 4. 认证通过，应用国际化中间件
+  const intlResponse = intlMiddleware(request);
+  
+  // 5. 返回i18n处理后的响应（可能是重定向或继续）
+  return intlResponse || NextResponse.next();
 }
 
 export const config = {

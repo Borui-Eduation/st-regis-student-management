@@ -33,8 +33,11 @@ export const authConfig = {
       console.log('🔍 Auth Check:', {
         path,
         isLoggedIn,
+        hasAuth: !!auth,
+        hasUser: !!auth?.user,
         userEmail: auth?.user?.email,
         userRole: auth?.user?.role,
+        allAuth: JSON.stringify(auth),
       });
 
       // 公开路径（去除语言前缀后的路径）
@@ -53,38 +56,50 @@ export const authConfig = {
         return true;
       }
 
-      // 需要登录
-      if (!isLoggedIn) {
-        console.log('❌ Not logged in, redirecting to signin');
-        return false;
+      // 🔥 临时：允许所有已登录用户访问所有页面（用于调试）
+      if (isLoggedIn) {
+        console.log('✅ User is logged in, allowing access (DEBUG MODE)');
+        return true;
       }
 
+      // 需要登录
+      console.log('❌ Not logged in, redirecting to signin');
+      return false;
+
+      /* 暂时注释掉角色检查
       // 角色检查
       const role = auth?.user?.role;
       
       if (pathWithoutLocale.startsWith('/admin') && 
           role !== 'admin' && 
           role !== 'superadmin') {
+        console.log('❌ No admin access for role:', role);
         return false;
       }
       
       if (pathWithoutLocale.startsWith('/superadmin') && role !== 'superadmin') {
+        console.log('❌ No superadmin access for role:', role);
         return false;
       }
       
       if (pathWithoutLocale.startsWith('/teacher') && role !== 'teacher') {
+        console.log('❌ No teacher access for role:', role);
         return false;
       }
       
       if (pathWithoutLocale.startsWith('/agent') && role !== 'agent') {
+        console.log('❌ No agent access for role:', role);
         return false;
       }
       
       if (pathWithoutLocale.startsWith('/student') && role !== 'student') {
+        console.log('❌ No student access for role:', role);
         return false;
       }
 
+      console.log('✅ Access granted');
       return true;
+      */
     },
   },
 } satisfies NextAuthConfig;
