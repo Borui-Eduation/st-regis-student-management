@@ -572,5 +572,160 @@
         "body": "You have successfully enrolled in {courseName}. We will review your application shortly."
       }
     }
+  },
+  "dialogs": {
+    "common": {
+      "cancel": "Cancel",
+      "save": "Save",
+      "submit": "Submit",
+      "create": "Create",
+      "edit": "Edit",
+      "delete": "Delete",
+      "close": "Close",
+      "confirm": "Confirm",
+      "loading": "Loading...",
+      "saving": "Saving...",
+      "creating": "Creating...",
+      "required": "Required",
+      "optional": "Optional"
+    },
+    "createStudent": {
+      "title": "Create New Student",
+      "description": "Add a new student to the system",
+      "fields": {
+        "name": "Student Name",
+        "email": "Email",
+        "phone": "Phone",
+        "school": "School",
+        "grade": "Grade",
+        "role": "Role",
+        "parentName": "Parent Name",
+        "parentEmail": "Parent Email",
+        "parentPhone": "Parent Phone",
+        "passwordOption": "Password Option",
+        "customPassword": "Custom Password"
+      },
+      "placeholders": {
+        "name": "Enter student name",
+        "email": "Enter email address",
+        "phone": "Enter phone number",
+        "school": "St. Regis",
+        "grade": "e.g., 9",
+        "parentName": "Enter parent name",
+        "parentEmail": "Enter parent email",
+        "parentPhone": "Enter parent phone",
+        "customPassword": "At least 8 characters"
+      },
+      "passwordOptions": {
+        "default": "Default Password (StRegis2025!)",
+        "custom": "Custom Password"
+      },
+      "hints": {
+        "email": "Email is required for login",
+        "password": "Password can be changed after first login",
+        "superadmin": "Superadmin can assign roles"
+      },
+      "success": "✅ Student created successfully!",
+      "errors": {
+        "fillRequired": "Please fill in all required fields",
+        "createFailed": "Failed to create student",
+        "passwordTooShort": "Custom password must be at least 8 characters"
+      }
+    },
+    "editStudent": {
+      "title": "Edit Student Information",
+      "description": "Update student details",
+      "success": "✅ Student information updated successfully!",
+      "errors": {
+        "updateFailed": "Failed to update student information"
+      }
+    },
+    "studentDetail": {
+      "title": "Student Details",
+      "tabs": {
+        "basic": "Basic Info",
+        "enrollments": "Enrollments",
+        "payments": "Payment Records"
+      },
+      "fields": {
+        "studentId": "Student ID",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "school": "School",
+        "grade": "Grade",
+        "role": "Role",
+        "parentName": "Parent Name",
+        "parentEmail": "Parent Email",
+        "parentPhone": "Parent Phone",
+        "registeredAt": "Registration Date"
+      },
+      "enrollments": {
+        "title": "Course Enrollments",
+        "noRecords": "No enrollment records"
+      },
+      "payments": {
+        "title": "Payment Records",
+        "noRecords": "No payment records"
+      }
+    },
+    "changeStatus": {
+      "title": "Change Enrollment Status",
+      "fields": {
+        "currentStatus": "Current Status",
+        "newStatus": "New Status",
+        "reason": "Reason"
+      },
+      "placeholders": {
+        "reason": "Please enter the reason for status change"
+      },
+      "success": "✅ Status changed successfully!",
+      "errors": {
+        "fillRequired": "Please select new status and fill in reason",
+        "changeFailed": "Failed to change status"
+      }
+    },
+    "editGrades": {
+      "title": "Edit Grades",
+      "fields": {
+        "midtermScore": "Midterm Score",
+        "finalScore": "Final Score",
+        "comments": "Comments"
+      },
+      "placeholders": {
+        "score": "0-100",
+        "comments": "Add comments for this student"
+      },
+      "success": "✅ Grades updated successfully!",
+      "errors": {
+        "invalidScore": "Please enter a valid score (0-100)",
+        "updateFailed": "Failed to update grades"
+      }
+    },
+    "addEnrollment": {
+      "title": "Add Course Enrollment",
+      "description": "Manually add a course enrollment record",
+      "fields": {
+        "student": "Student",
+        "course": "Course",
+        "teacher": "Teacher",
+        "status": "Status",
+        "paymentStatus": "Payment Status",
+        "paymentMethod": "Payment Method",
+        "amount": "Amount"
+      },
+      "placeholders": {
+        "searchStudent": "Search student by name or email",
+        "selectCourse": "Select a course",
+        "selectTeacher": "Select a teacher",
+        "amount": "Enter amount"
+      },
+      "success": "✅ Enrollment added successfully!",
+      "errors": {
+        "fillRequired": "Please fill in all required fields",
+        "studentNotFound": "Student not found",
+        "addFailed": "Failed to add enrollment"
+      }
+    }
   }
 }

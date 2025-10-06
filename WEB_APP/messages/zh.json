@@ -572,5 +572,160 @@
         "body": "您已成功注册课程 {courseName}，我们将尽快审核您的申请。"
       }
     }
+  },
+  "dialogs": {
+    "common": {
+      "cancel": "取消",
+      "save": "保存",
+      "submit": "提交",
+      "create": "创建",
+      "edit": "编辑",
+      "delete": "删除",
+      "close": "关闭",
+      "confirm": "确认",
+      "loading": "加载中...",
+      "saving": "保存中...",
+      "creating": "创建中...",
+      "required": "必填",
+      "optional": "选填"
+    },
+    "createStudent": {
+      "title": "创建新学生",
+      "description": "添加新学生到系统",
+      "fields": {
+        "name": "学生姓名",
+        "email": "邮箱",
+        "phone": "电话",
+        "school": "学校",
+        "grade": "年级",
+        "role": "角色",
+        "parentName": "家长姓名",
+        "parentEmail": "家长邮箱",
+        "parentPhone": "家长电话",
+        "passwordOption": "密码选项",
+        "customPassword": "自定义密码"
+      },
+      "placeholders": {
+        "name": "输入学生姓名",
+        "email": "输入邮箱地址",
+        "phone": "输入电话号码",
+        "school": "St. Regis",
+        "grade": "例如: 9",
+        "parentName": "输入家长姓名",
+        "parentEmail": "输入家长邮箱",
+        "parentPhone": "输入家长电话",
+        "customPassword": "至少8个字符"
+      },
+      "passwordOptions": {
+        "default": "默认密码 (StRegis2025!)",
+        "custom": "自定义密码"
+      },
+      "hints": {
+        "email": "登录需要邮箱",
+        "password": "首次登录后可修改密码",
+        "superadmin": "超级管理员可以指定角色"
+      },
+      "success": "✅ 学生创建成功！",
+      "errors": {
+        "fillRequired": "请填写所有必填字段",
+        "createFailed": "创建学生失败",
+        "passwordTooShort": "自定义密码至少需要8个字符"
+      }
+    },
+    "editStudent": {
+      "title": "编辑学生信息",
+      "description": "更新学生详细信息",
+      "success": "✅ 学生信息更新成功！",
+      "errors": {
+        "updateFailed": "更新学生信息失败"
+      }
+    },
+    "studentDetail": {
+      "title": "学生详情",
+      "tabs": {
+        "basic": "基本信息",
+        "enrollments": "选课记录",
+        "payments": "支付记录"
+      },
+      "fields": {
+        "studentId": "学生ID",
+        "name": "姓名",
+        "email": "邮箱",
+        "phone": "电话",
+        "school": "学校",
+        "grade": "年级",
+        "role": "角色",
+        "parentName": "家长姓名",
+        "parentEmail": "家长邮箱",
+        "parentPhone": "家长电话",
+        "registeredAt": "注册日期"
+      },
+      "enrollments": {
+        "title": "课程注册",
+        "noRecords": "暂无选课记录"
+      },
+      "payments": {
+        "title": "支付记录",
+        "noRecords": "暂无支付记录"
+      }
+    },
+    "changeStatus": {
+      "title": "更改注册状态",
+      "fields": {
+        "currentStatus": "当前状态",
+        "newStatus": "新状态",
+        "reason": "原因"
+      },
+      "placeholders": {
+        "reason": "请输入状态变更原因"
+      },
+      "success": "✅ 状态更改成功！",
+      "errors": {
+        "fillRequired": "请选择新状态并填写原因",
+        "changeFailed": "状态更改失败"
+      }
+    },
+    "editGrades": {
+      "title": "编辑成绩",
+      "fields": {
+        "midtermScore": "期中成绩",
+        "finalScore": "期末成绩",
+        "comments": "评语"
+      },
+      "placeholders": {
+        "score": "0-100",
+        "comments": "为该学生添加评语"
+      },
+      "success": "✅ 成绩更新成功！",
+      "errors": {
+        "invalidScore": "请输入有效的分数（0-100）",
+        "updateFailed": "更新成绩失败"
+      }
+    },
+    "addEnrollment": {
+      "title": "添加课程注册",
+      "description": "手动添加课程注册记录",
+      "fields": {
+        "student": "学生",
+        "course": "课程",
+        "teacher": "教师",
+        "status": "状态",
+        "paymentStatus": "支付状态",
+        "paymentMethod": "支付方式",
+        "amount": "金额"
+      },
+      "placeholders": {
+        "searchStudent": "按姓名或邮箱搜索学生",
+        "selectCourse": "选择课程",
+        "selectTeacher": "选择教师",
+        "amount": "输入金额"
+      },
+      "success": "✅ 注册添加成功！",
+      "errors": {
+        "fillRequired": "请填写所有必填字段",
+        "studentNotFound": "未找到学生",
+        "addFailed": "添加注册失败"
+      }
+    }
   }
 }
