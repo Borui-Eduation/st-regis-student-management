@@ -7,6 +7,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -30,6 +31,8 @@ interface MoodleCourseSyncDialogProps {
 
 export function MoodleCourseSyncDialog({ course, isOpen, onClose, onSuccess }: MoodleCourseSyncDialogProps) {
   const { toast } = useToast();
+  const t = useTranslations('dialogs.moodleSync');
+  const tCommon = useTranslations('dialogs.common');
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [moodleCourses, setMoodleCourses] = useState<MoodleCourse[]>([]);
@@ -49,18 +52,17 @@ export function MoodleCourseSyncDialog({ course, isOpen, onClose, onSuccess }: M
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || data.message || '获取Moodle课程失败');
+        throw new Error(data.error || data.message || t('errors.syncFailed'));
       }
 
       setMoodleCourses(data.data.courses || []);
       
       toast({
-        title: '✅ Moodle课程加载成功',
-        description: `找到 ${data.data.courses.length} 门课程`,
+        title: t('success'),
       });
     } catch (error: any) {
       toast({
-        title: '❌ 加载失败',
+        title: t('errors.syncFailed'),
         description: error.message,
         variant: 'destructive',
       });
@@ -295,7 +297,7 @@ export function MoodleCourseSyncDialog({ course, isOpen, onClose, onSuccess }: M
               onClick={onClose}
               disabled={syncing}
             >
-              取消
+              {tCommon('cancel')}
             </Button>
             <Button
               type="button"
@@ -309,11 +311,11 @@ export function MoodleCourseSyncDialog({ course, isOpen, onClose, onSuccess }: M
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  同步中...
+                  {t('syncing')}
                 </>
               ) : (
                 <>
-                  🔗 关联并同步
+                  🔗 {t('syncNow')}
                 </>
               )}
             </Button>
