@@ -420,6 +420,38 @@
         "enrolledStudents": "Enrolled Students ({count})",
         "noStudents": "No students enrolled in this course"
       }
+    },
+    "finance": {
+      "title": "Finance Management",
+      "subtitle": "View revenue statistics and payment records",
+      "errors": {
+        "fetchFailed": "Failed to fetch finance data",
+        "networkError": "Network error, please try again"
+      },
+      "retry": "Retry",
+      "stats": {
+        "totalRevenue": "Total Revenue",
+        "enrollments": "enrollments",
+        "paidRevenue": "Paid Revenue",
+        "payments": "payments",
+        "unpaidRevenue": "Unpaid Revenue",
+        "unpaid": "unpaid",
+        "studentsWithDebt": "Students with Debt",
+        "totalOwed": "Total Owed"
+      },
+      "paymentMethods": {
+        "title": "Payment Method Statistics",
+        "noRecords": "No payment records yet"
+      },
+      "studentOverview": {
+        "title": "Student Finance Overview",
+        "totalPaid": "Total Paid",
+        "totalOwed": "Total Owed",
+        "studentsWithDebt": "Students with Debt"
+      },
+      "actions": {
+        "viewUnpaid": "View Unpaid List"
+      }
     }
   },
   "forms": {

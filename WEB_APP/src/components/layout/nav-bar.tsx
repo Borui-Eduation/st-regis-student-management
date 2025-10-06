@@ -56,7 +56,6 @@ export default function NavBar() {
     // 管理员 - 看到学生管理功能
     if (role === 'admin') {
       return [
-        { name: t('console'), href: '/admin', icon: '🎛️' },
         { name: t('studentManagement'), href: '/admin', icon: '👨‍🎓' },
         { name: t('agentManagement'), href: '/admin/agents', icon: '🤝' },
         { name: t('financeManagement'), href: '/admin/finance', icon: '💰' },
@@ -66,7 +65,6 @@ export default function NavBar() {
     // 超级管理员 - 额外看到用户管理和 Moodle 管理
     if (role === 'superadmin') {
       return [
-        { name: t('console'), href: '/admin', icon: '🎛️' },
         { name: t('studentManagement'), href: '/admin', icon: '👨‍🎓' },
         { name: t('agentManagement'), href: '/admin/agents', icon: '🤝' },
         { name: t('financeManagement'), href: '/admin/finance', icon: '💰' },
@@ -117,7 +115,7 @@ export default function NavBar() {
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
@@ -268,16 +266,6 @@ export default function NavBar() {
 
                       {(session.user.role === 'admin' || session.user.role === 'superadmin') && (
                         <>
-                          <button
-                            onClick={() => {
-                              setDropdownOpen(false);
-                              router.push('/admin');
-                            }}
-                            className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                          >
-                            <span className="mr-2">🎛️</span>
-                            {t('console')}
-                          </button>
                           <button
                             onClick={() => {
                               setDropdownOpen(false);

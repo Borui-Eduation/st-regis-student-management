@@ -420,6 +420,38 @@
         "enrolledStudents": "注册学生 ({count})",
         "noStudents": "该课程暂无学生注册"
       }
+    },
+    "finance": {
+      "title": "财务管理",
+      "subtitle": "查看收入统计和支付记录",
+      "errors": {
+        "fetchFailed": "获取财务数据失败",
+        "networkError": "网络错误，请重试"
+      },
+      "retry": "重试",
+      "stats": {
+        "totalRevenue": "总收入",
+        "enrollments": "条注册",
+        "paidRevenue": "已收款",
+        "payments": "笔支付",
+        "unpaidRevenue": "待收款",
+        "unpaid": "笔未支付",
+        "studentsWithDebt": "欠费学生",
+        "totalOwed": "总欠费"
+      },
+      "paymentMethods": {
+        "title": "支付方式统计",
+        "noRecords": "暂无支付记录"
+      },
+      "studentOverview": {
+        "title": "学生财务概览",
+        "totalPaid": "总已付",
+        "totalOwed": "总欠费",
+        "studentsWithDebt": "欠费学生数"
+      },
+      "actions": {
+        "viewUnpaid": "查看未支付列表"
+      }
     }
   },
   "forms": {
