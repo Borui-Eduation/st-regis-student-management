@@ -11,6 +11,7 @@ export default function NavBar() {
   const t = useTranslations('nav');
   const tRoles = useTranslations('roles');
   const pathname = usePathname();
+  const router = useRouter();
   const { data: session, status } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -129,13 +130,13 @@ export default function NavBar() {
               {filteredNavigation.map((item) => {
                 const isActive = pathname === item.href;
                 return (
-                  <Link
+                  <button
                     key={item.name}
-                    href={item.href}
-                    onClick={(e) => {
-                      console.log('🔍 Link clicked:', item.href, 'Current pathname:', pathname);
+                    onClick={() => {
+                      console.log('🔍 Navigating to:', item.href);
+                      router.push(item.href);
                     }}
-                    className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
                       isActive
                         ? 'bg-blue-50 text-blue-700'
                         : 'text-gray-700 hover:bg-gray-50'
@@ -143,7 +144,7 @@ export default function NavBar() {
                   >
                     <span className="mr-2">{item.icon}</span>
                     {item.name}
-                  </Link>
+                  </button>
                 );
               })}
             </div>
@@ -198,114 +199,138 @@ export default function NavBar() {
                       {/* 根据角色显示对应的快捷菜单 */}
                       {session.user.role === 'student' && (
                         <>
-                          <Link
-                            href="/student"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            onClick={() => setDropdownOpen(false)}
+                          <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              router.push('/student');
+                            }}
+                            className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                           >
                             <span className="mr-2">🎓</span>
                             {t('courseSelection')}
-                          </Link>
-                          <Link
-                            href="/student/courses"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            onClick={() => setDropdownOpen(false)}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              router.push('/student/courses');
+                            }}
+                            className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                           >
                             <span className="mr-2">📚</span>
                             {t('myCourses')}
-                          </Link>
-                          <Link
-                            href="/student/profile"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            onClick={() => setDropdownOpen(false)}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              router.push('/student/profile');
+                            }}
+                            className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                           >
                             <span className="mr-2">👤</span>
                             {t('myProfile')}
-                          </Link>
+                          </button>
                         </>
                       )}
 
                       {session.user.role === 'agent' && (
                         <>
-                          <Link
-                            href="/agent"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            onClick={() => setDropdownOpen(false)}
+                          <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              router.push('/agent');
+                            }}
+                            className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                           >
                             <span className="mr-2">📊</span>
                             {t('dashboard')}
-                          </Link>
-                          <Link
-                            href="/agent?tab=students"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            onClick={() => setDropdownOpen(false)}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              router.push('/agent?tab=students');
+                            }}
+                            className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                           >
                             <span className="mr-2">👥</span>
                             {t('myStudents')}
-                          </Link>
-                          <Link
-                            href="/agent?tab=enrollments"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            onClick={() => setDropdownOpen(false)}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              router.push('/agent?tab=enrollments');
+                            }}
+                            className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                           >
                             <span className="mr-2">📝</span>
                             {t('enrollmentRecords')}
-                          </Link>
+                          </button>
                         </>
                       )}
 
                       {(session.user.role === 'admin' || session.user.role === 'superadmin') && (
                         <>
-                          <Link
-                            href="/admin"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            onClick={() => setDropdownOpen(false)}
+                          <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              router.push('/admin');
+                            }}
+                            className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                           >
                             <span className="mr-2">🎛️</span>
                             {t('console')}
-                          </Link>
-                          <Link
-                            href="/admin"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            onClick={() => setDropdownOpen(false)}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              router.push('/admin');
+                            }}
+                            className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                           >
                             <span className="mr-2">👨‍🎓</span>
                             {t('studentManagement')}
-                          </Link>
-                          <Link
-                            href="/admin/agents"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            onClick={() => setDropdownOpen(false)}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              router.push('/admin/agents');
+                            }}
+                            className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                           >
                             <span className="mr-2">🤝</span>
                             {t('agentManagement')}
-                          </Link>
-                          <Link
-                            href="/admin/finance"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            onClick={() => setDropdownOpen(false)}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              router.push('/admin/finance');
+                            }}
+                            className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                           >
                             <span className="mr-2">💰</span>
                             {t('financeManagement')}
-                          </Link>
+                          </button>
                           {session.user.role === 'superadmin' && (
                             <>
-                              <Link
-                                href="/superadmin"
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-200"
-                                onClick={() => setDropdownOpen(false)}
+                              <button
+                                onClick={() => {
+                                  setDropdownOpen(false);
+                                  router.push('/superadmin');
+                                }}
+                                className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-200"
                               >
                                 <span className="mr-2">👑</span>
                                 {t('userManagement')}
-                              </Link>
-                              <Link
-                                href="/superadmin/moodle"
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                                onClick={() => setDropdownOpen(false)}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setDropdownOpen(false);
+                                  router.push('/superadmin/moodle');
+                                }}
+                                className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                               >
                                 <span className="mr-2">📚</span>
                                 {t('moodleManagement')}
-                              </Link>
+                              </button>
                             </>
                           )}
                         </>
@@ -350,16 +375,19 @@ export default function NavBar() {
           {filteredNavigation.map((item) => {
             const isActive = pathname === item.href;
             return (
-              <Link
+              <button
                 key={item.name}
-                href={item.href}
+                onClick={() => {
+                  console.log('📱 Mobile nav click:', item.href);
+                  router.push(item.href);
+                }}
                 className={`flex flex-col items-center px-3 py-2 text-xs font-medium ${
                   isActive ? 'text-blue-700' : 'text-gray-600'
                 }`}
               >
                 <span className="text-lg mb-1">{item.icon}</span>
                 {item.name}
-              </Link>
+              </button>
             );
           })}
         </div>
