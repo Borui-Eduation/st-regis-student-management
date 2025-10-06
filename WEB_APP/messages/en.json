@@ -218,7 +218,16 @@
       "title": "Teacher Dashboard",
       "myCourses": "My Courses",
       "students": "Students",
-      "grades": "Grade Management"
+      "grades": "Grade Management",
+      "tips": {
+        "title": "Usage Tips",
+        "items": [
+          "View all your enrolled students in the list",
+          "Click on a student to view details and manage grades",
+          "Use the search function to quickly find students",
+          "Grades and comments can be edited after course opens"
+        ]
+      }
     },
     "auth": {
       "signin": {
@@ -238,7 +247,23 @@
       },
       "verifyRequest": {
         "title": "Check your email",
-        "subtitle": "We've sent you a sign in link"
+        "subtitle": "We've sent you a sign in link",
+        "nextSteps": {
+          "title": "Next Steps",
+          "steps": [
+            "Check your email inbox",
+            "Click the sign in link in the email",
+            "You will be automatically signed in"
+          ]
+        },
+        "tips": {
+          "title": "Tips",
+          "items": [
+            "The link is valid for 24 hours",
+            "Check your spam folder if you don't see the email",
+            "You can request a new link if needed"
+          ]
+        }
       }
     },
     "unauthorized": {
@@ -261,11 +286,54 @@
         "commission": "Commission"
       },
       "info": {
-        "title": "Agent Management Guide"
+        "title": "Agent Management Guide",
+        "items": [
+          "View all agents and their contact information",
+          "Use search to quickly find specific agents",
+          "Click on an agent to view their student list",
+          "Manage agent commissions and status"
+        ]
       },
       "errors": {
         "loadFailed": "Failed to load agents",
         "deleteFailed": "Failed to delete agent"
+      }
+    },
+    "settings": {
+      "title": "Account Settings",
+      "subtitle": "Manage your account information and password",
+      "accountInfo": {
+        "title": "Account Information",
+        "name": "Name",
+        "email": "Email",
+        "role": "Role"
+      },
+      "changePassword": {
+        "title": "Change Password",
+        "description": "Update your account password",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm New Password",
+        "defaultPassword": "Default Password",
+        "defaultPasswordHint": "Default password for new accounts is: StRegis2025!",
+        "saveButton": "Save Changes"
+      },
+      "securityTips": {
+        "title": "Security Tips",
+        "tips": [
+          "Use a strong password with at least 8 characters",
+          "Include uppercase, lowercase, numbers, and special characters",
+          "Don't share your password with others",
+          "Change your password regularly"
+        ]
+      },
+      "errors": {
+        "passwordMismatch": "Passwords do not match",
+        "passwordTooShort": "Password must be at least 8 characters",
+        "changeFailed": "Failed to change password"
+      },
+      "success": {
+        "passwordChanged": "Password updated successfully"
       }
     }
   },

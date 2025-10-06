@@ -218,7 +218,16 @@
       "title": "教师控制台",
       "myCourses": "我的课程",
       "students": "学生列表",
-      "grades": "成绩管理"
+      "grades": "成绩管理",
+      "tips": {
+        "title": "使用提示",
+        "items": [
+          "查看列表中所有已注册的学生",
+          "点击学生查看详情并管理成绩",
+          "使用搜索功能快速查找学生",
+          "课程开课后可以编辑成绩和评语"
+        ]
+      }
     },
     "auth": {
       "signin": {
@@ -238,7 +247,23 @@
       },
       "verifyRequest": {
         "title": "检查你的邮箱",
-        "subtitle": "我们已向你发送了一个登录链接"
+        "subtitle": "我们已向你发送了一个登录链接",
+        "nextSteps": {
+          "title": "后续步骤",
+          "steps": [
+            "检查您的邮箱",
+            "点击邮件中的登录链接",
+            "您将自动登录"
+          ]
+        },
+        "tips": {
+          "title": "提示",
+          "items": [
+            "链接有效期为24小时",
+            "如果没有收到邮件，请检查垃圾邮件文件夹",
+            "如需要可以请求新的链接"
+          ]
+        }
       }
     },
     "unauthorized": {
@@ -261,11 +286,54 @@
         "commission": "佣金"
       },
       "info": {
-        "title": "中介管理指南"
+        "title": "中介管理指南",
+        "items": [
+          "查看所有中介及其联系信息",
+          "使用搜索快速查找特定中介",
+          "点击中介查看其学生列表",
+          "管理中介佣金和状态"
+        ]
       },
       "errors": {
         "loadFailed": "加载中介失败",
         "deleteFailed": "删除中介失败"
+      }
+    },
+    "settings": {
+      "title": "账户设置",
+      "subtitle": "管理您的账户信息和密码",
+      "accountInfo": {
+        "title": "账户信息",
+        "name": "姓名",
+        "email": "邮箱",
+        "role": "角色"
+      },
+      "changePassword": {
+        "title": "修改密码",
+        "description": "更新您的账户密码",
+        "currentPassword": "当前密码",
+        "newPassword": "新密码",
+        "confirmPassword": "确认新密码",
+        "defaultPassword": "默认密码",
+        "defaultPasswordHint": "新账号默认密码为：StRegis2025!",
+        "saveButton": "保存更改"
+      },
+      "securityTips": {
+        "title": "安全提示",
+        "tips": [
+          "使用至少8个字符的强密码",
+          "包含大小写字母、数字和特殊字符",
+          "不要与他人分享您的密码",
+          "定期更换密码"
+        ]
+      },
+      "errors": {
+        "passwordMismatch": "密码不匹配",
+        "passwordTooShort": "密码必须至少8个字符",
+        "changeFailed": "修改密码失败"
+      },
+      "success": {
+        "passwordChanged": "密码更新成功"
       }
     }
   },
