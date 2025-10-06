@@ -707,10 +707,36 @@
     },
     "studentDetail": {
       "title": "Student Details",
-      "tabs": {
-        "basic": "Basic Info",
-        "enrollments": "Enrollments",
-        "payments": "Payment Records"
+      "description": "View detailed student information",
+      "sections": {
+        "basicInfo": "Basic Information",
+        "parentInfo": "Parent Information",
+        "enrollmentInfo": "Enrollment Information"
+      },
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "school": "School",
+        "grade": "Grade",
+        "status": "Status",
+        "role": "Role",
+        "parentName": "Parent Name",
+        "parentEmail": "Parent Email",
+        "parentPhone": "Parent Phone",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At"
+      },
+      "enrollments": {
+        "title": "Course Enrollments",
+        "noEnrollments": "This student has no course enrollments.",
+        "courseName": "Course Name",
+        "status": "Status",
+        "paymentStatus": "Payment Status",
+        "midterm": "Midterm",
+        "final": "Final",
+        "actions": "Actions",
+        "teacher": "Teacher"
       }
     },
     "changeStatus": {

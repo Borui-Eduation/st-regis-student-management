@@ -6,7 +6,7 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const nextConfig = {
   reactStrictMode: true,
   // 🚀 Vercel 部署时注释掉 standalone，Docker 部署时取消注释
-  output: 'standalone',
+  // output: 'standalone',
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb',

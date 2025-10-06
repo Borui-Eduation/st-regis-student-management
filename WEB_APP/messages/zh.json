@@ -707,10 +707,36 @@
     },
     "studentDetail": {
       "title": "学生详情",
-      "tabs": {
-        "basic": "基本信息",
-        "enrollments": "选课记录",
-        "payments": "支付记录"
+      "description": "查看学生的详细信息",
+      "sections": {
+        "basicInfo": "基本信息",
+        "parentInfo": "家长信息",
+        "enrollmentInfo": "注册信息"
+      },
+      "fields": {
+        "name": "姓名",
+        "email": "邮箱",
+        "phone": "电话",
+        "school": "学校",
+        "grade": "年级",
+        "status": "状态",
+        "role": "角色",
+        "parentName": "家长姓名",
+        "parentEmail": "家长邮箱",
+        "parentPhone": "家长电话",
+        "createdAt": "创建日期",
+        "updatedAt": "更新日期"
+      },
+      "enrollments": {
+        "title": "课程注册",
+        "noEnrollments": "该学生暂无课程注册。",
+        "courseName": "课程名称",
+        "status": "状态",
+        "paymentStatus": "支付状态",
+        "midterm": "期中",
+        "final": "期末",
+        "actions": "操作",
+        "teacher": "教师"
       }
     },
     "changeStatus": {
