@@ -132,6 +132,9 @@ export default function NavBar() {
                   <Link
                     key={item.name}
                     href={item.href}
+                    onClick={(e) => {
+                      console.log('🔍 Link clicked:', item.href, 'Current pathname:', pathname);
+                    }}
                     className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                       isActive
                         ? 'bg-blue-50 text-blue-700'
