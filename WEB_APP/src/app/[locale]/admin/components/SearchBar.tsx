@@ -3,9 +3,12 @@
  * 搜索和过滤工具栏
  */
 
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-// FilterStatus 和 SearchType 需要临时定义，因为全局types中没有
+
 type SearchType = 'all' | 'name' | 'email' | 'course' | 'teacher';
 type FilterStatus = 'all' | 'pending' | 'ready' | 'open' | 'rejected';
 
@@ -34,6 +37,8 @@ export function SearchBar({
   onSearch,
   onRefresh,
 }: SearchBarProps) {
+  const t = useTranslations('pages.admin.search');
+  
   const showFullSearch = (activeTab === 'students' && filterStatus === 'all') || activeTab === 'enrollments';
 
   if (!showFullSearch) {
@@ -45,7 +50,7 @@ export function SearchBar({
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              刷新
+              {t('buttons.refresh')}
             </Button>
           </div>
         </CardContent>
@@ -54,11 +59,11 @@ export function SearchBar({
   }
 
   const searchTypes: Array<{ value: SearchType; label: string; icon: string }> = [
-    { value: 'all', label: '全部', icon: '' },
-    { value: 'name', label: '姓名', icon: '👤' },
-    { value: 'email', label: '邮箱', icon: '📧' },
-    { value: 'course', label: '课程', icon: '📚' },
-    { value: 'teacher', label: '教师', icon: '👨‍🏫' },
+    { value: 'all', label: t('types.all'), icon: '' },
+    { value: 'name', label: t('types.name'), icon: '👤' },
+    { value: 'email', label: t('types.email'), icon: '📧' },
+    { value: 'course', label: t('types.course'), icon: '📚' },
+    { value: 'teacher', label: t('types.teacher'), icon: '👨‍🏫' },
   ];
 
   return (
@@ -91,12 +96,11 @@ export function SearchBar({
                   onChange={(e) => {
                     const value = e.target.value;
                     onSearchTermChange(value);
-                    // 自动触发搜索（下拉菜单选择后）
                     setTimeout(() => onSearch(), 100);
                   }}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">👨‍🏫 选择教师...</option>
+                  <option value="">👨‍🏫 {t('placeholders.selectTeacher')}</option>
                   {teachers.map((teacher) => (
                     <option key={teacher} value={teacher}>
                       {teacher}
@@ -109,12 +113,11 @@ export function SearchBar({
                   onChange={(e) => {
                     const value = e.target.value;
                     onSearchTermChange(value);
-                    // 自动触发搜索（下拉菜单选择后）
                     setTimeout(() => onSearch(), 100);
                   }}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">📚 选择课程...</option>
+                  <option value="">📚 {t('placeholders.selectCourse')}</option>
                   {courses.map((course) => (
                     <option key={course} value={course}>
                       {course}
@@ -126,12 +129,12 @@ export function SearchBar({
                   type="text"
                   placeholder={
                     searchType === 'name'
-                      ? '🔍 搜索学生姓名...'
+                      ? '🔍 ' + t('placeholders.searchName')
                       : searchType === 'email'
-                      ? '🔍 搜索邮箱地址...'
+                      ? '🔍 ' + t('placeholders.searchEmail')
                       : activeTab === 'students'
-                      ? '🔍 搜索学生姓名、邮箱或ID...'
-                      : '🔍 搜索学生姓名、邮箱或课程...'
+                      ? '🔍 ' + t('placeholders.searchStudents')
+                      : '🔍 ' + t('placeholders.searchAll')
                   }
                   value={searchTerm}
                   onChange={(e) => onSearchTermChange(e.target.value)}
@@ -145,14 +148,14 @@ export function SearchBar({
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                搜索
+                {t('buttons.search')}
               </Button>
             )}
             <Button onClick={onRefresh} variant="outline">
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              刷新
+              {t('buttons.refresh')}
             </Button>
           </div>
         </div>
@@ -160,6 +163,3 @@ export function SearchBar({
     </Card>
   );
 }
-
-
-

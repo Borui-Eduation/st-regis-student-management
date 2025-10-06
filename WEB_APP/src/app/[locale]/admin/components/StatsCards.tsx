@@ -3,8 +3,11 @@
  * 显示管理员统计数据的卡片组
  */
 
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-// Stats 和 FilterStatus 需要临时定义
+
 type FilterStatus = 'all' | 'pending' | 'ready' | 'open' | 'rejected';
 
 interface Stats {
@@ -30,45 +33,47 @@ interface StatsCardsProps {
 }
 
 export function StatsCards({ stats, filterStatus, onFilterChange }: StatsCardsProps) {
+  const t = useTranslations('pages.admin.stats');
+  
   const statCards = [
     {
       id: 'all' as FilterStatus,
       icon: '👥',
-      title: '学生总数',
+      title: t('all'),
       value: stats?.students.active || 0,
-      subtitle: '全部学生',
+      subtitle: t('allSubtitle'),
       color: 'blue',
     },
     {
       id: 'pending' as FilterStatus,
       icon: '⏳',
-      title: '待审批',
+      title: t('pending'),
       value: stats?.enrollments.pending || 0,
-      subtitle: '需要处理',
+      subtitle: t('pendingSubtitle'),
       color: 'orange',
     },
     {
       id: 'ready' as FilterStatus,
       icon: '✅',
-      title: '待开课',
+      title: t('ready'),
       value: stats?.enrollments.ready || 0,
-      subtitle: '等待IT',
+      subtitle: t('readySubtitle'),
       color: 'blue',
     },
     {
       id: 'open' as FilterStatus,
       icon: '🎉',
-      title: '已开课',
+      title: t('open'),
       value: stats?.enrollments.open || 0,
-      subtitle: '可以学习',
+      subtitle: t('openSubtitle'),
       color: 'green',
     },
     {
       id: 'rejected' as FilterStatus,
       icon: '❌',
-      title: '已拒绝',
+      title: t('rejected'),
       value: stats?.enrollments.rejected || 0,
-      subtitle: '被拒绝',
+      subtitle: t('rejectedSubtitle'),
       color: 'red',
     },
   ];
@@ -99,20 +104,19 @@ export function StatsCards({ stats, filterStatus, onFilterChange }: StatsCardsPr
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-xs font-medium text-gray-500">📚 总课程</CardTitle>
+          <CardTitle className="text-xs font-medium text-gray-500">
+            📚 {t('totalCourses')}
+          </CardTitle>
           <div className="text-2xl font-bold text-purple-600">
             {stats?.courses.active || 0}
           </div>
         </CardHeader>
         <CardContent>
           <p className="text-xs text-gray-500">
-            注册: {stats?.enrollments.total || 0}
+            {t('enrollments')}: {stats?.enrollments.total || 0}
           </p>
         </CardContent>
       </Card>
     </div>
   );
 }
-
-
-

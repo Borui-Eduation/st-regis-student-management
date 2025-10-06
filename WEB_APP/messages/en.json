@@ -140,13 +140,18 @@
         "students": "👨‍🎓 Student List"
       },
       "stats": {
-        "totalStudents": "Total Students",
-        "activeStudents": "Active Students",
-        "totalEnrollments": "Total Enrollments",
-        "pendingEnrollments": "Pending",
-        "readyEnrollments": "Ready",
-        "openEnrollments": "Open",
-        "rejectedEnrollments": "Rejected"
+        "all": "Total Students",
+        "allSubtitle": "All students",
+        "pending": "Pending",
+        "pendingSubtitle": "Needs processing",
+        "ready": "Ready",
+        "readySubtitle": "Waiting to start",
+        "open": "Open",
+        "openSubtitle": "Can study",
+        "rejected": "Rejected",
+        "rejectedSubtitle": "Rejected",
+        "totalCourses": "Total Courses",
+        "enrollments": "Enrollments"
       },
       "filters": {
         "allEnrollments": "Enrollment Records",
@@ -169,13 +174,24 @@
         "deleteStudent": "Delete Student"
       },
       "search": {
-        "placeholder": "Search students, courses or teachers...",
         "types": {
           "all": "All",
           "name": "Name",
           "email": "Email",
           "course": "Course",
           "teacher": "Teacher"
+        },
+        "placeholders": {
+          "selectTeacher": "Select teacher...",
+          "selectCourse": "Select course...",
+          "searchName": "Search student name...",
+          "searchEmail": "Search email address...",
+          "searchStudents": "Search student name, email or ID...",
+          "searchAll": "Search student name, email or course..."
+        },
+        "buttons": {
+          "search": "Search",
+          "refresh": "Refresh"
         }
       },
       "table": {

@@ -140,13 +140,18 @@
         "students": "👨‍🎓 学生列表"
       },
       "stats": {
-        "totalStudents": "总学生数",
-        "activeStudents": "激活学生",
-        "totalEnrollments": "总注册数",
-        "pendingEnrollments": "待审批",
-        "readyEnrollments": "待开课",
-        "openEnrollments": "已开课",
-        "rejectedEnrollments": "已拒绝"
+        "all": "学生总数",
+        "allSubtitle": "全部学生",
+        "pending": "待审批",
+        "pendingSubtitle": "需要处理",
+        "ready": "待开课",
+        "readySubtitle": "等待开课",
+        "open": "已开课",
+        "openSubtitle": "可以学习",
+        "rejected": "已拒绝",
+        "rejectedSubtitle": "被拒绝",
+        "totalCourses": "总课程",
+        "enrollments": "注册"
       },
       "filters": {
         "allEnrollments": "课程注册记录",
@@ -169,13 +174,24 @@
         "deleteStudent": "删除学生"
       },
       "search": {
-        "placeholder": "搜索学生、课程或教师...",
         "types": {
           "all": "全部",
           "name": "姓名",
           "email": "邮箱",
           "course": "课程",
           "teacher": "教师"
+        },
+        "placeholders": {
+          "selectTeacher": "选择教师...",
+          "selectCourse": "选择课程...",
+          "searchName": "搜索学生姓名...",
+          "searchEmail": "搜索邮箱地址...",
+          "searchStudents": "搜索学生姓名、邮箱或ID...",
+          "searchAll": "搜索学生姓名、邮箱或课程..."
+        },
+        "buttons": {
+          "search": "搜索",
+          "refresh": "刷新"
         }
       },
       "table": {
