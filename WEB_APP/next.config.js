@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // 🚀 启用 standalone 输出模式（Docker 部署必需）
-  output: 'standalone',
+  // 🚀 Vercel 部署时注释掉 standalone，Docker 部署时取消注释
+  // output: 'standalone',
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb',
@@ -10,6 +10,12 @@ const nextConfig = {
   },
   images: {
     domains: ['firebasestorage.googleapis.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+      },
+    ],
   },
   env: {
     NEXT_PUBLIC_APP_NAME: 'St Regis Enrollment',
