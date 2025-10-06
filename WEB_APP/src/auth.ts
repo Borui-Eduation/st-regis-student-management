@@ -1,12 +1,11 @@
 /**
  * NextAuth v5 Configuration (Full - Node.js Runtime)
- * This includes database adapter and runs in Node.js runtime
+ * 使用 JWT 会话策略，不需要数据库 adapter
  */
 
 import NextAuth from "next-auth";
-import { FirestoreAdapter } from "@next-auth/firebase-adapter";
 import Credentials from "next-auth/providers/credentials";
-import { adminDb, collections } from "./lib/firebase-admin";
+import { collections } from "./lib/firebase-admin";
 import { assignRoleByEmail } from "./lib/permissions";
 import { verifyPassword } from "./lib/password";
 import { authConfig } from "./auth.config";
@@ -84,7 +83,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   
-  adapter: FirestoreAdapter(adminDb),
+  // 🚀 使用 JWT 会话策略，不需要数据库 adapter
+  // adapter: FirestoreAdapter(adminDb),
   
   callbacks: {
     ...authConfig.callbacks,
@@ -139,7 +139,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             updatedAt: new Date(),
           });
           
-          // 🚀 同时更新 users collection（NextAuth使用）
+          // 🚀 使用 JWT 会话，不需要同步到 users collection
+          // (如果使用数据库会话策略，取消注释下面的代码)
+          /*
           try {
             const usersCollection = adminDb.collection('users');
             const authUserSnapshot = await usersCollection
@@ -157,6 +159,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           } catch (error) {
             console.error('更新users collection失败:', error);
           }
+          */
         }
 
         // 将角色和ID附加到用户对象
