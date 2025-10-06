@@ -245,6 +245,28 @@
       "title": "Unauthorized Access",
       "message": "You don't have permission to access this page",
       "backToHome": "Back to Home"
+    },
+    "agents": {
+      "title": "Agent Management",
+      "subtitle": "Manage agent accounts and view their students",
+      "searchPlaceholder": "Search by name, email or phone...",
+      "createAgent": "Create Agent",
+      "listTitle": "Agent List",
+      "noAgents": "No agents found",
+      "confirmDelete": "⚠️ Are you sure you want to delete this agent?\n\nThis action cannot be undone!",
+      "deleteSuccess": "✅ Agent deleted successfully",
+      "table": {
+        "contact": "Contact",
+        "contactInfo": "Contact Info",
+        "commission": "Commission"
+      },
+      "info": {
+        "title": "Agent Management Guide"
+      },
+      "errors": {
+        "loadFailed": "Failed to load agents",
+        "deleteFailed": "Failed to delete agent"
+      }
     }
   },
   "forms": {

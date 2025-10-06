@@ -245,6 +245,28 @@
       "title": "未授权访问",
       "message": "你没有权限访问此页面",
       "backToHome": "返回首页"
+    },
+    "agents": {
+      "title": "中介管理",
+      "subtitle": "管理中介账号并查看其学生",
+      "searchPlaceholder": "搜索姓名、邮箱或电话...",
+      "createAgent": "创建中介",
+      "listTitle": "中介列表",
+      "noAgents": "暂无中介",
+      "confirmDelete": "⚠️ 确认删除该中介吗？\n\n此操作无法撤销！",
+      "deleteSuccess": "✅ 中介已删除",
+      "table": {
+        "contact": "联系人",
+        "contactInfo": "联系信息",
+        "commission": "佣金"
+      },
+      "info": {
+        "title": "中介管理指南"
+      },
+      "errors": {
+        "loadFailed": "加载中介失败",
+        "deleteFailed": "删除中介失败"
+      }
     }
   },
   "forms": {
