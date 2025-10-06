@@ -646,56 +646,38 @@
         "basic": "Basic Info",
         "enrollments": "Enrollments",
         "payments": "Payment Records"
-      },
-      "fields": {
-        "studentId": "Student ID",
-        "name": "Name",
-        "email": "Email",
-        "phone": "Phone",
-        "school": "School",
-        "grade": "Grade",
-        "role": "Role",
-        "parentName": "Parent Name",
-        "parentEmail": "Parent Email",
-        "parentPhone": "Parent Phone",
-        "registeredAt": "Registration Date"
-      },
-      "enrollments": {
-        "title": "Course Enrollments",
-        "noRecords": "No enrollment records"
-      },
-      "payments": {
-        "title": "Payment Records",
-        "noRecords": "No payment records"
       }
     },
     "changeStatus": {
       "title": "Change Enrollment Status",
-      "fields": {
-        "currentStatus": "Current Status",
-        "newStatus": "New Status",
-        "reason": "Reason"
-      },
-      "placeholders": {
-        "reason": "Please enter the reason for status change"
-      },
-      "success": "✅ Status changed successfully!",
+      "description": "Change enrollment status for {student} in {course}",
+      "currentStatus": "Current Status",
+      "newStatus": "New Status",
+      "selectStatus": "Select new status",
+      "comments": "Reason/Comments",
+      "commentsPlaceholder": "e.g., Student completed payment, approved for course...",
+      "commentsHint": "This comment will be recorded in approval history",
+      "courseInfo": "Course Information",
+      "student": "Student",
+      "course": "Course",
+      "teacher": "Teacher",
+      "semester": "Semester",
+      "confirmChange": "Confirm Change",
+      "noChange": "No change needed",
+      "statusUnchanged": "Status has not changed",
+      "success": "✅ Status updated",
+      "successDesc": "Course status changed from \"{from}\" to \"{to}\"",
       "errors": {
-        "fillRequired": "Please select new status and fill in reason",
-        "changeFailed": "Failed to change status"
+        "updateFailed": "Update failed"
       }
     },
     "editGrades": {
       "title": "Edit Grades",
-      "fields": {
-        "midtermScore": "Midterm Score",
-        "finalScore": "Final Score",
-        "comments": "Comments"
-      },
-      "placeholders": {
-        "score": "0-100",
-        "comments": "Add comments for this student"
-      },
+      "midterm": "Midterm Score",
+      "final": "Final Score",
+      "comments": "Comments",
+      "scorePlaceholder": "0-100",
+      "commentsPlaceholder": "Add comments for this student",
       "success": "✅ Grades updated successfully!",
       "errors": {
         "invalidScore": "Please enter a valid score (0-100)",

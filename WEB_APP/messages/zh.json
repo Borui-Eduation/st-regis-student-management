@@ -646,56 +646,38 @@
         "basic": "基本信息",
         "enrollments": "选课记录",
         "payments": "支付记录"
-      },
-      "fields": {
-        "studentId": "学生ID",
-        "name": "姓名",
-        "email": "邮箱",
-        "phone": "电话",
-        "school": "学校",
-        "grade": "年级",
-        "role": "角色",
-        "parentName": "家长姓名",
-        "parentEmail": "家长邮箱",
-        "parentPhone": "家长电话",
-        "registeredAt": "注册日期"
-      },
-      "enrollments": {
-        "title": "课程注册",
-        "noRecords": "暂无选课记录"
-      },
-      "payments": {
-        "title": "支付记录",
-        "noRecords": "暂无支付记录"
       }
     },
     "changeStatus": {
-      "title": "更改注册状态",
-      "fields": {
-        "currentStatus": "当前状态",
-        "newStatus": "新状态",
-        "reason": "原因"
-      },
-      "placeholders": {
-        "reason": "请输入状态变更原因"
-      },
-      "success": "✅ 状态更改成功！",
+      "title": "更改课程注册状态",
+      "description": "为 {student} 在课程 {course} 中更改注册状态",
+      "currentStatus": "当前状态",
+      "newStatus": "选择新状态",
+      "selectStatus": "请选择状态",
+      "comments": "更改原因/备注",
+      "commentsPlaceholder": "例如：学生已完成支付，批准开课...",
+      "commentsHint": "该备注将记录在审批历史中",
+      "courseInfo": "课程信息",
+      "student": "学生",
+      "course": "课程",
+      "teacher": "教师",
+      "semester": "学期",
+      "confirmChange": "🔄 确认更改",
+      "noChange": "⚠️ 无需更改",
+      "statusUnchanged": "状态未发生变化",
+      "success": "✅ 状态已更新",
+      "successDesc": "课程状态已从 \"{from}\" 更改为 \"{to}\"",
       "errors": {
-        "fillRequired": "请选择新状态并填写原因",
-        "changeFailed": "状态更改失败"
+        "updateFailed": "更新失败"
       }
     },
     "editGrades": {
       "title": "编辑成绩",
-      "fields": {
-        "midtermScore": "期中成绩",
-        "finalScore": "期末成绩",
-        "comments": "评语"
-      },
-      "placeholders": {
-        "score": "0-100",
-        "comments": "为该学生添加评语"
-      },
+      "midterm": "期中成绩",
+      "final": "期末成绩",
+      "comments": "评语",
+      "scorePlaceholder": "0-100",
+      "commentsPlaceholder": "为该学生添加评语",
       "success": "✅ 成绩更新成功！",
       "errors": {
         "invalidScore": "请输入有效的分数（0-100）",
