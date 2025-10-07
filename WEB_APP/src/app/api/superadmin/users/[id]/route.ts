@@ -97,7 +97,18 @@ export async function DELETE(
 
 /**
  * PUT /api/superadmin/users/[id]
- * 更新系统用户
+ * 更新用户信息和角色
+ * 
+ * 🔄 支持角色转换：
+ * - student -> agent/teacher/admin/superadmin
+ * - agent/teacher/admin/superadmin -> student
+ * - 任意系统角色之间互转
+ * 
+ * 🚀 自动处理副作用：
+ * - student -> agent: 在 agents 集合创建记录
+ * - student -> teacher: 在 teachers 集合创建记录
+ * - agent -> student/其他: 删除 agents 集合记录
+ * - teacher -> student/其他: 删除 teachers 集合记录
  */
 export async function PUT(
   req: NextRequest,
@@ -127,21 +138,95 @@ export async function PUT(
     }
     
     const currentData = userDoc.data();
+    const currentRole = currentData?.role || 'student';
+    const newRole = role || currentRole;
     
-    // 只能修改系统用户
-    if (!currentData?.role || !['admin', 'agent', 'teacher', 'superadmin'].includes(currentData.role)) {
+    // 验证新角色
+    if (role && !['student', 'admin', 'agent', 'teacher', 'superadmin'].includes(role)) {
       return NextResponse.json(
-        { success: false, error: '只能修改系统用户' },
+        { success: false, error: '角色必须是 student, admin, agent, teacher 或 superadmin' },
         { status: 400 }
       );
     }
     
-    // 验证新角色
-    if (role && !['admin', 'agent', 'teacher', 'superadmin'].includes(role)) {
-      return NextResponse.json(
-        { success: false, error: '角色必须是 admin, agent, teacher 或 superadmin' },
-        { status: 400 }
-      );
+    // 🔄 处理角色转换的副作用
+    if (role && currentRole !== newRole) {
+      console.log(`🔄 角色转换: ${currentData?.email} ${currentRole} -> ${newRole}`);
+      
+      // 从 agent 转出：删除 agents 集合记录
+      if (currentRole === 'agent' && newRole !== 'agent') {
+        try {
+          const agentSnapshot = await collections.agents
+            .where('email', '==', currentData?.email)
+            .limit(1)
+            .get();
+          
+          if (!agentSnapshot.empty) {
+            await agentSnapshot.docs[0].ref.delete();
+            console.log(`✅ 已删除 agents 集合记录: ${currentData?.email}`);
+          }
+        } catch (error) {
+          console.error('Failed to delete agent record:', error);
+        }
+      }
+      
+      // 从 teacher 转出：删除 teachers 集合记录
+      if (currentRole === 'teacher' && newRole !== 'teacher') {
+        try {
+          const teacherSnapshot = await collections.teachers
+            .where('email', '==', currentData?.email)
+            .limit(1)
+            .get();
+          
+          if (!teacherSnapshot.empty) {
+            await teacherSnapshot.docs[0].ref.delete();
+            console.log(`✅ 已删除 teachers 集合记录: ${currentData?.email}`);
+          }
+        } catch (error) {
+          console.error('Failed to delete teacher record:', error);
+        }
+      }
+      
+      // 转为 agent：创建 agents 集合记录
+      if (newRole === 'agent' && currentRole !== 'agent') {
+        try {
+          const agentData = {
+            name: name || currentData?.name,
+            email: email || currentData?.email,
+            phone: phone || currentData?.phone || null,
+            status: status || currentData?.status || 'active',
+            totalStudents: 0,
+            totalRevenue: 0,
+            commission: 0,
+            createdAt: FieldValue.serverTimestamp(),
+            updatedAt: FieldValue.serverTimestamp(),
+          };
+          
+          await collections.agents.doc().set(agentData);
+          console.log(`✅ 已创建 agents 集合记录: ${agentData.email}`);
+        } catch (error) {
+          console.error('Failed to create agent record:', error);
+        }
+      }
+      
+      // 转为 teacher：创建 teachers 集合记录
+      if (newRole === 'teacher' && currentRole !== 'teacher') {
+        try {
+          const teacherData = {
+            name: name || currentData?.name,
+            email: email || currentData?.email,
+            phone: phone || currentData?.phone || null,
+            status: status || currentData?.status || 'active',
+            createdAt: FieldValue.serverTimestamp(),
+            updatedAt: FieldValue.serverTimestamp(),
+          };
+          
+          await collections.teachers.doc().set(teacherData);
+          console.log(`✅ 已创建 teachers 集合记录: ${teacherData.email}`);
+        } catch (error) {
+          console.error('Failed to create teacher record:', error);
+        }
+      }
     }
     
     // 更新数据
@@ -158,8 +243,8 @@ export async function PUT(
     await collections.students.doc(userId).update(updateData);
     
     return createSuccessResponse(
-      { userId, ...updateData },
-      '用户已更新'
+      { userId, ...updateData, roleChanged: currentRole !== newRole },
+      `用户已更新${currentRole !== newRole ? '（角色已变更：' + currentRole + ' → ' + newRole + '）' : ''}`
     );
     
   } catch (error: any) {

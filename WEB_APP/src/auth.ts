@@ -126,44 +126,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         
         console.log(`✅ 用户验证通过: ${email} (角色: ${dbRole})`);
 
-        // 🚀 优先使用邮箱白名单判断角色（保证权限配置是权威来源）
+        // 🚀 优先使用数据库中的角色（支持动态用户管理）
+        // 只有当邮箱在白名单中时，才使用白名单角色覆盖（用于紧急权限提升）
         const roleFromWhitelist = assignRoleByEmail(email);
+        const isInWhitelist = roleFromWhitelist !== 'student';
         
-        // 如果白名单中的角色与数据库不同，更新数据库
-        if (roleFromWhitelist !== dbRole) {
-          console.log(`🔄 更新用户角色: ${email} (${dbRole} → ${roleFromWhitelist})`);
+        let finalRole = dbRole;
+        
+        // 如果邮箱在白名单中，且白名单角色高于数据库角色，则使用白名单角色
+        if (isInWhitelist && roleFromWhitelist !== dbRole) {
+          console.log(`🔄 白名单优先：${email} (数据库: ${dbRole}, 白名单: ${roleFromWhitelist})`);
           
-          // 更新 students collection
+          // 更新数据库以保持一致性
           await collections.students.doc(userId).update({
             role: roleFromWhitelist,
             updatedAt: new Date(),
           });
           
-          // 🚀 使用 JWT 会话，不需要同步到 users collection
-          // (如果使用数据库会话策略，取消注释下面的代码)
-          /*
-          try {
-            const usersCollection = adminDb.collection('users');
-            const authUserSnapshot = await usersCollection
-              .where('email', '==', email)
-              .limit(1)
-              .get();
-            
-            if (!authUserSnapshot.empty) {
-              await authUserSnapshot.docs[0].ref.update({
-                role: roleFromWhitelist,
-                updatedAt: new Date(),
-              });
-              console.log(`✅ users collection 已同步: ${email} → ${roleFromWhitelist}`);
-            }
-          } catch (error) {
-            console.error('更新users collection失败:', error);
-          }
-          */
+          finalRole = roleFromWhitelist;
         }
 
         // 将角色和ID附加到用户对象
-        user.role = roleFromWhitelist;
+        user.role = finalRole;
         user.id = userId;
 
         return true;
@@ -177,20 +161,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // 初始登录时从数据库查询角色
       if (user?.email) {
         try {
-          // 🚀 优先使用邮箱白名单判断角色
-          const roleFromWhitelist = assignRoleByEmail(user.email);
-          
           const usersSnapshot = await collections.students
             .where('email', '==', user.email)
             .limit(1)
             .get();
 
           if (!usersSnapshot.empty) {
+            const userData = usersSnapshot.docs[0].data();
+            const dbRole = userData.role || 'student';
+            
             token.id = usersSnapshot.docs[0].id;
-            token.role = roleFromWhitelist; // 使用白名单角色
+            
+            // 🚀 优先使用数据库中的角色（支持动态用户管理）
+            // 只有当邮箱在白名单中时，白名单角色才覆盖数据库角色（用于紧急权限提升）
+            const roleFromWhitelist = assignRoleByEmail(user.email);
+            const isInWhitelist = roleFromWhitelist !== 'student';
+            
+            // 默认使用数据库角色
+            let finalRole = dbRole;
+            
+            // 只有邮箱在白名单中时，白名单角色才覆盖数据库角色
+            if (isInWhitelist && roleFromWhitelist !== dbRole) {
+              console.log(`🔄 白名单优先：${user.email} (数据库: ${dbRole}, 白名单: ${roleFromWhitelist})`);
+              finalRole = roleFromWhitelist;
+            }
+            
+            token.role = finalRole;
             
             // 🚀 优化：如果是agent，查询并存储agentId避免重复查询
-            if (roleFromWhitelist === 'agent') {
+            if (token.role === 'agent') {
               try {
                 const agentSnapshot = await collections.agents
                   .where('email', '==', user.email)
@@ -206,7 +205,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
             
             // 🚀 优化：如果是teacher，查询并存储teacherId避免重复查询
-            if (roleFromWhitelist === 'teacher') {
+            if (token.role === 'teacher') {
               try {
                 const teacherSnapshot = await collections.teachers
                   .where('email', '==', user.email)
@@ -222,12 +221,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
           } else {
             token.id = user.id;
-            token.role = roleFromWhitelist; // 使用白名单角色
+            token.role = user.role || assignRoleByEmail(user.email);
           }
         } catch (error) {
-          // Database query failed - use whitelist role
+          // Database query failed - fallback to user object
           token.id = user.id;
-          token.role = assignRoleByEmail(user.email);
+          token.role = user.role || assignRoleByEmail(user.email);
         }
       }
 

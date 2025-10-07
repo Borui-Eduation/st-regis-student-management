@@ -3,8 +3,17 @@
  * 超级管理员用户管理API
  * 权限：仅超级管理员
  * 
- * 功能：创建和管理系统用户（admin, agent, superadmin）
- * 注意：不涉及普通学生管理
+ * 🎯 功能：创建和管理系统用户
+ * ✅ 支持角色：admin, agent, teacher, superadmin
+ * ❌ 不支持角色：student（学生请使用 POST /api/admin/students）
+ * 
+ * 📋 角色说明：
+ * - admin: 管理员，可管理学生、课程、注册等
+ * - agent: 中介，可查看和管理自己的学生
+ * - teacher: 教师，可查看和管理自己的课程
+ * - superadmin: 超级管理员，拥有所有权限
+ * 
+ * 🔐 默认密码：StRegis2025!
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -16,16 +25,29 @@ import type { ApiResponse } from '@/types';
 
 /**
  * GET /api/superadmin/users
- * 获取所有系统用户（排除普通学生）
+ * 获取所有用户（包括学生）
+ * 
+ * Query参数：
+ * - includeStudents: 是否包括学生（默认 false）
  */
 export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse>> {
   try {
     await requireRole(['superadmin']);
     
-    // 获取所有用户，只显示admin, agent, teacher, superadmin
-    const snapshot = await collections.students
-      .where('role', 'in', ['admin', 'agent', 'teacher', 'superadmin'])
-      .get();
+    const searchParams = req.nextUrl.searchParams;
+    const includeStudents = searchParams.get('includeStudents') === 'true';
+    
+    let snapshot;
+    
+    if (includeStudents) {
+      // 获取所有用户（包括学生）
+      snapshot = await collections.students.get();
+    } else {
+      // 只获取系统用户（admin, agent, teacher, superadmin）
+      snapshot = await collections.students
+        .where('role', 'in', ['admin', 'agent', 'teacher', 'superadmin'])
+        .get();
+    }
     
     const users = snapshot.docs.map(doc => ({
       id: doc.id,

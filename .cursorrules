@@ -466,6 +466,176 @@ export async function GET(req: NextRequest) {
 }
 ```
 
+### 3. 用户角色判断逻辑 🚨
+
+**核心原则：优先使用数据库中的角色，邮箱白名单仅作为紧急覆盖机制**
+
+#### 问题背景
+早期设计使用 `assignRoleByEmail()` 函数根据邮箱白名单判断角色，导致：
+- 通过 `/api/superadmin/users` 创建的管理员
+- 如果邮箱不在白名单中，登录时角色被强制改为 'student'
+- 例如：创建 angel@example.com 为 admin，但登录后变成 student
+
+#### 解决方案（auth.ts）
+
+```typescript
+// ✅ 正确做法：优先使用数据库角色
+const dbRole = userData.role || 'student';
+const roleFromWhitelist = assignRoleByEmail(email);
+const isInWhitelist = roleFromWhitelist !== 'student';
+
+// 只有邮箱在白名单中时，白名单角色才覆盖数据库角色
+let finalRole = dbRole;
+if (isInWhitelist && roleFromWhitelist !== dbRole) {
+  console.log(`🔄 白名单优先：${email} (数据库: ${dbRole}, 白名单: ${roleFromWhitelist})`);
+  finalRole = roleFromWhitelist;
+}
+
+token.role = finalRole;
+
+// ❌ 错误做法：始终使用白名单角色
+token.role = assignRoleByEmail(email); // 会导致非白名单用户被改为 student
+```
+
+#### 角色优先级
+1. **邮箱白名单角色** - 用于紧急权限提升（如初始 superadmin）
+2. **数据库角色** - 正常情况下的权威来源
+3. **默认角色 (student)** - 两者都不存在时的兜底
+
+#### 白名单用途
+邮箱白名单（`permissions.ts`）应该只用于：
+- 初始 superadmin 账号（如 yao.s.1216@gmail.com）
+- 紧急情况下的权限提升
+- 不应该用于日常管理员创建
+
+#### 日常用户管理
+通过 `/api/superadmin/users` 创建的用户，角色完全由数据库控制，无需添加到白名单。
+
+### 4. 用户创建接口分离规则 🚨
+
+**核心原则：学生创建和系统用户创建必须严格分离**
+
+#### POST /api/admin/students
+**用途：** 仅用于创建学生账号  
+**权限：** admin 和 superadmin  
+**特征：**
+```typescript
+// ✅ 强制规则
+role: 'student',           // 必须硬编码为 student
+hashedPassword: null,      // 学生不设置密码（无登录功能）
+passwordSetAt: null,       // 不记录密码设置时间
+
+// ✅ 支持字段
+name, email, phone, school, grade
+parentName, parentEmail, parentPhone
+```
+
+**❌ 禁止行为：**
+- 不能接受 `role` 参数（即使是 superadmin 也不行）
+- 不能设置密码字段
+- 不能创建非学生角色
+
+#### POST /api/superadmin/users
+**用途：** 创建系统用户（admin, agent, teacher, superadmin）  
+**权限：** 仅 superadmin  
+**特征：**
+```typescript
+// ✅ 强制规则
+role: 'admin' | 'agent' | 'teacher' | 'superadmin',  // 必须指定，不能是 student
+hashedPassword: await getDefaultPasswordHash(),       // 自动设置默认密码
+passwordSetAt: FieldValue.serverTimestamp(),          // 记录密码设置时间
+
+// ✅ 默认密码
+StRegis2025!
+
+// ✅ 副作用
+if (role === 'agent') {
+  // 同时在 agents 集合创建记录
+  await collections.agents.doc().set({...agentData});
+}
+if (role === 'teacher') {
+  // 同时在 teachers 集合创建记录
+  await collections.teachers.doc().set({...teacherData});
+}
+```
+
+**❌ 禁止行为：**
+- 不能接受 `role: 'student'`（学生请使用 `/api/admin/students`）
+
+#### 前端组件分离
+
+**CreateStudentDialog.tsx**
+```typescript
+// ✅ 正确做法
+- 不显示角色选择器
+- 不显示密码设置选项
+- 调用 POST /api/admin/students
+- 表单只包含学生相关字段
+
+// ❌ 错误做法
+- 允许 superadmin 选择角色（会导致创建错误的用户类型）
+- 发送 role 参数到学生接口
+```
+
+**superadmin/page.tsx**
+```typescript
+// ✅ 正确做法
+- 显示角色选择器（admin, agent, teacher, superadmin）
+- 调用 POST /api/superadmin/users
+- 提示默认密码
+
+// ❌ 错误做法
+- 允许选择 student 角色（学生不应在此创建）
+```
+
+#### 职责对照表
+
+| 角色 | 创建接口 | 权限要求 | 密码 | 前端位置 |
+|------|---------|---------|------|---------|
+| student | `/api/admin/students` | admin, superadmin | 无 | Admin Dashboard |
+| admin | `/api/superadmin/users` | superadmin | StRegis2025! | Superadmin Dashboard |
+| agent | `/api/superadmin/users` | superadmin | StRegis2025! | Superadmin Dashboard |
+| teacher | `/api/superadmin/users` | superadmin | StRegis2025! | Superadmin Dashboard |
+| superadmin | `/api/superadmin/users` | superadmin | StRegis2025! | Superadmin Dashboard |
+
+#### 常见错误及修复
+
+**错误案例 1：在学生接口接受 role 参数**
+```typescript
+// ❌ 错误
+const userRole = (session.user?.role === 'superadmin' && role) ? role : 'student';
+
+// ✅ 正确
+role: 'student', // 硬编码，不接受参数
+```
+
+**错误案例 2：前端发送 role 参数到学生接口**
+```typescript
+// ❌ 错误
+if (isSuperAdmin && formData.role) {
+  createData.role = formData.role; // 会被学生接口忽略或产生错误
+}
+
+// ✅ 正确
+// 不发送 role 参数，让 API 强制设置
+```
+
+**错误案例 3：在系统用户接口允许 student 角色**
+```typescript
+// ❌ 错误
+if (!['admin', 'agent', 'teacher', 'superadmin', 'student'].includes(role)) {
+  return error;
+}
+
+// ✅ 正确
+if (!['admin', 'agent', 'teacher', 'superadmin'].includes(role)) {
+  return NextResponse.json(
+    { success: false, error: '学生请使用 POST /api/admin/students 创建' },
+    { status: 400 }
+  );
+}
+```
+
 ---
 
 ## 📊 监控和日志
@@ -791,5 +961,9 @@ artillery run load-test.yml
 ---
 
 **创建日期:** 2025-01-03  
-**最后更新:** 2025-01-03  
-**版本:** 1.0.0
+**最后更新:** 2025-10-06  
+**版本:** 1.2.0
+
+**更新记录:**
+- 2025-10-06: 添加用户创建接口分离规则（学生 vs 系统用户）
+- 2025-10-06: 修复角色判断逻辑 - 优先使用数据库角色而非邮箱白名单
