@@ -45,7 +45,7 @@ export default function AdminPage() {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchType, setSearchType] = useState<SearchType>('all');
+  const [searchType, setSearchType] = useState<SearchType>('course'); // 默认使用 course 搜索
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -87,6 +87,11 @@ export default function AdminPage() {
       return email && !systemEmails.has(email);
     });
     
+    // 🔥 应用状态筛选
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(enrollment => enrollment.status === filterStatus);
+    }
+    
     // 再应用搜索过滤
     if (searchTerm.trim() && activeTab === 'enrollments') {
       const term = searchTerm.toLowerCase().trim();
@@ -94,17 +99,13 @@ export default function AdminPage() {
       filtered = filtered.filter(enrollment => {
         // 根据搜索类型过滤
         switch (searchType) {
-          case 'name':
-            return enrollment.studentName?.toLowerCase().includes(term);
-          case 'email':
-            return enrollment.studentEmail?.toLowerCase().includes(term);
           case 'course':
             return enrollment.courseName?.toLowerCase().includes(term);
           case 'teacher':
             return enrollment.teacherName?.toLowerCase().includes(term);
           case 'all':
           default:
-            // 搜索所有字段
+            // 搜索所有字段（姓名、邮箱、课程、教师）
             return (
               enrollment.studentName?.toLowerCase().includes(term) ||
               enrollment.studentEmail?.toLowerCase().includes(term) ||
@@ -116,12 +117,14 @@ export default function AdminPage() {
     }
     
     return filtered;
-  }, [enrollments, searchTerm, searchType, activeTab]);
+  }, [enrollments, searchTerm, searchType, activeTab, filterStatus]);
 
   // Event Handlers
   const handleFilterChange = (status: FilterStatus) => {
     setFilterStatus(status);
     setCurrentPage(1);
+    // 重置搜索，以便显示该状态的所有记录
+    setSearchTerm('');
   };
 
   const handleSearch = () => {

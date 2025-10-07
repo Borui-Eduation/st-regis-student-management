@@ -360,11 +360,20 @@
       "createUser": "Create User",
       "createSuccess": "✅ User created successfully!",
       "deleteSuccess": "✅ User deleted!",
+      "updateSuccess": "✅ User updated successfully!",
       "confirmDelete": "⚠️ Confirm deleting user {name}?\n\nThis action cannot be undone!",
+      "showStudents": "Show Students",
+      "searchPlaceholder": "Search by name, email or phone...",
+      "noMatchingUsers": "No matching users found",
+      "noUsers": "No system users",
+      "roleFilter": {
+        "all": "All Roles"
+      },
       "errors": {
         "fillRequired": "Please fill in all required fields",
         "createFailed": "Creation failed",
         "deleteFailed": "Delete failed",
+        "updateFailed": "Update failed",
         "operationFailed": "Operation failed"
       },
       "userList": {
@@ -376,7 +385,9 @@
       },
       "dialog": {
         "title": "Create System User",
+        "editTitle": "Edit User",
         "description": "Create administrator, teacher, agent, or superadmin account",
+        "editDescription": "Update user information and role",
         "fields": {
           "name": "Name",
           "email": "Email",
@@ -387,7 +398,29 @@
           "name": "Enter name",
           "email": "Enter email",
           "phone": "Enter phone"
+        },
+        "roleChangeWarning": "Role change: {from} → {to}",
+        "warnings": {
+          "reloginRequired": "User needs to re-login for changes to take effect",
+          "studentToSystem": "Student will be upgraded to system user",
+          "systemToStudent": "System user will be downgraded to student (cannot login)",
+          "deleteAgentRecord": "Will delete agents collection record",
+          "deleteTeacherRecord": "Will delete teachers collection record",
+          "createAgentRecord": "Will create agents collection record",
+          "createTeacherRecord": "Will create teachers collection record"
         }
+      },
+      "info": {
+        "title": "Permission Instructions",
+        "items": [
+          "Student: No login access, profile management only",
+          "Administrator (Admin): Manage students, courses, enrollments, finance",
+          "Teacher: View and manage own courses",
+          "Agent: Refer students, view own students",
+          "Super Administrator (Superadmin): Manage all system users and permissions",
+          "Role Transition: Can upgrade students to system users, or downgrade system users to students",
+          "Users need to re-login after role changes"
+        ]
       }
     },
     "performance": {

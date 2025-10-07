@@ -360,11 +360,20 @@
       "createUser": "创建用户",
       "createSuccess": "✅ 用户创建成功！",
       "deleteSuccess": "✅ 用户已删除！",
+      "updateSuccess": "✅ 用户更新成功！",
       "confirmDelete": "⚠️ 确认删除用户 {name} 吗？\n\n此操作无法撤销！",
+      "showStudents": "显示学生",
+      "searchPlaceholder": "搜索姓名、邮箱或电话...",
+      "noMatchingUsers": "没有找到匹配的用户",
+      "noUsers": "暂无系统用户",
+      "roleFilter": {
+        "all": "所有角色"
+      },
       "errors": {
         "fillRequired": "请填写所有必填字段",
         "createFailed": "创建失败",
         "deleteFailed": "删除失败",
+        "updateFailed": "更新失败",
         "operationFailed": "操作失败"
       },
       "userList": {
@@ -376,7 +385,9 @@
       },
       "dialog": {
         "title": "创建系统用户",
+        "editTitle": "编辑用户",
         "description": "创建管理员、教师、中介或超级管理员账号",
+        "editDescription": "修改用户信息和角色权限",
         "fields": {
           "name": "姓名",
           "email": "邮箱",
@@ -387,7 +398,29 @@
           "name": "请输入姓名",
           "email": "请输入邮箱",
           "phone": "请输入电话"
+        },
+        "roleChangeWarning": "角色变更：{from} → {to}",
+        "warnings": {
+          "reloginRequired": "用户需要重新登录才能生效",
+          "studentToSystem": "学生将升级为系统用户",
+          "systemToStudent": "系统用户将降级为学生（无法登录）",
+          "deleteAgentRecord": "将删除 agents 集合记录",
+          "deleteTeacherRecord": "将删除 teachers 集合记录",
+          "createAgentRecord": "将创建 agents 集合记录",
+          "createTeacherRecord": "将创建 teachers 集合记录"
         }
+      },
+      "info": {
+        "title": "权限说明",
+        "items": [
+          "学生（Student）：无登录权限，仅用于档案管理",
+          "管理员（Admin）：管理学生、课程、注册、财务",
+          "教师（Teacher）：查看和管理自己的课程",
+          "中介（Agent）：推荐学生、查看自己的学生",
+          "超级管理员（Superadmin）：管理所有系统用户和权限",
+          "角色转换：可以将学生升级为系统用户，或将系统用户降级为学生",
+          "修改角色后，用户需要重新登录才能生效"
+        ]
       }
     },
     "performance": {

@@ -59,9 +59,6 @@ export function SearchBar({
   }
 
   const searchTypes: Array<{ value: SearchType; label: string; icon: string }> = [
-    { value: 'all', label: t('types.all'), icon: '' },
-    { value: 'name', label: t('types.name'), icon: '👤' },
-    { value: 'email', label: t('types.email'), icon: '📧' },
     { value: 'course', label: t('types.course'), icon: '📚' },
     { value: 'teacher', label: t('types.teacher'), icon: '👨‍🏫' },
   ];
@@ -124,33 +121,8 @@ export function SearchBar({
                     </option>
                   ))}
                 </select>
-              ) : (
-                <input
-                  type="text"
-                  placeholder={
-                    searchType === 'name'
-                      ? '🔍 ' + t('placeholders.searchName')
-                      : searchType === 'email'
-                      ? '🔍 ' + t('placeholders.searchEmail')
-                      : activeTab === 'students'
-                      ? '🔍 ' + t('placeholders.searchStudents')
-                      : '🔍 ' + t('placeholders.searchAll')
-                  }
-                  value={searchTerm}
-                  onChange={(e) => onSearchTermChange(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && onSearch()}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              )}
+              ) : null}
             </div>
-            {searchType !== 'teacher' && searchType !== 'course' && (
-              <Button onClick={onSearch} variant="outline">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                {t('buttons.search')}
-              </Button>
-            )}
             <Button onClick={onRefresh} variant="outline">
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

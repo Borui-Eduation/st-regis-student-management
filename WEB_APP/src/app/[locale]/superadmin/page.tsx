@@ -53,6 +53,8 @@ export default function SuperadminPage() {
   const [processing, setProcessing] = useState(false);
   const [editingUser, setEditingUser] = useState<SystemUser | null>(null);
   const [includeStudents, setIncludeStudents] = useState(false); // 是否显示学生
+  const [searchQuery, setSearchQuery] = useState(''); // 搜索关键词
+  const [roleFilter, setRoleFilter] = useState<string>('all'); // 角色筛选
   
   // 表单数据
   const [formData, setFormData] = useState({
@@ -222,6 +224,26 @@ export default function SuperadminPage() {
     );
   };
 
+  // 过滤用户列表
+  const filteredUsers = users.filter(user => {
+    // 角色筛选
+    if (roleFilter !== 'all' && user.role !== roleFilter) {
+      return false;
+    }
+    
+    // 搜索关键词
+    if (searchQuery) {
+      const searchLower = searchQuery.toLowerCase();
+      return (
+        user.name?.toLowerCase().includes(searchLower) ||
+        user.email?.toLowerCase().includes(searchLower) ||
+        user.phone?.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    return true;
+  });
+
   if (status === 'loading' || !session) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -306,7 +328,7 @@ export default function SuperadminPage() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle>{t('userList.title')}</CardTitle>
-                <p className="text-sm text-gray-600 mt-1">{tCommon('total', { count: users.length })}</p>
+                <p className="text-sm text-gray-600 mt-1">{tCommon('total', { count: filteredUsers.length })}</p>
               </div>
               <div className="flex items-center gap-4">
                 {/* 显示学生开关 */}
@@ -317,7 +339,7 @@ export default function SuperadminPage() {
                     onChange={(e) => setIncludeStudents(e.target.checked)}
                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                   />
-                  <span>显示学生</span>
+                  <span>{t('showStudents') || '显示学生'}</span>
                 </label>
                 
                 <Button
@@ -328,6 +350,34 @@ export default function SuperadminPage() {
                 </Button>
               </div>
             </div>
+
+            {/* 搜索和过滤栏 */}
+            <div className="mt-4 flex gap-4">
+              {/* 搜索框 */}
+              <div className="flex-1">
+                <Input
+                  type="text"
+                  placeholder={t('searchPlaceholder') || '搜索姓名、邮箱或电话...'}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+              
+              {/* 角色筛选 */}
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">{t('roleFilter.all') || '所有角色'}</option>
+                <option value="student">{tRoles('student')}</option>
+                <option value="admin">{tRoles('admin')}</option>
+                <option value="teacher">{tRoles('teacher')}</option>
+                <option value="agent">{tRoles('agent')}</option>
+                <option value="superadmin">{tRoles('superadmin')}</option>
+              </select>
+            </div>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -335,9 +385,9 @@ export default function SuperadminPage() {
                 <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 <p className="mt-4 text-gray-600">加载中...</p>
               </div>
-            ) : users.length === 0 ? (
+            ) : filteredUsers.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-600">暂无系统用户</p>
+                <p className="text-gray-600">{searchQuery || roleFilter !== 'all' ? '没有找到匹配的用户' : '暂无系统用户'}</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -353,7 +403,7 @@ export default function SuperadminPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {users.map((user) => (
+                    {filteredUsers.map((user) => (
                       <tr key={user.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="font-medium text-gray-900">{user.name}</div>
