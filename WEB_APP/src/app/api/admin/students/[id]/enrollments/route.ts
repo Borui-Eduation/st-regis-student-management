@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/api-auth';
 import { adminDb, collections } from '@/lib/firebase-admin';
 import type { ApiResponse } from '@/types';
 
@@ -11,6 +12,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<ApiResponse>> {
   try {
+    await requireRole(['admin', 'superadmin']);
     const { id: studentId } = await params;
 
     // 查询该学生的所有注册

@@ -3,8 +3,9 @@ import { requireRole } from '@/lib/api-auth';
 import { collections, FieldValue } from '@/lib/firebase-admin';
 import { createErrorResponse, createSuccessResponse, notFoundError, validationError, conflictError } from '@/lib/api-error-handler';
 import { getPriceForCourse } from '@/lib/pricing';
-import { tieredCachedFetch, invalidateTieredCacheByPrefix } from '@/lib/cache-tiered';
+import { tieredCachedFetch } from '@/lib/cache-tiered';
 import { CacheKeys, CACHE_STRATEGY } from '@/lib/cache';
+import { invalidateEnrollmentsCaches, invalidateStudentsCaches } from '@/lib/cache-utils';
 import type { ApiResponse, PaginatedResponse } from '@/types';
 
 /**
@@ -151,7 +152,10 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
     });
 
     // 🚀 自动失效相关缓存（两层）
-    await invalidateTieredCacheByPrefix('enrollments:');
+    await Promise.all([
+      invalidateEnrollmentsCaches(),
+      invalidateStudentsCaches(),
+    ]);
 
     return createSuccessResponse(
       {

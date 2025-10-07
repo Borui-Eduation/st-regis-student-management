@@ -193,8 +193,8 @@ export const CacheTTL = {
  * Cache options interface
  */
 export interface CacheOptions {
-  l1Ttl: number;  // L1内存缓存TTL（秒）
-  l2Ttl: number;  // L2 Redis缓存TTL（秒）
+  l1Ttl: number;  // L1内存缓存TTL（毫秒）
+  l2Ttl: number;  // L2 Redis缓存TTL（毫秒）
   description?: string;
 }
 
@@ -217,8 +217,8 @@ export const CACHE_STRATEGY: Record<string, CacheOptions> = {
    * 示例：GET /api/students/:id, GET /api/courses/:id
    */
   profiles: {
-    l1Ttl: 900,      // 15分钟内存缓存
-    l2Ttl: 3600,     // 1小时Redis缓存
+    l1Ttl: 15 * 60 * 1000,     // 15分钟内存缓存（毫秒）
+    l2Ttl: 60 * 60 * 1000,     // 1小时Redis缓存（毫秒）
     description: '基础档案：students, agents, teachers, courses（单个记录）',
   },
 
@@ -234,8 +234,8 @@ export const CACHE_STRATEGY: Record<string, CacheOptions> = {
    * 示例：GET /api/admin/enrollments
    */
   lists: {
-    l1Ttl: 60,       // 1分钟内存缓存
-    l2Ttl: 300,      // 5分钟Redis缓存
+    l1Ttl: 60 * 1000,        // 1分钟内存缓存（毫秒）
+    l2Ttl: 5 * 60 * 1000,    // 5分钟Redis缓存（毫秒）
     description: '查询列表：enrollments, payments（列表）',
   },
 
@@ -251,8 +251,8 @@ export const CACHE_STRATEGY: Record<string, CacheOptions> = {
    * 示例：GET /api/admin/stats, GET /api/admin/finance/stats
    */
   stats: {
-    l1Ttl: 300,      // 5分钟内存缓存
-    l2Ttl: 900,      // 15分钟Redis缓存
+    l1Ttl: 5 * 60 * 1000,     // 5分钟内存缓存（毫秒）
+    l2Ttl: 15 * 60 * 1000,    // 15分钟Redis缓存（毫秒）
     description: '统计数据：dashboard stats, finance stats',
   },
 
@@ -268,8 +268,8 @@ export const CACHE_STRATEGY: Record<string, CacheOptions> = {
    * 示例：GET /api/config/status-map
    */
   config: {
-    l1Ttl: 3600,     // 1小时内存缓存
-    l2Ttl: 3600,     // 1小时Redis缓存
+    l1Ttl: 60 * 60 * 1000,    // 1小时内存缓存（毫秒）
+    l2Ttl: 60 * 60 * 1000,    // 1小时Redis缓存（毫秒）
     description: '配置数据：status maps, constants',
   },
 
