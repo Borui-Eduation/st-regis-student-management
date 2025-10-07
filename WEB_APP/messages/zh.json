@@ -176,11 +176,21 @@
       },
       "search": {
         "types": {
-          "all": "全部",
+          "all": "🎯 智能搜索",
           "name": "姓名",
           "email": "邮箱",
-          "course": "课程",
-          "teacher": "教师"
+          "course": "📚 课程",
+          "teacher": "👨‍🏫 教师"
+        },
+        "descriptions": {
+          "all": "搜索任何内容：学生、教师、课程...",
+          "course": "按课程筛选学生",
+          "teacher": "按教师筛选学生"
+        },
+        "hints": {
+          "all": "输入学生姓名、邮箱、教师名字或课程名称进行搜索",
+          "course": "选择课程以查看该课程的所有学生",
+          "teacher": "选择教师以查看该教师名下的所有学生"
         },
         "placeholders": {
           "selectTeacher": "选择教师...",
@@ -188,11 +198,16 @@
           "searchName": "搜索学生姓名...",
           "searchEmail": "搜索邮箱地址...",
           "searchStudents": "搜索学生姓名、邮箱或ID...",
-          "searchAll": "搜索学生姓名、邮箱或课程..."
+          "searchAll": "搜索学生姓名、邮箱或课程...",
+          "searchAnything": "🔍 搜索学生姓名、邮箱、教师或课程..."
         },
         "buttons": {
           "search": "搜索",
-          "refresh": "刷新"
+          "refresh": "刷新",
+          "clear": "清除"
+        },
+        "status": {
+          "searching": "正在搜索"
         }
       },
       "table": {
