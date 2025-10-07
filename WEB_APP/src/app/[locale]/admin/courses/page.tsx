@@ -118,8 +118,9 @@ export default function CoursesManagementPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="mb-8 flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50">
+      <div className="w-full mx-auto px-6 lg:px-8 py-8">
+        <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
           <p className="text-gray-600 mt-2">{t('subtitle')}</p>
