@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/lib/api-auth';
 import { collections } from '@/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { invalidateFinanceCaches } from '@/lib/cache-utils';
 
 /**
  * POST /api/admin/finance/mark-paid
@@ -69,6 +70,9 @@ export async function POST(req: NextRequest) {
         updatedAt: FieldValue.serverTimestamp(),
       });
     }
+
+    // 失效财务相关缓存
+    await invalidateFinanceCaches();
 
     return NextResponse.json({
       success: true,

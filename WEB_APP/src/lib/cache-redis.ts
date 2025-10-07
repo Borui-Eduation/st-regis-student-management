@@ -10,15 +10,63 @@ import { kv } from '@vercel/kv';
  */
 export class RedisCache {
   /**
+   * 将键索引到可按前缀失效的集合中
+   * 例如 key = "students:1:20:query" 将被索引到：
+   *   _keys:students:
+   *   _keys:students:1:
+   *   _keys:students:1:20:
+   *   _keys:students:1:20:query
+   */
+  private async indexKey(key: string): Promise<void> {
+    const prefixes = this.computePrefixes(key);
+    await Promise.all(prefixes.map(prefix => kv.sadd(`_keys:${prefix}`, key)));
+  }
+
+  /**
+   * 从前缀集合中移除某个键
+   */
+  private async deindexKey(key: string): Promise<void> {
+    const prefixes = this.computePrefixes(key);
+    await Promise.all(prefixes.map(prefix => kv.srem(`_keys:${prefix}`, key)));
+  }
+
+  /**
+   * 计算所有层级前缀（包含完整键作为最后一个前缀）
+   */
+  private computePrefixes(key: string): string[] {
+    const parts = key.split(':');
+    if (parts.length === 1) {
+      return [`${key}`];
+    }
+    const prefixes: string[] = [];
+    for (let i = 0; i < parts.length; i++) {
+      const slice = parts.slice(0, i + 1).join(':');
+      const ensureColon = i < parts.length - 1 ? ':' : '';
+      prefixes.push(`${slice}${ensureColon}`);
+    }
+    return prefixes;
+  }
+  /**
    * 获取缓存数据
    */
   async get<T>(key: string): Promise<T | null> {
     try {
-      const value = await kv.get<T>(key);
-      if (value !== null) {
+      const raw = await kv.get<unknown>(key);
+      if (raw !== null) {
         console.log(`✅ Redis缓存命中: ${key}`);
       }
-      return value;
+      // 兼容两种存储形态：
+      // 1) 直接对象（kv.set存储JSON）
+      // 2) 字符串（历史版本使用JSON.stringify + setex）
+      if (typeof raw === 'string') {
+        try {
+          return JSON.parse(raw) as T;
+        } catch {
+          // 不是JSON字符串，则按字符串返回
+          return raw as unknown as T;
+        }
+      }
+      return raw as T | null;
     } catch (error) {
       console.error(`❌ Redis获取失败: ${key}`, error);
       return null;
@@ -33,16 +81,17 @@ export class RedisCache {
    */
   async set<T>(key: string, value: T, ttl?: number): Promise<void> {
     try {
-      if (ttl) {
-        // 设置带过期时间的缓存（TTL单位：毫秒，Redis需要秒）
-        const ttlInSeconds = Math.max(1, Math.floor(ttl / 1000)); // 确保至少1秒
-        await kv.setex(key, ttlInSeconds, JSON.stringify(value));
+      if (ttl && ttl > 0) {
+        // 使用 kv.set 并设置过期时间（单位：秒）
+        const ttlInSeconds = Math.max(1, Math.floor(ttl / 1000));
+        await kv.set(key, value as any, { ex: ttlInSeconds });
         console.log(`💾 Redis缓存已保存: ${key}, TTL: ${ttlInSeconds}秒 (${ttl}ms)`);
       } else {
-        // 永久缓存
-        await kv.set(key, JSON.stringify(value));
+        await kv.set(key, value as any);
         console.log(`💾 Redis缓存已保存: ${key} (永久)`);
       }
+      // 维护前缀索引，便于按前缀失效
+      await this.indexKey(key);
     } catch (error) {
       console.error(`❌ Redis保存失败: ${key}`, error);
     }
@@ -55,6 +104,8 @@ export class RedisCache {
     try {
       await kv.del(key);
       console.log(`🗑️ Redis缓存已删除: ${key}`);
+      // 从索引中移除
+      await this.deindexKey(key);
     } catch (error) {
       console.error(`❌ Redis删除失败: ${key}`, error);
     }
@@ -65,13 +116,22 @@ export class RedisCache {
    */
   async deleteByPattern(pattern: string): Promise<void> {
     try {
-      // Vercel KV不支持SCAN，需要手动管理键列表
-      // 使用特殊键存储所有相关键
       const keysSetKey = `_keys:${pattern}`;
-      const keys = await kv.smembers<string>(keysSetKey);
-      
+      let keys = await kv.smembers<string>(keysSetKey);
+      // 如果索引还未建立，尝试通过 keys(prefix*) 回退删除
+      if (!keys || keys.length === 0) {
+        try {
+          const prefix = pattern.endsWith('*') ? pattern : `${pattern}*`;
+          // @ts-ignore - keys API 可用但类型定义可能缺失
+          keys = (await (kv as any).keys(prefix)) as string[];
+        } catch {
+          keys = [];
+        }
+      }
+
       if (keys && keys.length > 0) {
         await Promise.all(keys.map(k => kv.del(k)));
+        // 清理索引集合
         await kv.del(keysSetKey);
         console.log(`🗑️ Redis批量删除: ${pattern} (${keys.length}个键)`);
       }

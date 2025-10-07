@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/lib/api-auth';
 import { adminDb, collections, FieldValue } from '@/lib/firebase-admin';
 import { createErrorResponse, createSuccessResponse } from '@/lib/api-error-handler';
+import { tieredCachedFetch } from '@/lib/cache-tiered';
+import { CACHE_STRATEGY } from '@/lib/cache';
 import { getDefaultPasswordHash, hashPassword } from '@/lib/password';
 import type { ApiResponse, PaginatedResponse } from '@/types';
 
@@ -11,6 +13,7 @@ import type { ApiResponse, PaginatedResponse } from '@/types';
  */
 export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse>> {
   try {
+    await requireRole(['admin', 'superadmin']);
     const searchParams = req.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
     const pageSize = parseInt(searchParams.get('pageSize') || '20');
@@ -25,134 +28,110 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse>> 
       query = query.where('status', '==', status) as any;
     }
 
-    const snapshot = await query.get();
-    
-    // 🚀 优化：一次性获取所有enrollments，避免N+1查询
-    const studentIds = snapshot.docs.map(doc => doc.id);
-    
-    // 批量获取所有enrollments（使用 'in' 查询，最多10个ID一批）
-    const enrollmentsMap = new Map<string, any[]>();
-    
-    if (studentIds.length > 0) {
-      // Firestore 'in' 查询最多支持10个值，需要分批
-      const batchSize = 10;
-      const enrollmentPromises = [];
-      
-      for (let i = 0; i < studentIds.length; i += batchSize) {
-        const batch = studentIds.slice(i, i + batchSize);
-        enrollmentPromises.push(
-          collections.enrollments
-            .where('studentId', 'in', batch)
-            .get()
-        );
-      }
-      
-      const enrollmentSnapshots = await Promise.all(enrollmentPromises);
-      
-      // 构建enrollments映射表
-      enrollmentSnapshots.forEach(snapshot => {
-        snapshot.docs.forEach(eDoc => {
-          const eData = eDoc.data();
-          const studentId = eData.studentId;
-          
-          if (!enrollmentsMap.has(studentId)) {
-            enrollmentsMap.set(studentId, []);
+    const searchLower = search.toLowerCase();
+    const cacheKey = `students:list:${status}:${page}:${pageSize}:${searchLower}`;
+    const response = await tieredCachedFetch(
+      cacheKey,
+      async () => {
+        const snapshot = await query.get();
+
+        // 批量获取所有enrollments（使用 'in' 查询，最多10个ID一批）
+        const studentIds = snapshot.docs.map(doc => doc.id);
+        const enrollmentsMap = new Map<string, any[]>();
+        if (studentIds.length > 0) {
+          const batchSize = 10;
+          const enrollmentPromises = [] as Promise<any>[];
+          for (let i = 0; i < studentIds.length; i += batchSize) {
+            const batch = studentIds.slice(i, i + batchSize);
+            enrollmentPromises.push(
+              collections.enrollments.where('studentId', 'in', batch).get()
+            );
           }
-          
-          enrollmentsMap.get(studentId)!.push({
-            enrollmentId: eDoc.id,
-            courseName: eData.courseName,
-            teacherName: eData.teacherName,
-            status: eData.status,
+          const enrollmentSnapshots = await Promise.all(enrollmentPromises);
+          enrollmentSnapshots.forEach(snapshot => {
+            snapshot.docs.forEach(eDoc => {
+              const eData = eDoc.data();
+              const studentId = eData.studentId;
+              if (!enrollmentsMap.has(studentId)) {
+                enrollmentsMap.set(studentId, []);
+              }
+              enrollmentsMap.get(studentId)!.push({
+                enrollmentId: eDoc.id,
+                courseName: eData.courseName,
+                teacherName: eData.teacherName,
+                status: eData.status,
+              });
+            });
           });
+        }
+
+        // 🔧 排除教师账号（避免老师出现在学生列表中）
+        const teachersSnapshot = await collections.teachers.get();
+        const teacherEmails = new Set(teachersSnapshot.docs.map(doc => doc.data().email?.toLowerCase()));
+
+        let allStudents = snapshot.docs
+          .filter(doc => {
+            const data = doc.data();
+            const email = data.email?.toLowerCase();
+            const role = data.role;
+            const isNonStudent = role && ['admin', 'superadmin', 'agent'].includes(role);
+            return email && !teacherEmails.has(email) && !isNonStudent;
+          })
+          .map(doc => {
+            const data = doc.data();
+            const { hashedPassword, ...safeData } = data as any; // 移除敏感字段
+            const studentId = doc.id;
+            const enrollments = enrollmentsMap.get(studentId) || [];
+            return {
+              ...safeData,
+              studentId,
+              enrollmentDate: data.enrollmentDate?.toDate?.()?.toISOString() || null,
+              createdAt: data.createdAt?.toDate?.()?.toISOString() || null,
+              updatedAt: data.updatedAt?.toDate?.()?.toISOString() || null,
+              enrollments,
+            };
+          });
+
+        // 搜索过滤（内存中）
+        if (searchLower) {
+          allStudents = allStudents.filter((student: any) => {
+            const basicMatch =
+              student.name?.toLowerCase().includes(searchLower) ||
+              student.email?.toLowerCase().includes(searchLower) ||
+              student.phoneNumber?.includes(searchLower) ||
+              student.studentId?.toLowerCase().includes(searchLower);
+            const courseMatch = student.enrollments?.some((e: any) =>
+              e.courseName?.toLowerCase().includes(searchLower) ||
+              e.teacherName?.toLowerCase().includes(searchLower)
+            );
+            return basicMatch || courseMatch;
+          });
+        }
+
+        // 排序（按创建时间倒序）
+        allStudents.sort((a: any, b: any) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
         });
-      });
-    }
-    
-    // 组装学生数据（不需要异步）
-    // 🔧 排除教师账号（避免老师出现在学生列表中）
-    const teachersSnapshot = await collections.teachers.get();
-    const teacherEmails = new Set(teachersSnapshot.docs.map(doc => doc.data().email?.toLowerCase()));
-    
-    let allStudents = snapshot.docs
-      .filter(doc => {
-        const data = doc.data();
-        const email = data.email?.toLowerCase();
-        const role = data.role;
-        
-        // 🚀 排除非学生账号：
-        // 1. 排除教师邮箱
-        // 2. 排除明确标记为管理员/中介的账号 (admin, superadmin, agent)
-        // 3. 没有role字段的默认视为学生
-        const isNonStudent = role && ['admin', 'superadmin', 'agent'].includes(role);
-        
-        return (
-          email && 
-          !teacherEmails.has(email) &&
-          !isNonStudent
-        );
-      })
-      .map(doc => {
-      const data = doc.data();
-      const studentId = doc.id;
-      const enrollments = enrollmentsMap.get(studentId) || [];
-      
-      return {
-        ...data,
-        studentId,
-        enrollmentDate: data.enrollmentDate?.toDate?.()?.toISOString() || null,
-        createdAt: data.createdAt?.toDate?.()?.toISOString() || null,
-        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || null,
-        enrollments,
-      };
-    });
 
-    // 搜索过滤（内存中）
-    if (search) {
-      const searchLower = search.toLowerCase();
-      allStudents = allStudents.filter(student => {
-        // 基本信息搜索
-        const studentData = student as any;
-        const basicMatch = 
-          studentData.name?.toLowerCase().includes(searchLower) ||
-          studentData.email?.toLowerCase().includes(searchLower) ||
-          studentData.phoneNumber?.includes(search) ||
-          studentData.studentId?.toLowerCase().includes(searchLower);
-        
-        // 课程和教师搜索
-        const courseMatch = student.enrollments?.some((e: any) =>
-          e.courseName?.toLowerCase().includes(searchLower) ||
-          e.teacherName?.toLowerCase().includes(searchLower)
-        );
-        
-        return basicMatch || courseMatch;
-      });
-    }
+        // 分页
+        const total = allStudents.length;
+        const offset = (page - 1) * pageSize;
+        const items = allStudents.slice(offset, offset + pageSize);
 
-    // 排序（按创建时间倒序）
-    allStudents.sort((a, b) => {
-      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return dateB - dateA;
-    });
+        return {
+          items,
+          total,
+          page,
+          pageSize,
+          hasMore: offset + items.length < total,
+        } as PaginatedResponse<any>;
+      },
+      CACHE_STRATEGY.lists
+    );
 
-    // 分页
-    const total = allStudents.length;
-    const offset = (page - 1) * pageSize;
-    const items = allStudents.slice(offset, offset + pageSize);
-
-    const response: PaginatedResponse<any> = {
-      items,
-      total,
-      page,
-      pageSize,
-      hasMore: offset + items.length < total,
-    };
-
-    return NextResponse.json({
-      success: true,
-      data: response,
-    });
+    return NextResponse.json({ success: true, data: response });
 
   } catch (error: any) {
     return NextResponse.json(

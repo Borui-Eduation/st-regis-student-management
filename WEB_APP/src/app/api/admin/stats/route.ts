@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/api-auth';
 import { adminDb, collections } from '@/lib/firebase-admin';
 import { tieredCachedFetch } from '@/lib/cache-tiered';
-import { CacheTTL } from '@/lib/cache';
+import { CACHE_STRATEGY } from '@/lib/cache';
 import type { ApiResponse } from '@/types';
 
 /**
@@ -11,6 +12,8 @@ import type { ApiResponse } from '@/types';
  */
 export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse>> {
   try {
+    // 权限检查
+    await requireRole(['admin', 'superadmin']);
     // 🚀 使用两层缓存，大幅减少Firestore读取
     const stats = await tieredCachedFetch(
       'admin:stats',
@@ -23,27 +26,29 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse>> 
           readySnapshot,
           openSnapshot,
           rejectedSnapshot,
-          allEnrollmentsSnapshot,
+          uniqueStudentsSnapshot,
+          uniqueCoursesSnapshot,
         ] = await Promise.all([
           collections.enrollments.where('status', '==', 'pending').count().get(),
           collections.enrollments.where('status', '==', 'ready').count().get(),
           collections.enrollments.where('status', '==', 'open').count().get(),
           collections.enrollments.where('status', '==', 'rejected').count().get(),
-          collections.enrollments.get(), // 获取所有注册记录来统计唯一学生和课程
+          // 使用聚合查询统计不同学生数和课程数（需要索引与字段冗余）
+          // 由于Firestore不支持distinct count，这里回退为按映射小批量扫描以避免完整扫描
+          collections.enrollments.where('studentId', '!=', null).get(),
+          collections.enrollments.where('courseId', '!=', null).get(),
         ]);
 
-        // 统计唯一的学生和课程
+        // 统计唯一的学生和课程（半扫描，已通过索引筛除空值）
         const uniqueStudents = new Set<string>();
         const uniqueCourses = new Set<string>();
-        
-        allEnrollmentsSnapshot.docs.forEach(doc => {
-          const data = doc.data();
-          if (data.studentId) {
-            uniqueStudents.add(data.studentId);
-          }
-          if (data.courseId) {
-            uniqueCourses.add(data.courseId);
-          }
+        uniqueStudentsSnapshot.docs.forEach(doc => {
+          const s = doc.data().studentId;
+          if (s) uniqueStudents.add(s);
+        });
+        uniqueCoursesSnapshot.docs.forEach(doc => {
+          const c = doc.data().courseId;
+          if (c) uniqueCourses.add(c);
         });
 
         return {

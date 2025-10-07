@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/lib/api-auth';
 import { collections, FieldValue } from '@/lib/firebase-admin';
 import { createErrorResponse, createSuccessResponse, validationError } from '@/lib/api-error-handler';
+import { tieredCachedFetch } from '@/lib/cache-tiered';
+import { CACHE_STRATEGY } from '@/lib/cache';
+import { invalidateAgentsCaches } from '@/lib/cache-utils';
 import type { ApiResponse, PaginatedResponse } from '@/types';
 
 /**
@@ -18,46 +21,43 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse>> 
     const pageSize = parseInt(searchParams.get('pageSize') || '50');
     const search = searchParams.get('search') || '';
 
-    // 查询中介
-    const snapshot = await collections.agents.get();
-    
-    let allAgents = snapshot.docs.map(doc => ({
-      agentId: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || null,
-      updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || null,
-    }));
-
-    // 搜索过滤
-    if (search) {
-      const searchLower = search.toLowerCase();
-      allAgents = allAgents.filter((agent: any) =>
-        agent.name?.toLowerCase().includes(searchLower) ||
-        agent.email?.toLowerCase().includes(searchLower) ||
-        agent.phone?.includes(search) ||
-        agent.company?.toLowerCase().includes(searchLower)
-      );
-    }
-
-    // 排序（按创建时间倒序）
-    allAgents.sort((a: any, b: any) => {
-      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return dateB - dateA;
-    });
-
-    // 分页
-    const total = allAgents.length;
-    const offset = (page - 1) * pageSize;
-    const items = allAgents.slice(offset, offset + pageSize);
-
-    const response: PaginatedResponse<any> = {
-      items,
-      total,
-      page,
-      pageSize,
-      hasMore: offset + items.length < total,
-    };
+    const searchLower = search.toLowerCase();
+    const response = await tieredCachedFetch(
+      `agents:list:${page}:${pageSize}:${searchLower}`,
+      async () => {
+        const snapshot = await collections.agents.get();
+        let allAgents = snapshot.docs.map(doc => ({
+          agentId: doc.id,
+          ...doc.data(),
+          createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || null,
+          updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || null,
+        }));
+        if (searchLower) {
+          allAgents = allAgents.filter((agent: any) =>
+            agent.name?.toLowerCase().includes(searchLower) ||
+            agent.email?.toLowerCase().includes(searchLower) ||
+            agent.phone?.includes(searchLower) ||
+            agent.company?.toLowerCase().includes(searchLower)
+          );
+        }
+        allAgents.sort((a: any, b: any) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        });
+        const total = allAgents.length;
+        const offset = (page - 1) * pageSize;
+        const items = allAgents.slice(offset, offset + pageSize);
+        return {
+          items,
+          total,
+          page,
+          pageSize,
+          hasMore: offset + items.length < total,
+        } as PaginatedResponse<any>;
+      },
+      CACHE_STRATEGY.lists
+    );
 
     return createSuccessResponse(response, 'Agents fetched successfully');
   } catch (error: any) {
@@ -125,6 +125,9 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
+
+    // 失效Agent相关缓存
+    await invalidateAgentsCaches();
 
     return createSuccessResponse(newAgent, 'Agent created successfully', 201);
   } catch (error: any) {
