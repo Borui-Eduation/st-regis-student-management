@@ -118,6 +118,18 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
     // 计算课程费用
     const courseFee = getPriceForCourse(courseData?.subject || 'Math');
 
+    // 从课程获取日期，如果没有则使用默认值
+    const startDate = courseData?.startDate || '2025-09-01';
+    const endDate = courseData?.endDate || '2026-01-20';
+    
+    // 格式化日期（确保是字符串格式）
+    const formattedStartDate = typeof startDate === 'number' 
+      ? new Date(startDate).toISOString().split('T')[0]
+      : (typeof startDate === 'string' ? startDate.split('T')[0] : startDate);
+    const formattedEndDate = typeof endDate === 'number'
+      ? new Date(endDate).toISOString().split('T')[0]
+      : (typeof endDate === 'string' ? endDate.split('T')[0] : endDate);
+
     // 创建注册记录
     const enrollmentData = {
       studentId,
@@ -129,6 +141,10 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
       courseGrade: courseData?.grade || null,
       teacherId: courseData?.teacherId || '',
       teacherName: courseData?.teacherName || '',
+      academicYear: courseData?.academicYear || '2025-2026',
+      semester: courseData?.semester || 'Fall',
+      startDate: formattedStartDate,
+      endDate: formattedEndDate,
       status: status, // ready, pending, or open
       courseFee,
       paid: false,

@@ -114,6 +114,10 @@ export interface Course {
   moodleId?: string;                 // Moodle 课程 ID
   moodleCategoryId?: string;         // Moodle 分类 ID
   
+  // 🆕 课程日期（从 Moodle 同步）
+  startDate?: string | number;       // 课程开始日期（Unix timestamp 或 ISO string）
+  endDate?: string | number;         // 课程结束日期（Unix timestamp 或 ISO string）
+  
   // 时间安排（新增）
   schedule?: {
     dayOfWeek: string;               // Monday, Tuesday, etc.

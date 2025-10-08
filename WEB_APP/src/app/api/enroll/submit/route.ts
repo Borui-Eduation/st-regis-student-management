@@ -44,6 +44,22 @@ export async function POST(req: NextRequest) {
     for (const item of cartItems) {
       const enrollmentRef = collections.enrollments.doc();
       
+      // 获取课程信息以读取开始和结束日期
+      const courseDoc = await collections.courses.doc(item.courseId).get();
+      const courseData = courseDoc.data();
+      
+      // 从课程获取日期，如果没有则使用默认值
+      const startDate = courseData?.startDate || '2025-09-01';
+      const endDate = courseData?.endDate || '2026-01-20';
+      
+      // 如果是 timestamp 格式，转换为 ISO string
+      const formattedStartDate = typeof startDate === 'number' 
+        ? new Date(startDate).toISOString().split('T')[0]
+        : (typeof startDate === 'string' ? startDate.split('T')[0] : startDate);
+      const formattedEndDate = typeof endDate === 'number'
+        ? new Date(endDate).toISOString().split('T')[0]
+        : (typeof endDate === 'string' ? endDate.split('T')[0] : endDate);
+      
       const enrollmentData = {
         enrollmentId: enrollmentRef.id,
         
@@ -62,8 +78,8 @@ export async function POST(req: NextRequest) {
         // 学期信息
         academicYear: item.academicYear,
         semester: item.semester,
-        startDate: '2025-09-01',
-        endDate: '2026-01-20',
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
         
         // 初始状态
         status: 'pending' as const,

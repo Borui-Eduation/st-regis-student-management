@@ -115,6 +115,17 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
           courseData.moodleCategoryId = moodleCourse.categoryid.toString();
         }
 
+        // 添加课程开始和结束日期（从 Moodle 同步）
+        if (moodleCourse.startdate && moodleCourse.startdate > 0) {
+          // 转换 Unix timestamp 到 ISO string
+          courseData.startDate = new Date(moodleCourse.startdate * 1000).toISOString();
+        }
+        
+        if (moodleCourse.enddate && moodleCourse.enddate > 0) {
+          // 转换 Unix timestamp 到 ISO string
+          courseData.endDate = new Date(moodleCourse.enddate * 1000).toISOString();
+        }
+
         if (existingCourseQuery.empty) {
           // 创建新课程
           const newCourseData: any = {

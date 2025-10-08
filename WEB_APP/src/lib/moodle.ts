@@ -27,6 +27,9 @@ interface MoodleCourse {
   fullname: string;
   shortname: string;
   categoryid?: number;
+  startdate?: number;       // Unix timestamp
+  enddate?: number;         // Unix timestamp
+  summary?: string;         // 课程描述
 }
 
 interface MoodleEnrollment {
