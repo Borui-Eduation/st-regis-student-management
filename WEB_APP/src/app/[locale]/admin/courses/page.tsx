@@ -398,6 +398,7 @@ export default function CoursesManagementPage() {
         onClose={handleDialogClose}
         onSuccess={handleDialogSuccess}
       />
+      </div>
     </div>
   );
 }
