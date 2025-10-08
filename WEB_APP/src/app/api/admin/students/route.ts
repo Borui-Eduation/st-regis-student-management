@@ -189,11 +189,19 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
 
     // 🎯 此接口只创建学生账号
     // 学生账号不需要密码（没有登录功能）
+    
+    // 自动判断学生来源（根据学校）
+    const schoolName = school || 'St. Regis';
+    const schoolType = (schoolName.toLowerCase().includes('st') && schoolName.toLowerCase().includes('regis'))
+      ? 'stregis'
+      : 'outside';
+    
     const studentData = {
       name,
       email: email || null,
       phone: phone || null,
-      school: school || 'St. Regis',
+      school: schoolName,
+      schoolType, // 🆕 根据学校自动设置学生来源
       grade: grade ? parseInt(grade) : null,
       status: status || 'active',
       role: 'student', // 🚨 强制为学生角色

@@ -92,6 +92,14 @@ export async function PATCH(
       }
     }
 
+    // 🆕 如果更新了学校，自动更新学生来源
+    if (body.school !== undefined) {
+      const schoolName = body.school || 'St. Regis';
+      updateData.schoolType = (schoolName.toLowerCase().includes('st') && schoolName.toLowerCase().includes('regis'))
+        ? 'stregis'
+        : 'outside';
+    }
+
     // 如果更新邮箱，检查邮箱是否已被其他学生使用
     if (body.email && body.email !== studentDoc.data()?.email) {
       const existingStudent = await collections.students
