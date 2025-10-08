@@ -176,11 +176,21 @@
       },
       "search": {
         "types": {
-          "all": "All",
+          "all": "🎯 Smart Search",
           "name": "Name",
           "email": "Email",
-          "course": "Course",
-          "teacher": "Teacher"
+          "course": "📚 Course",
+          "teacher": "👨‍🏫 Teacher"
+        },
+        "descriptions": {
+          "all": "Search anything: students, teachers, courses...",
+          "course": "Filter students by course",
+          "teacher": "Filter students by teacher"
+        },
+        "hints": {
+          "all": "Enter student name, email, teacher name, or course name to search",
+          "course": "Select a course to view all students in that course",
+          "teacher": "Select a teacher to view all students under that teacher"
         },
         "placeholders": {
           "selectTeacher": "Select teacher...",
@@ -188,11 +198,16 @@
           "searchName": "Search student name...",
           "searchEmail": "Search email address...",
           "searchStudents": "Search student name, email or ID...",
-          "searchAll": "Search student name, email or course..."
+          "searchAll": "Search student name, email or course...",
+          "searchAnything": "🔍 Search student name, email, teacher, or course..."
         },
         "buttons": {
           "search": "Search",
-          "refresh": "Refresh"
+          "refresh": "Refresh",
+          "clear": "Clear"
+        },
+        "status": {
+          "searching": "Searching"
         }
       },
       "table": {
